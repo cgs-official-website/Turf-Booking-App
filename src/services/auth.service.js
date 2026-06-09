@@ -4,7 +4,6 @@
 
 const bcrypt = require("bcryptjs");
 
-const User = require("../models/User");
 const ApiError = require("../utils/ApiError");
 const { generateToken } = require("../utils/jwt");
 
