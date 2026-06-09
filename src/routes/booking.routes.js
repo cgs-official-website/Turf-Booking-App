@@ -25,8 +25,6 @@ router.get("/turf/:turfId", protect, authorizeRoles("vendor", "admin"), getTurfB
 router.get("/:id", protect, getBookingById);
 router.patch("/:id/cancel", protect, cancelBooking);
 
-// Logged-in user's bookings
-router.get("/my-bookings", getMyBookings);
-
+// Logged-in user's bookings (handled by /my)
 
 module.exports = router;

@@ -18,12 +18,6 @@ const {
 
 const { protect, authorizeRoles } = require("../middlewares/auth.middleware");
 
-// User profile
-router.get("/profile", getMyProfile);
-router.put("/profile", updateMyProfile);
-router.put("/change-password", changePassword);
-
-
 // Authenticated user
 router.get("/profile", protect, getMyProfile);
 router.put("/profile", protect, updateMyProfile);

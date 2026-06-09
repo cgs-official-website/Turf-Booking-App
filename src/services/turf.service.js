@@ -110,7 +110,6 @@ const getAvailableSlots = async (turfId, date) => {
 
   const turf = await Turf.findById(turfId);
   if (!turf) throw new ApiError(404, "Turf not found");
-  const Booking = require("../models/Booking");
 
 
   const bookedSlots = await Booking.find({
