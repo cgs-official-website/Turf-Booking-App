@@ -3,8 +3,8 @@
 //  Handles: Create booking, Cancel, Get bookings
 // =============================================
 
-const Booking = require("../models/booking.model");
-const Turf = require("../models/turf.model");
+const Booking = require("../models/Booking");
+const Turf = require("../models/Turf");
 
 // ─────────────────────────────────────────────
 // CREATE a new booking

@@ -3,7 +3,7 @@
 //  Handles: Add, Update, Delete, List turfs
 // =============================================
 
-const Turf = require("../models/turf.model");
+const Turf = require("../models/Turf");
 
 // ─────────────────────────────────────────────
 // ADD a new turf (admin/owner only)
@@ -114,7 +114,7 @@ const deleteTurf = async (turfId, ownerId) => {
 // CHECK available slots for a turf on a date
 // ─────────────────────────────────────────────
 const getAvailableSlots = async (turfId, date) => {
-  const Booking = require("../models/booking.model");
+  const Booking = require("../models/Booking");
 
   // Get all confirmed bookings for this turf on this date
   const bookedSlots = await Booking.find({

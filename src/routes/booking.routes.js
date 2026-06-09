@@ -3,7 +3,7 @@ const router = express.Router();
 
 const {
   createBooking,
-  getUserBookings,
+  getMyBookings,
   getTurfBookings,
   getBookingById,
   cancelBooking,
@@ -13,7 +13,7 @@ const {
 router.post("/", createBooking);
 
 // Logged-in user's bookings
-router.get("/my-bookings", getUserBookings);
+router.get("/my-bookings", getMyBookings);
 
 // Turf bookings
 router.get("/turf/:turfId", getTurfBookings);

@@ -5,7 +5,7 @@
 
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const User = require("../models/user.model"); // your Mongoose/Sequelize model
+const User = require("../models/User"); // your Mongoose/Sequelize model
 
 const JWT_SECRET = process.env.JWT_SECRET || "your_jwt_secret_key";
 const JWT_EXPIRES_IN = "7d";
