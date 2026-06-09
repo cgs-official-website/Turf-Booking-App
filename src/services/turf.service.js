@@ -3,6 +3,7 @@
 // =============================================
 
 const Turf = require("../models/Turf");
+
 const Booking = require("../models/Booking");
 const ApiError = require("../utils/ApiError");
 
@@ -106,8 +107,11 @@ const deleteTurf = async (turfId, requesterId, requesterRole) => {
 // Working hours: 06:00 – 23:00 in 1-hour increments
 // ─────────────────────────────────────────────
 const getAvailableSlots = async (turfId, date) => {
+
   const turf = await Turf.findById(turfId);
   if (!turf) throw new ApiError(404, "Turf not found");
+  const Booking = require("../models/Booking");
+
 
   const bookedSlots = await Booking.find({
     turf: turfId,

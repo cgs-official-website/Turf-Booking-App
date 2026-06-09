@@ -3,9 +3,17 @@
 // =============================================
 
 const bcrypt = require("bcryptjs");
+
 const User = require("../models/User");
 const ApiError = require("../utils/ApiError");
 const { generateToken } = require("../utils/jwt");
+
+const jwt = require("jsonwebtoken");
+const User = require("../models/User"); // your Mongoose/Sequelize model
+
+const JWT_SECRET = process.env.JWT_SECRET || "your_jwt_secret_key";
+const JWT_EXPIRES_IN = "7d";
+
 
 // ─────────────────────────────────────────────
 // REGISTER

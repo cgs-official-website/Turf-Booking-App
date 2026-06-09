@@ -4,9 +4,16 @@
 //  authorizeRoles → role-based access control
 // =============================================
 
+
 const User = require("../models/User");
 const { verifyToken } = require("../utils/jwt");
 const ApiError = require("../utils/ApiError");
+
+const jwt = require("jsonwebtoken");
+const User = require("../models/User");
+
+const JWT_SECRET = process.env.JWT_SECRET || "your_jwt_secret_key";
+
 
 // ─────────────────────────────────────────────
 // protect — attach req.user from valid JWT
