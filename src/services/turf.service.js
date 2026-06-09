@@ -1,25 +1,27 @@
 // =============================================
-//  TURF SERVICE — turf-booking-app
-//  Handles: Add, Update, Delete, List turfs
+//  TURF SERVICE — Add, List, Update, Delete, Slots
 // =============================================
 
-const Turf = require("../models/turf.model");
+const Turf = require("../models/Turf");
+const Booking = require("../models/Booking");
+const ApiError = require("../utils/ApiError");
 
 // ─────────────────────────────────────────────
-// ADD a new turf (admin/owner only)
+// ADD a new turf
 // ─────────────────────────────────────────────
-const addTurf = async ({ name, location, pricePerHour, amenities, images, ownerId }) => {
-  // Check if turf with same name + location already exists
+const addTurf = async ({ name, location, sportType, pricePerHour, description, amenities, images, ownerId }) => {
   const existing = await Turf.findOne({ name, location });
   if (existing) {
-    throw new Error("A turf with this name already exists at this location");
+    throw new ApiError(400, "A turf with this name already exists at this location");
   }
 
   const turf = await Turf.create({
     name,
     location,
+    sportType,
     pricePerHour,
-    amenities: amenities || [],  // e.g. ["floodlights", "parking", "drinking water"]
+    description,
+    amenities: amenities || [],
     images: images || [],
     owner: ownerId,
     isAvailable: true,
@@ -29,57 +31,51 @@ const addTurf = async ({ name, location, pricePerHour, amenities, images, ownerI
 };
 
 // ─────────────────────────────────────────────
-// GET all turfs (with optional filters)
+// GET all available turfs (with optional filters)
+// Supports: ?location=chennai&minPrice=500&maxPrice=2000&sportType=football
 // ─────────────────────────────────────────────
-const getAllTurfs = async ({ location, minPrice, maxPrice } = {}) => {
+const getAllTurfs = async ({ location, minPrice, maxPrice, sportType } = {}) => {
   const query = { isAvailable: true };
 
-  // Filter by location (partial match, case-insensitive)
   if (location) {
     query.location = { $regex: location, $options: "i" };
   }
 
-  // Filter by price range
+  if (sportType) {
+    query.sportType = sportType;
+  }
+
   if (minPrice || maxPrice) {
     query.pricePerHour = {};
     if (minPrice) query.pricePerHour.$gte = Number(minPrice);
     if (maxPrice) query.pricePerHour.$lte = Number(maxPrice);
   }
 
-  const turfs = await Turf.find(query).select("-__v");
-  return turfs;
+  return await Turf.find(query).populate("owner", "name email").select("-__v");
 };
 
 // ─────────────────────────────────────────────
 // GET single turf by ID
 // ─────────────────────────────────────────────
 const getTurfById = async (turfId) => {
-  const turf = await Turf.findById(turfId);
-
-  if (!turf) {
-    throw new Error("Turf not found");
-  }
-
+  const turf = await Turf.findById(turfId).populate("owner", "name email");
+  if (!turf) throw new ApiError(404, "Turf not found");
   return turf;
 };
 
 // ─────────────────────────────────────────────
-// UPDATE turf details (admin/owner only)
+// UPDATE turf (owner or admin only)
 // ─────────────────────────────────────────────
-const updateTurf = async (turfId, ownerId, updateData) => {
+const updateTurf = async (turfId, requesterId, requesterRole, updateData) => {
   const turf = await Turf.findById(turfId);
+  if (!turf) throw new ApiError(404, "Turf not found");
 
-  if (!turf) {
-    throw new Error("Turf not found");
+  // Admins can update any turf; vendors can only update their own
+  if (requesterRole !== "admin" && turf.owner.toString() !== requesterId.toString()) {
+    throw new ApiError(403, "Not authorised to update this turf");
   }
 
-  // Only the owner of the turf can update it
-  if (turf.owner.toString() !== ownerId.toString()) {
-    throw new Error("Not authorized to update this turf");
-  }
-
-  // Allowed fields to update
-  const allowedFields = ["name", "location", "pricePerHour", "amenities", "images", "isAvailable"];
+  const allowedFields = ["name", "location", "sportType", "pricePerHour", "description", "amenities", "images", "isAvailable"];
   allowedFields.forEach((field) => {
     if (updateData[field] !== undefined) {
       turf[field] = updateData[field];
@@ -87,43 +83,38 @@ const updateTurf = async (turfId, ownerId, updateData) => {
   });
 
   await turf.save();
-
   return { message: "Turf updated successfully", turf };
 };
 
 // ─────────────────────────────────────────────
-// DELETE a turf (admin/owner only)
+// DELETE turf (owner or admin only)
 // ─────────────────────────────────────────────
-const deleteTurf = async (turfId, ownerId) => {
+const deleteTurf = async (turfId, requesterId, requesterRole) => {
   const turf = await Turf.findById(turfId);
+  if (!turf) throw new ApiError(404, "Turf not found");
 
-  if (!turf) {
-    throw new Error("Turf not found");
-  }
-
-  if (turf.owner.toString() !== ownerId.toString()) {
-    throw new Error("Not authorized to delete this turf");
+  if (requesterRole !== "admin" && turf.owner.toString() !== requesterId.toString()) {
+    throw new ApiError(403, "Not authorised to delete this turf");
   }
 
   await turf.deleteOne();
-
   return { message: "Turf deleted successfully" };
 };
 
 // ─────────────────────────────────────────────
-// CHECK available slots for a turf on a date
+// GET available slots for a turf on a given date
+// Working hours: 06:00 – 23:00 in 1-hour increments
 // ─────────────────────────────────────────────
 const getAvailableSlots = async (turfId, date) => {
-  const Booking = require("../models/booking.model");
+  const turf = await Turf.findById(turfId);
+  if (!turf) throw new ApiError(404, "Turf not found");
 
-  // Get all confirmed bookings for this turf on this date
   const bookedSlots = await Booking.find({
     turf: turfId,
-    date,
-    status: "confirmed",
+    bookingDate: new Date(date),
+    bookingStatus: { $ne: "cancelled" },
   }).select("startTime endTime");
 
-  // Define working hours: 6 AM to 11 PM, in 1-hour slots
   const allSlots = [];
   for (let hour = 6; hour < 23; hour++) {
     const start = `${String(hour).padStart(2, "0")}:00`;
@@ -131,22 +122,14 @@ const getAvailableSlots = async (turfId, date) => {
     allSlots.push({ startTime: start, endTime: end });
   }
 
-  // Mark each slot as available or booked
   const slots = allSlots.map((slot) => {
-    const isBooked = bookedSlots.some((booking) => {
-      return booking.startTime <= slot.startTime && booking.endTime >= slot.endTime;
-    });
+    const isBooked = bookedSlots.some(
+      (b) => b.startTime <= slot.startTime && b.endTime >= slot.endTime
+    );
     return { ...slot, isAvailable: !isBooked };
   });
 
   return slots;
 };
 
-module.exports = {
-  addTurf,
-  getAllTurfs,
-  getTurfById,
-  updateTurf,
-  deleteTurf,
-  getAvailableSlots,
-};
+module.exports = { addTurf, getAllTurfs, getTurfById, updateTurf, deleteTurf, getAvailableSlots };

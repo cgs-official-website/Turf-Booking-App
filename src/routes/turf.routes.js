@@ -1,31 +1,31 @@
+// =============================================
+//  TURF ROUTES
+// =============================================
+
 const express = require("express");
 const router = express.Router();
 
 const {
-  addTurf,
   getAllTurfs,
   getTurfById,
+  getAvailableSlots,
+  addTurf,
   updateTurf,
   deleteTurf,
-  getAvailableSlots,
 } = require("../controllers/turf.controller");
 
-// Create turf
-router.post("/", addTurf);
+const { protect, authorizeRoles } = require("../middlewares/auth.middleware");
+const validate = require("../middlewares/validation.middleware");
+const { addTurfSchema, updateTurfSchema } = require("../validators/turf.validator");
 
-// Get all turfs
+// Public routes
 router.get("/", getAllTurfs);
-
-// Get available slots
+router.get("/:id", getTurfById);
 router.get("/:id/slots", getAvailableSlots);
 
-// Get turf by ID
-router.get("/:id", getTurfById);
-
-// Update turf
-router.put("/:id", updateTurf);
-
-// Delete turf
-router.delete("/:id", deleteTurf);
+// Vendor / Admin only
+router.post("/", protect, authorizeRoles("vendor", "admin"), validate(addTurfSchema), addTurf);
+router.put("/:id", protect, authorizeRoles("vendor", "admin"), validate(updateTurfSchema), updateTurf);
+router.delete("/:id", protect, authorizeRoles("vendor", "admin"), deleteTurf);
 
 module.exports = router;

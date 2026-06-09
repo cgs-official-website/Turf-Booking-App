@@ -1,23 +1,30 @@
+// =============================================
+//  USER ROUTES
+//  All routes require authentication
+// =============================================
+
 const express = require("express");
 const router = express.Router();
 
 const {
-  getUserProfile,
-  updateUserProfile,
+  getMyProfile,
+  updateMyProfile,
   changePassword,
   getAllUsers,
   getUserById,
   deleteUser,
 } = require("../controllers/user.controller");
 
-// User profile
-router.get("/profile", getUserProfile);
-router.put("/profile", updateUserProfile);
-router.put("/change-password", changePassword);
+const { protect, authorizeRoles } = require("../middlewares/auth.middleware");
 
-// Admin routes
-router.get("/", getAllUsers);
-router.get("/:id", getUserById);
-router.delete("/:id", deleteUser);
+// Authenticated user
+router.get("/profile", protect, getMyProfile);
+router.put("/profile", protect, updateMyProfile);
+router.put("/change-password", protect, changePassword);
+
+// Admin only
+router.get("/", protect, authorizeRoles("admin"), getAllUsers);
+router.get("/:id", protect, authorizeRoles("admin"), getUserById);
+router.delete("/:id", protect, authorizeRoles("admin"), deleteUser);
 
 module.exports = router;

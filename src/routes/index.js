@@ -1,14 +1,13 @@
+// =============================================
+//  ROUTE INDEX — mounts all route modules
+// =============================================
+
 const express = require("express");
 const router = express.Router();
 
-const authRoutes = require("./auth.routes");
-const userRoutes = require("./user.routes");
-const turfRoutes = require("./turf.routes");
-const bookingRoutes = require("./booking.routes");
-
-router.use("/auth", authRoutes);
-router.use("/users", userRoutes);
-router.use("/turfs", turfRoutes);
-router.use("/bookings", bookingRoutes);
+router.use("/auth", require("./auth.routes"));
+router.use("/users", require("./user.routes"));
+router.use("/turfs", require("./turf.routes"));
+router.use("/bookings", require("./booking.routes"));
 
 module.exports = router;

@@ -1,14 +1,17 @@
+// =============================================
+//  AUTH ROUTES
+//  POST /api/auth/register
+//  POST /api/auth/login
+// =============================================
+
 const express = require("express");
 const router = express.Router();
 
-const {
-  registerUser,
-  loginUser,
-  verifyToken,
-} = require("../controllers/auth.controller");
+const { register, login } = require("../controllers/auth.controller");
+const validate = require("../middlewares/validation.middleware");
+const { registerSchema, loginSchema } = require("../validators/auth.validator");
 
-router.post("/register", registerUser);
-router.post("/login", loginUser);
-router.get("/verify", verifyToken);
+router.post("/register", validate(registerSchema), register);
+router.post("/login", validate(loginSchema), login);
 
 module.exports = router;

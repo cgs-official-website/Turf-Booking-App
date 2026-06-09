@@ -1,47 +1,26 @@
 // =============================================
-//  AUTH CONTROLLER — turf-booking-app
-//  Routes: POST /api/auth/register
-//          POST /api/auth/login
+//  AUTH CONTROLLER
+//  POST /api/auth/register
+//  POST /api/auth/login
 // =============================================
 
 const authService = require("../services/auth.service");
 
-// ─────────────────────────────────────────────
-// POST /api/auth/register
-// ─────────────────────────────────────────────
-const register = async (req, res) => {
+const register = async (req, res, next) => {
   try {
-    const { name, email, password, role } = req.body;
-
-    // Basic validation
-    if (!name || !email || !password) {
-      return res.status(400).json({ success: false, message: "Name, email and password are required" });
-    }
-
-    const result = await authService.registerUser({ name, email, password, role });
-
+    const result = await authService.registerUser(req.body);
     return res.status(201).json({ success: true, ...result });
   } catch (error) {
-    return res.status(400).json({ success: false, message: error.message });
+    next(error);
   }
 };
 
-// ─────────────────────────────────────────────
-// POST /api/auth/login
-// ─────────────────────────────────────────────
-const login = async (req, res) => {
+const login = async (req, res, next) => {
   try {
-    const { email, password } = req.body;
-
-    if (!email || !password) {
-      return res.status(400).json({ success: false, message: "Email and password are required" });
-    }
-
-    const result = await authService.loginUser({ email, password });
-
+    const result = await authService.loginUser(req.body);
     return res.status(200).json({ success: true, ...result });
   } catch (error) {
-    return res.status(401).json({ success: false, message: error.message });
+    next(error);
   }
 };
 

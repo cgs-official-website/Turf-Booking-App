@@ -1,104 +1,68 @@
 // =============================================
-//  USER CONTROLLER — turf-booking-app
-//  Routes: GET    /api/users/profile        → get my profile
-//          PUT    /api/users/profile        → update my profile
-//          PUT    /api/users/change-password→ change password
-//          GET    /api/users/              → all users (admin only)
-//          GET    /api/users/:id           → single user (admin only)
-//          DELETE /api/users/:id           → delete user (admin only)
+//  USER CONTROLLER
+//  GET    /api/users/profile
+//  PUT    /api/users/profile
+//  PUT    /api/users/change-password
+//  GET    /api/users/            (admin)
+//  GET    /api/users/:id         (admin)
+//  DELETE /api/users/:id         (admin)
 // =============================================
 
 const userService = require("../services/user.service");
 
-// ─────────────────────────────────────────────
-// GET /api/users/profile
-// ─────────────────────────────────────────────
-const getMyProfile = async (req, res) => {
+const getMyProfile = async (req, res, next) => {
   try {
     const user = await userService.getUserProfile(req.user.id);
-
     return res.status(200).json({ success: true, user });
   } catch (error) {
-    return res.status(404).json({ success: false, message: error.message });
+    next(error);
   }
 };
 
-// ─────────────────────────────────────────────
-// PUT /api/users/profile
-// ─────────────────────────────────────────────
-const updateMyProfile = async (req, res) => {
+const updateMyProfile = async (req, res, next) => {
   try {
     const result = await userService.updateUserProfile(req.user.id, req.body);
-
     return res.status(200).json({ success: true, ...result });
   } catch (error) {
-    return res.status(400).json({ success: false, message: error.message });
+    next(error);
   }
 };
 
-// ─────────────────────────────────────────────
-// PUT /api/users/change-password
-// ─────────────────────────────────────────────
-const changePassword = async (req, res) => {
+const changePassword = async (req, res, next) => {
   try {
     const { oldPassword, newPassword } = req.body;
-
-    if (!oldPassword || !newPassword) {
-      return res.status(400).json({ success: false, message: "oldPassword and newPassword are required" });
-    }
-
     const result = await userService.changePassword(req.user.id, { oldPassword, newPassword });
-
     return res.status(200).json({ success: true, ...result });
   } catch (error) {
-    return res.status(400).json({ success: false, message: error.message });
+    next(error);
   }
 };
 
-// ─────────────────────────────────────────────
-// GET /api/users/   (admin only)
-// ─────────────────────────────────────────────
-const getAllUsers = async (req, res) => {
+const getAllUsers = async (req, res, next) => {
   try {
     const users = await userService.getAllUsers();
-
     return res.status(200).json({ success: true, count: users.length, users });
   } catch (error) {
-    return res.status(500).json({ success: false, message: error.message });
+    next(error);
   }
 };
 
-// ─────────────────────────────────────────────
-// GET /api/users/:id  (admin only)
-// ─────────────────────────────────────────────
-const getUserById = async (req, res) => {
+const getUserById = async (req, res, next) => {
   try {
     const user = await userService.getUserById(req.params.id);
-
     return res.status(200).json({ success: true, user });
   } catch (error) {
-    return res.status(404).json({ success: false, message: error.message });
+    next(error);
   }
 };
 
-// ─────────────────────────────────────────────
-// DELETE /api/users/:id  (admin only)
-// ─────────────────────────────────────────────
-const deleteUser = async (req, res) => {
+const deleteUser = async (req, res, next) => {
   try {
     const result = await userService.deleteUser(req.params.id);
-
     return res.status(200).json({ success: true, ...result });
   } catch (error) {
-    return res.status(404).json({ success: false, message: error.message });
+    next(error);
   }
 };
 
-module.exports = {
-  getMyProfile,
-  updateMyProfile,
-  changePassword,
-  getAllUsers,
-  getUserById,
-  deleteUser,
-};
+module.exports = { getMyProfile, updateMyProfile, changePassword, getAllUsers, getUserById, deleteUser };
