@@ -1,0 +1,30 @@
+const { required } = require("joi");
+const mongoose = require("mongoose");
+
+const adminSchema = new mongoose.Schema(
+  {
+    name: {
+      type: String,
+      required: [true, "Admin name is required"],
+    },
+
+    email: {
+      type: String,
+      unique: true,
+      lowercase: true,
+      required: [true, "email is required"],
+    },
+
+    password: {
+      type: String,
+      required: [true, "password is required"],
+    },
+
+    role: {
+      type: String,
+      enum: ["admin"],
+      default: "admin",
+    },
+  },
+  { timestamps: true },
+);

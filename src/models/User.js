@@ -29,7 +29,7 @@ const userSchema = new mongoose.Schema({
 
   role: {
     type: String,
-    enum: ['user', 'vendor', 'admin'],
+    enum: ['user', 'vendor'],
     default: 'user', //enum stands for enumeration(restrict a field to a fixed set of allowed values.)
   },
 },
