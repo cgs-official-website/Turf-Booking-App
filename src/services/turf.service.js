@@ -138,7 +138,7 @@ const getAvailableSlots = async (turfId, date) => {
 
   // 2. Collect unique time boundaries (hourly + bookings)
   const timePoints = new Set();
-  for (let h = 1; h <= 23; h++) {
+  for (let h = 1; h <= 24; h++) {
     timePoints.add(`${String(h).padStart(2, "0")}:00`);
   }
   for (const b of mergedBookings) {
@@ -147,7 +147,7 @@ const getAvailableSlots = async (turfId, date) => {
   }
   
   const sortedPoints = Array.from(timePoints).sort();
-  const validPoints = sortedPoints.filter(p => p >= "01:00" && p <= "23:00");
+  const validPoints = sortedPoints.filter(p => p >= "01:00" && p <= "2:00");
 
   // 3. Generate raw segments
   const rawSegments = [];
