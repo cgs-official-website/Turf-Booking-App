@@ -1,28 +1,44 @@
-// =============================================
-//  TURF VALIDATORS — Joi schemas
-// =============================================
-
 const Joi = require("joi");
 
 const addTurfSchema = Joi.object({
   name: Joi.string().trim().required(),
   location: Joi.string().trim().required(),
-  sportType: Joi.string().valid("football", "cricket", "badminton", "multi-sport").required(),
-  pricePerHour: Joi.number().min(0).required(),
-  description: Joi.string().optional().allow(""),
+  sportType: Joi.string()
+    .valid("football", "cricket", "badminton", "multi-sport")
+    .required(),
+  pricePerHour: Joi.object({
+    basePrice: Joi.number().min(0).required(),
+    eveningPrice: Joi.number().min(0).optional(),
+    weekendPrice: Joi.number().min(0).optional(),
+  }).required(),
+  description: Joi.string().allow("").optional(),
   amenities: Joi.array().items(Joi.string()).default([]),
-  images: Joi.array().items(Joi.string().uri()).default([]),
+  mainImage: Joi.string().required(),
+  secondaryImages: Joi.array().items(Joi.string()).max(4).default([]),
 });
 
 const updateTurfSchema = Joi.object({
-  name: Joi.string().trim().optional(),
-  location: Joi.string().trim().optional(),
-  sportType: Joi.string().valid("football", "cricket", "badminton", "multi-sport").optional(),
-  pricePerHour: Joi.number().min(0).optional(),
-  description: Joi.string().optional().allow(""),
-  amenities: Joi.array().items(Joi.string()).optional(),
-  images: Joi.array().items(Joi.string().uri()).optional(),
-  isAvailable: Joi.boolean().optional(),
+  name: Joi.string().trim(),
+  location: Joi.string().trim(),
+  sportType: Joi.string().valid(
+    "football",
+    "cricket",
+    "badminton",
+    "multi-sport",
+  ),
+  pricePerHour: Joi.object({
+    basePrice: Joi.number().min(0),
+    eveningPrice: Joi.number().min(0),
+    weekendPrice: Joi.number().min(0),
+  }),
+  description: Joi.string().allow(""),
+  amenities: Joi.array().items(Joi.string()),
+  mainImage: Joi.string(),
+  secondaryImages: Joi.array().items(Joi.string()).max(4),
+  isAvailable: Joi.boolean(),
 });
 
-module.exports = { addTurfSchema, updateTurfSchema };
+module.exports = {
+  addTurfSchema,
+  updateTurfSchema,
+};

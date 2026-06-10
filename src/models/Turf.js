@@ -15,19 +15,43 @@ const turfSchema = new mongoose.Schema(
 
     sportType: {
       type: String,
-    //   enum: ["football", "cricket", "badminton", "multi-sport"],
+      //   enum: ["football", "cricket", "badminton", "multi-sport"],
       required: [true, "Sport type is required"],
     },
 
     pricePerHour: {
-      type: Number,
-      required: [true, "Price per hour is required"],
-      min: 0,
+      basePrice: {
+        type: Number,
+        required: [true, "Base price is required"],
+        min: 0,
+      },
+
+      eveningPrice: {
+        type: Number,
+        min: 0,
+      },
+
+      weekendPrice: {
+        type: Number,
+        min: 0,
+      },
     },
 
     description: {
       type: String,
+      default: "" ,
     },
+
+    mainImage: {
+      type: String,
+      required: true,
+    },
+
+    secondaryImages: [
+      {
+        type: String,
+      },
+    ],
 
     isAvailable: {
       type: Boolean,
@@ -42,8 +66,8 @@ const turfSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-    collation:"turfs"
-  }
+    collation: "turfs",
+  },
 );
 
 module.exports = mongoose.model("Turf", turfSchema);

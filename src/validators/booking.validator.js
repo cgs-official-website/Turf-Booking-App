@@ -1,7 +1,3 @@
-// =============================================
-//  BOOKING VALIDATORS — Joi schemas
-// =============================================
-
 const Joi = require("joi");
 
 const createBookingSchema = Joi.object({
@@ -9,17 +5,33 @@ const createBookingSchema = Joi.object({
     "string.hex": "turfId must be a valid MongoDB ObjectId",
     "string.length": "turfId must be a valid MongoDB ObjectId",
   }),
-  bookingDate: Joi.date().iso().min("now").required().messages({
-    "date.min": "Booking date cannot be in the past",
-  }),
+
+  bookingDate: Joi.date().iso().required(),
+
   startTime: Joi.string()
     .pattern(/^([01]\d|2[0-3]):[0-5]\d$/)
     .required()
-    .messages({ "string.pattern.base": "startTime must be in HH:MM format (e.g. 09:00)" }),
+    .messages({
+      "string.pattern.base": "startTime must be in HH:MM format (e.g. 09:00)",
+    }),
+
   endTime: Joi.string()
     .pattern(/^([01]\d|2[0-3]):[0-5]\d$/)
     .required()
-    .messages({ "string.pattern.base": "endTime must be in HH:MM format (e.g. 10:00)" }),
-});
+    .messages({
+      "string.pattern.base": "endTime must be in HH:MM format (e.g. 10:00)",
+    }),
+})
+  .custom((value, helpers) => {
+    if (value.startTime >= value.endTime) {
+      return helpers.error("any.invalid");
+    }
+    return value;
+  })
+  .messages({
+    "any.invalid": "endTime must be later than startTime",
+  });
 
-module.exports = { createBookingSchema };
+module.exports = {
+  createBookingSchema,
+};
