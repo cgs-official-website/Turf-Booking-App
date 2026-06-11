@@ -3,13 +3,13 @@ const ApiResponse = require("../utils/ApiResponse");
 
 const createBooking = async (req, res, next) => {
   try {
-    const result = await bookingService.createBooking({
+    const bookingResult = await bookingService.createBooking({
       ...req.body,
       userId: req.user.id,
     });
 
     return res.status(201).json(
-      new ApiResponse(201, "Booking created successfully", result)
+      new ApiResponse(201, "Booking created successfully", bookingResult)
     );
   } catch (error) {
     next(error);
@@ -60,42 +60,30 @@ const getBookingById = async (req, res, next) => {
 
 const confirmBooking = async (req, res, next) => {
   try {
-<<<<<<< HEAD
-    const result = await bookingService.confirmBooking(req.params.id, req.user.id, req.user.role);
-    return res.status(200).json({ success: true, ...result });
-=======
-    const result = await bookingService.cancelBooking(
+    const confirmResult = await bookingService.confirmBooking(req.params.id, req.user.id, req.user.role);
+    return res.status(200).json({ success: true, ...confirmResult });
+    const cancelResult = await bookingService.cancelBooking(
       req.params.id,
       req.user.id,
       req.user.role
     );
 
     return res.status(200).json(
-      new ApiResponse(200, "Booking cancelled successfully", result)
+      new ApiResponse(200, "Booking cancelled successfully", cancelResult)
     );
->>>>>>> 8d62cbcba70be8927450a31d1bf22db7cfe7265d
   } catch (error) {
     next(error);
   }
 };
 
-<<<<<<< HEAD
 const rejectBooking = async (req, res, next) => {
   try {
-    const result = await bookingService.rejectBooking(req.params.id, req.user.id, req.user.role);
-    return res.status(200).json({ success: true, ...result });
+    const rejectResult = await bookingService.rejectBooking(req.params.id, req.user.id, req.user.role);
+    return res.status(200).json({ success: true, ...rejectResult });
   } catch (error) {
     next(error);
   }
 };
 
 module.exports = { createBooking, getMyBookings, getTurfBookings, getBookingById, confirmBooking, rejectBooking };
-=======
-module.exports = {
-  createBooking,
-  getMyBookings,
-  getTurfBookings,
-  getBookingById,
-  cancelBooking,
-};
->>>>>>> 8d62cbcba70be8927450a31d1bf22db7cfe7265d
+
