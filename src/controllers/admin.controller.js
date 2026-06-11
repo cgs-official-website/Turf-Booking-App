@@ -1,17 +1,17 @@
 const adminService = require("../services/admin.service");
 const ApiResponse = require("../utils/ApiResponse");
 
-const createAdmin = async (req, res, next) => {
-  try {
-    const admin = await adminService.createAdmin(req.body);
+// const createAdmin = async (req, res, next) => {
+//   try {
+//     const admin = await adminService.createAdmin(req.body);
 
-    res.status(201).json(
-      new ApiResponse(201, "Admin created successfully", admin)
-    );
-  } catch (error) {
-    next(error);
-  }
-};
+//     res.status(201).json(
+//       new ApiResponse(201, "Admin created successfully", admin)
+//     );
+//   } catch (error) {
+//     next(error);
+//   }
+// };
 
 const loginAdmin = async (req, res, next) => {
   try {
@@ -36,7 +36,7 @@ const getProfile = async (req, res, next) => {
 };
 
 module.exports = {
-  createAdmin,
+  // createAdmin,
   loginAdmin,
   getProfile,
 };

@@ -3,26 +3,26 @@ const ApiError = require("../utils/ApiError");
 const { generateToken } = require("../utils/jwt");
 const Admin = require("../models/Admin");
 
-const createAdmin = async ({ name, email, password }) => {
-  const existingAdmin = await Admin.findOne({ email });
-  if (existingAdmin) {
-    throw new ApiError(400, "Email is already registered");
-  }
+// const createAdmin = async ({ name, email, password }) => {
+//   const existingAdmin = await Admin.findOne({ email });
+//   if (existingAdmin) {
+//     throw new ApiError(400, "Email is already registered");
+//   }
 
-  const hashedPassword = await bcrypt.hash(password, 10);
+//   const hashedPassword = await bcrypt.hash(password, 10);
 
-  const admin = await Admin.create({
-    name,
-    email,
-    password: hashedPassword,
-    role: "admin",
-  });
+//   const admin = await Admin.create({
+//     name,
+//     email,
+//     password: hashedPassword,
+//     role: "admin",
+//   });
 
-  return {
-    success: true,
-    message: "Admin created successfully"
-  };
-};
+//   return {
+//     success: true,
+//     message: "Admin created successfully"
+//   };
+// };
 
 const loginAdmin = async ({ email, password }) => {
   const admin = await Admin.findOne({ email });
@@ -49,4 +49,7 @@ const loginAdmin = async ({ email, password }) => {
   };
 };
 
-module.exports = { createAdmin, loginAdmin };
+module.exports = { 
+  // createAdmin, 
+  loginAdmin 
+};
