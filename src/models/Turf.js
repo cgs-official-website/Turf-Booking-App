@@ -44,7 +44,7 @@ const turfSchema = new mongoose.Schema(
 
     description: {
       type: String,
-      default: "" ,
+      default: "",
     },
 
     mainImage: {
@@ -71,7 +71,7 @@ const turfSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-    collation: "turfs",
+    collection: "turfs",
   },
 );
 

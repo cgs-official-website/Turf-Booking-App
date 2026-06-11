@@ -1,19 +1,13 @@
-// =============================================
-//  USER CONTROLLER
-//  GET    /api/users/profile
-//  PUT    /api/users/profile
-//  PUT    /api/users/change-password
-//  GET    /api/users/            (admin)
-//  GET    /api/users/:id         (admin)
-//  DELETE /api/users/:id         (admin)
-// =============================================
-
 const userService = require("../services/user.service");
+const ApiResponse = require("../utils/ApiResponse");
 
 const getMyProfile = async (req, res, next) => {
   try {
     const user = await userService.getUserProfile(req.user.id);
-    return res.status(200).json({ success: true, user });
+
+    return res.status(200).json(
+      new ApiResponse(200, "Profile fetched successfully", user)
+    );
   } catch (error) {
     next(error);
   }
@@ -21,8 +15,14 @@ const getMyProfile = async (req, res, next) => {
 
 const updateMyProfile = async (req, res, next) => {
   try {
-    const result = await userService.updateUserProfile(req.user.id, req.body);
-    return res.status(200).json({ success: true, ...result });
+    const result = await userService.updateUserProfile(
+      req.user.id,
+      req.body
+    );
+
+    return res.status(200).json(
+      new ApiResponse(200, "Profile updated successfully", result)
+    );
   } catch (error) {
     next(error);
   }
@@ -31,8 +31,15 @@ const updateMyProfile = async (req, res, next) => {
 const changePassword = async (req, res, next) => {
   try {
     const { oldPassword, newPassword } = req.body;
-    const result = await userService.changePassword(req.user.id, { oldPassword, newPassword });
-    return res.status(200).json({ success: true, ...result });
+
+    const result = await userService.changePassword(req.user.id, {
+      oldPassword,
+      newPassword,
+    });
+
+    return res.status(200).json(
+      new ApiResponse(200, "Password changed successfully", result)
+    );
   } catch (error) {
     next(error);
   }
@@ -41,7 +48,13 @@ const changePassword = async (req, res, next) => {
 const getAllUsers = async (req, res, next) => {
   try {
     const users = await userService.getAllUsers();
-    return res.status(200).json({ success: true, count: users.length, users });
+
+    return res.status(200).json(
+      new ApiResponse(200, "Users fetched successfully", {
+        count: users.length,
+        users,
+      })
+    );
   } catch (error) {
     next(error);
   }
@@ -50,7 +63,10 @@ const getAllUsers = async (req, res, next) => {
 const getUserById = async (req, res, next) => {
   try {
     const user = await userService.getUserById(req.params.id);
-    return res.status(200).json({ success: true, user });
+
+    return res.status(200).json(
+      new ApiResponse(200, "User fetched successfully", user)
+    );
   } catch (error) {
     next(error);
   }
@@ -59,11 +75,20 @@ const getUserById = async (req, res, next) => {
 const deleteUser = async (req, res, next) => {
   try {
     const result = await userService.deleteUser(req.params.id);
-    return res.status(200).json({ success: true, ...result });
+
+    return res.status(200).json(
+      new ApiResponse(200, "User deleted successfully", result)
+    );
   } catch (error) {
     next(error);
   }
 };
 
-module.exports = { getMyProfile, updateMyProfile, changePassword, getAllUsers, getUserById, deleteUser };
-
+module.exports = {
+  getMyProfile,
+  updateMyProfile,
+  changePassword,
+  getAllUsers,
+  getUserById,
+  deleteUser,
+};
