@@ -6,7 +6,7 @@ const { authorizeAdmin } = require("../middlewares/admin.middleware");
 
 const router = express.Router();
 
-router.post("/create", validate(createAdminSchema), adminController.createAdmin);
+// router.post("/create", validate(createAdminSchema), adminController.createAdmin); // Disabled for security
 router.post("/login", validate(loginAdminSchema), adminController.loginAdmin);
 router.get("/profile", authorizeAdmin, adminController.getProfile);
 

@@ -114,7 +114,7 @@ const getAvailableSlots = async (turfId, date) => {
   const bookedSlots = await Booking.find({
     turf: turfId,
     bookingDate: new Date(date),
-    bookingStatus: { $ne: "cancelled" },
+    bookingStatus: { $ne: "rejected" },
   }).select("startTime endTime").sort({ startTime: 1 });
 
   // 1. Merge overlapping/consecutive bookings

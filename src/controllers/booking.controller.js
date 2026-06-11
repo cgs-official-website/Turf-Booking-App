@@ -45,13 +45,22 @@ const getBookingById = async (req, res, next) => {
   }
 };
 
-const cancelBooking = async (req, res, next) => {
+const confirmBooking = async (req, res, next) => {
   try {
-    const result = await bookingService.cancelBooking(req.params.id, req.user.id, req.user.role);
+    const result = await bookingService.confirmBooking(req.params.id, req.user.id, req.user.role);
     return res.status(200).json({ success: true, ...result });
   } catch (error) {
     next(error);
   }
 };
 
-module.exports = { createBooking, getMyBookings, getTurfBookings, getBookingById, cancelBooking };
+const rejectBooking = async (req, res, next) => {
+  try {
+    const result = await bookingService.rejectBooking(req.params.id, req.user.id, req.user.role);
+    return res.status(200).json({ success: true, ...result });
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = { createBooking, getMyBookings, getTurfBookings, getBookingById, confirmBooking, rejectBooking };

@@ -42,7 +42,7 @@ const createBooking = async ({
   const conflict = await Booking.findOne({
     turf: turfId,
     bookingDate: new Date(bookingDate),
-    bookingStatus: { $ne: "cancelled" },
+    bookingStatus: { $ne: "rejected" },
     startTime: { $lt: endTime },
     endTime: { $gt: startTime },
   });
@@ -89,7 +89,7 @@ const createBooking = async ({
     startTime,
     endTime,
     totalAmount,
-    bookingStatus: "confirmed",
+    bookingStatus: "pending",
     paymentStatus: "pending",
   });
 
@@ -99,7 +99,7 @@ const createBooking = async ({
   );
 
   return {
-    message: "Booking confirmed successfully",
+    message: "Booking request submitted successfully",
     booking,
   };
 };
@@ -166,16 +166,16 @@ const getBookingById = async (bookingId) => {
 };
 
 // ─────────────────────────────────────────────
-// CANCEL booking
+// CONFIRM booking
 // ─────────────────────────────────────────────
-const cancelBooking = async (
+const confirmBooking = async (
   bookingId,
-  userId,
+  vendorId,
   userRole
 ) => {
   const booking = await Booking.findById(
     bookingId
-  );
+  ).populate("turf");
 
   if (!booking) {
     throw new ApiError(404, "Booking not found");
@@ -183,29 +183,70 @@ const cancelBooking = async (
 
   if (
     userRole !== "admin" &&
-    booking.user.toString() !== userId.toString()
+    booking.turf.owner.toString() !== vendorId.toString()
   ) {
     throw new ApiError(
       403,
-      "Not authorised to cancel this booking"
+      "Not authorised to confirm this booking"
     );
   }
 
-  if (
-    booking.bookingStatus === "cancelled"
-  ) {
+  if (booking.bookingStatus !== "pending") {
     throw new ApiError(
       400,
-      "Booking is already cancelled"
+      "Only pending bookings can be confirmed"
     );
   }
 
-  booking.bookingStatus = "cancelled";
+  booking.bookingStatus = "confirmed";
 
   await booking.save();
 
   return {
-    message: "Booking cancelled successfully",
+    message: "Booking confirmed successfully",
+    booking,
+  };
+};
+
+// ─────────────────────────────────────────────
+// REJECT booking
+// ─────────────────────────────────────────────
+const rejectBooking = async (
+  bookingId,
+  vendorId,
+  userRole
+) => {
+  const booking = await Booking.findById(
+    bookingId
+  ).populate("turf");
+
+  if (!booking) {
+    throw new ApiError(404, "Booking not found");
+  }
+
+  if (
+    userRole !== "admin" &&
+    booking.turf.owner.toString() !== vendorId.toString()
+  ) {
+    throw new ApiError(
+      403,
+      "Not authorised to reject this booking"
+    );
+  }
+
+  if (booking.bookingStatus !== "pending") {
+    throw new ApiError(
+      400,
+      "Only pending bookings can be rejected"
+    );
+  }
+
+  booking.bookingStatus = "rejected";
+
+  await booking.save();
+
+  return {
+    message: "Booking rejected successfully",
     booking,
   };
 };
@@ -215,6 +256,7 @@ module.exports = {
   getUserBookings,
   getTurfBookings,
   getBookingById,
-  cancelBooking,
+  confirmBooking,
+  rejectBooking,
 };
 
