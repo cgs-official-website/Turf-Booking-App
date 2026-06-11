@@ -115,12 +115,12 @@ const getAvailableSlots = async (turfId, date) => {
     throw new ApiError(400, "Invalid date format");
   }
 
-  // Define 24-hour window for the queried date
+  // Use UTC boundaries for the queried date to prevent timezone offsets
   const startOfDay = new Date(queryDate);
-  startOfDay.setHours(0, 0, 0, 0);
+  startOfDay.setUTCHours(0, 0, 0, 0);
 
   const endOfDay = new Date(queryDate);
-  endOfDay.setHours(24, 0, 0, 0);
+  endOfDay.setUTCHours(24, 0, 0, 0);
 
   // Find all bookings that overlap with this day
   const bookedSlots = await Booking.find({
@@ -130,13 +130,13 @@ const getAvailableSlots = async (turfId, date) => {
     endDateTime: { $gt: startOfDay },
   }).select("startDateTime endDateTime").sort({ startDateTime: 1 });
 
-  // Generate hourly blocks from startOfDay to endOfDay
+  // Generate hourly blocks from startOfDay to endOfDay using UTC
   const rawSegments = [];
   let current = new Date(startOfDay);
 
   while (current < endOfDay) {
     const nextHour = new Date(current);
-    nextHour.setHours(current.getHours() + 1, current.getMinutes(), current.getSeconds(), 0);
+    nextHour.setUTCHours(current.getUTCHours() + 1, current.getUTCMinutes(), current.getUTCSeconds(), 0);
     const segmentEnd = nextHour > endOfDay ? endOfDay : nextHour;
 
     // Check if this segment overlaps with any booking
@@ -144,8 +144,8 @@ const getAvailableSlots = async (turfId, date) => {
       (b) => b.startDateTime < segmentEnd && b.endDateTime > current
     );
 
-    // Format times for backward compatibility visually
-    const formatTime = (d) => `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+    // Format times using UTC to match startDateTime accurately
+    const formatTime = (d) => `${String(d.getUTCHours()).padStart(2, '0')}:${String(d.getUTCMinutes()).padStart(2, '0')}`;
     
     rawSegments.push({
       startTime: formatTime(current),
