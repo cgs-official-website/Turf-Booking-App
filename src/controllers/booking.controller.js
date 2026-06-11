@@ -3,14 +3,16 @@ const ApiResponse = require("../utils/ApiResponse");
 
 const createBooking = async (req, res, next) => {
   try {
-    const result = await bookingService.createBooking({
+    const bookingResult = await bookingService.createBooking({
       ...req.body,
       userId: req.user.id,
     });
 
-    return res.status(201).json(
-      new ApiResponse(201, "Booking created successfully", result)
-    );
+    return res
+      .status(201)
+      .json(
+        new ApiResponse(201, "Booking created successfully", bookingResult),
+      );
   } catch (error) {
     next(error);
   }
@@ -24,7 +26,7 @@ const getMyBookings = async (req, res, next) => {
       new ApiResponse(200, "Bookings fetched successfully", {
         count: bookings.length,
         bookings,
-      })
+      }),
     );
   } catch (error) {
     next(error);
@@ -39,7 +41,7 @@ const getTurfBookings = async (req, res, next) => {
       new ApiResponse(200, "Turf bookings fetched successfully", {
         count: bookings.length,
         bookings,
-      })
+      }),
     );
   } catch (error) {
     next(error);
@@ -50,9 +52,9 @@ const getBookingById = async (req, res, next) => {
   try {
     const booking = await bookingService.getBookingById(req.params.id);
 
-    return res.status(200).json(
-      new ApiResponse(200, "Booking fetched successfully", booking)
-    );
+    return res
+      .status(200)
+      .json(new ApiResponse(200, "Booking fetched successfully", booking));
   } catch (error) {
     next(error);
   }
@@ -60,25 +62,46 @@ const getBookingById = async (req, res, next) => {
 
 const confirmBooking = async (req, res, next) => {
   try {
-
-    const result = await bookingService.cancelBooking(
+    const confirmResult = await bookingService.confirmBooking(
       req.params.id,
       req.user.id,
-      req.user.role
+      req.user.role,
+    );
+    return res.status(200).json({ success: true, ...confirmResult });
+    const cancelResult = await bookingService.cancelBooking(
+      req.params.id,
+      req.user.id,
+      req.user.role,
     );
 
-    return res.status(200).json(
-      new ApiResponse(200, "Booking cancelled successfully", result)
-    );
+    return res
+      .status(200)
+      .json(
+        new ApiResponse(200, "Booking cancelled successfully", cancelResult),
+      );
   } catch (error) {
     next(error);
   }
 };
 
+const rejectBooking = async (req, res, next) => {
+  try {
+    const rejectResult = await bookingService.rejectBooking(
+      req.params.id,
+      req.user.id,
+      req.user.role,
+    );
+    return res.status(200).json({ success: true, ...rejectResult });
+  } catch (error) {
+    next(error);
+  }
+};
 
 module.exports = {
   createBooking,
   getMyBookings,
   getTurfBookings,
-  getBookingById
+  getBookingById,
+  confirmBooking,
+  rejectBooking,
 };
