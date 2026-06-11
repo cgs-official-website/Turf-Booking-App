@@ -35,6 +35,11 @@ const turfSchema = new mongoose.Schema(
         type: Number,
         min: 0,
       },
+
+      weekendEveningPrice: {
+        type: Number,
+        min: 0,
+      },
     },
 
     description: {
