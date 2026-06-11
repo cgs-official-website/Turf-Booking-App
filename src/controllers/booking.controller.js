@@ -58,8 +58,9 @@ const getBookingById = async (req, res, next) => {
   }
 };
 
-const cancelBooking = async (req, res, next) => {
+const confirmBooking = async (req, res, next) => {
   try {
+
     const result = await bookingService.cancelBooking(
       req.params.id,
       req.user.id,
@@ -74,10 +75,10 @@ const cancelBooking = async (req, res, next) => {
   }
 };
 
+
 module.exports = {
   createBooking,
   getMyBookings,
   getTurfBookings,
-  getBookingById,
-  cancelBooking,
+  getBookingById
 };

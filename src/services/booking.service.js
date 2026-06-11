@@ -6,15 +6,16 @@ const Booking = require("../models/Booking");
 const Turf = require("../models/Turf");
 const ApiError = require("../utils/ApiError");
 
+const pricingConfig = require("../config/pricing");
+
 // ─────────────────────────────────────────────
 // CREATE a new booking
 // ─────────────────────────────────────────────
 const createBooking = async ({
   userId,
   turfId,
-  bookingDate,
-  startTime,
-  endTime,
+  startDateTime,
+  endDateTime,
 }) => {
   // 1. Check turf exists and is available
   const turf = await Turf.findById(turfId);
@@ -28,23 +29,26 @@ const createBooking = async ({
   }
 
   // 2. Validate start < end
-  const [startH, startM] = startTime.split(":").map(Number);
-  const [endH, endM] = endTime.split(":").map(Number);
+  const ensureUTC = (dateStr) => {
+    if (typeof dateStr === 'string' && !dateStr.endsWith('Z') && !dateStr.includes('+') && !dateStr.match(/-\d\d:\d\d$/)) {
+      return new Date(dateStr + 'Z');
+    }
+    return new Date(dateStr);
+  };
 
-  const startMinutes = startH * 60 + startM;
-  const endMinutes = endH * 60 + endM;
+  const start = ensureUTC(startDateTime);
+  const end = ensureUTC(endDateTime);
 
-  if (endMinutes <= startMinutes) {
-    throw new ApiError(400, "endTime must be after startTime");
+  if (end <= start) {
+    throw new ApiError(400, "endDateTime must be after startDateTime");
   }
 
   // 3. Conflict check
   const conflict = await Booking.findOne({
     turf: turfId,
-    bookingDate: new Date(bookingDate),
-    bookingStatus: { $ne: "cancelled" },
-    startTime: { $lt: endTime },
-    endTime: { $gt: startTime },
+    bookingStatus: { $in: ["pending", "confirmed"] },
+    startDateTime: { $lt: end },
+    endDateTime: { $gt: start },
   });
 
   if (conflict) {
@@ -54,53 +58,65 @@ const createBooking = async ({
     );
   }
 
-  // 4. Calculate pricing
-  const bookingDay = new Date(bookingDate).getDay();
+  // 4. Calculate pricing hour-by-hour
+  let totalAmount = 0;
+  let durationHours = 0;
 
-  let pricePerHour = turf.pricePerHour.basePrice;
+  let current = new Date(start);
+  while (current < end) {
+    const nextHour = new Date(current);
+    nextHour.setUTCHours(current.getUTCHours() + 1, current.getUTCMinutes(), current.getUTCSeconds(), 0);
+    const segmentEnd = nextHour > end ? end : nextHour;
 
-  // Weekend Price
-  if (
-    (bookingDay === 0 || bookingDay === 6) &&
-    turf.pricePerHour.weekendPrice
-  ) {
-    pricePerHour = turf.pricePerHour.weekendPrice;
+    const segmentDurationHours = (segmentEnd - current) / (1000 * 60 * 60);
+
+    const dayOfWeek = current.getUTCDay();
+    const hour = current.getUTCHours();
+
+    const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
+    const isEvening = hour >= pricingConfig.eveningStartHour || hour < pricingConfig.eveningEndHour;
+
+    let pricePerHour = turf.pricePerHour.basePrice;
+
+    if (isWeekend && isEvening && turf.pricePerHour.weekendEveningPrice !== undefined) {
+      pricePerHour = turf.pricePerHour.weekendEveningPrice;
+    } else if (isWeekend && turf.pricePerHour.weekendPrice !== undefined) {
+      pricePerHour = turf.pricePerHour.weekendPrice;
+    } else if (isEvening && turf.pricePerHour.eveningPrice !== undefined) {
+      pricePerHour = turf.pricePerHour.eveningPrice;
+    }
+
+    console.log(`[Pricing Block] Start: ${current.toISOString()} | End: ${segmentEnd.toISOString()} | Weekend?: ${isWeekend} | Evening?: ${isEvening} | Applied Price: ${pricePerHour}`);
+
+    totalAmount += pricePerHour * segmentDurationHours;
+    durationHours += segmentDurationHours;
+
+    current = segmentEnd;
   }
-
-  // Evening Price
-  else if (
-    startH >= 18 &&
-    turf.pricePerHour.eveningPrice
-  ) {
-    pricePerHour = turf.pricePerHour.eveningPrice;
-  }
-
-  const durationHours =
-    (endMinutes - startMinutes) / 60;
-
-  const totalAmount =
-    durationHours * pricePerHour;
 
   // 5. Create booking
   const booking = await Booking.create({
     user: userId,
     turf: turfId,
-    bookingDate: new Date(bookingDate),
-    startTime,
-    endTime,
+    startDateTime: start,
+    endDateTime: end,
     totalAmount,
-    bookingStatus: "confirmed",
+    bookingStatus: "pending",
     paymentStatus: "pending",
   });
 
-  await booking.populate(
-    "turf",
-    "name location sportType pricePerHour"
-  );
-
   return {
-    message: "Booking confirmed successfully",
-    booking,
+    message: "Booking request submitted successfully",
+    booking: {
+      bookingId: booking._id,
+      turfId: booking.turf,
+      userId: booking.user,
+      startDateTime: booking.startDateTime,
+      endDateTime: booking.endDateTime,
+      durationHours,
+      totalAmount,
+      bookingStatus: booking.bookingStatus,
+    },
   };
 };
 
@@ -116,7 +132,7 @@ const getUserBookings = async (userId) => {
       "name location sportType pricePerHour mainImage"
     )
     .sort({
-      bookingDate: -1,
+      startDateTime: -1,
     });
 };
 
@@ -138,7 +154,7 @@ const getTurfBookings = async (turfId) => {
       "name email phone"
     )
     .sort({
-      bookingDate: 1,
+      startDateTime: 1,
     });
 };
 
@@ -166,16 +182,16 @@ const getBookingById = async (bookingId) => {
 };
 
 // ─────────────────────────────────────────────
-// CANCEL booking
+// CONFIRM booking
 // ─────────────────────────────────────────────
-const cancelBooking = async (
+const confirmBooking = async (
   bookingId,
-  userId,
+  vendorId,
   userRole
 ) => {
   const booking = await Booking.findById(
     bookingId
-  );
+  ).populate("turf");
 
   if (!booking) {
     throw new ApiError(404, "Booking not found");
@@ -183,29 +199,70 @@ const cancelBooking = async (
 
   if (
     userRole !== "admin" &&
-    booking.user.toString() !== userId.toString()
+    booking.turf.owner.toString() !== vendorId.toString()
   ) {
     throw new ApiError(
       403,
-      "Not authorised to cancel this booking"
+      "Not authorised to confirm this booking"
     );
   }
 
-  if (
-    booking.bookingStatus === "cancelled"
-  ) {
+  if (booking.bookingStatus !== "pending") {
     throw new ApiError(
       400,
-      "Booking is already cancelled"
+      "Only pending bookings can be confirmed"
     );
   }
 
-  booking.bookingStatus = "cancelled";
+  booking.bookingStatus = "confirmed";
 
   await booking.save();
 
   return {
-    message: "Booking cancelled successfully",
+    message: "Booking confirmed successfully",
+    booking,
+  };
+};
+
+// ─────────────────────────────────────────────
+// REJECT booking
+// ─────────────────────────────────────────────
+const rejectBooking = async (
+  bookingId,
+  vendorId,
+  userRole
+) => {
+  const booking = await Booking.findById(
+    bookingId
+  ).populate("turf");
+
+  if (!booking) {
+    throw new ApiError(404, "Booking not found");
+  }
+
+  if (
+    userRole !== "admin" &&
+    booking.turf.owner.toString() !== vendorId.toString()
+  ) {
+    throw new ApiError(
+      403,
+      "Not authorised to reject this booking"
+    );
+  }
+
+  if (booking.bookingStatus !== "pending") {
+    throw new ApiError(
+      400,
+      "Only pending bookings can be rejected"
+    );
+  }
+
+  booking.bookingStatus = "rejected";
+
+  await booking.save();
+
+  return {
+    message: "Booking rejected successfully",
     booking,
   };
 };
@@ -215,6 +272,7 @@ module.exports = {
   getUserBookings,
   getTurfBookings,
   getBookingById,
-  cancelBooking,
+  confirmBooking,
+  rejectBooking,
 };
 

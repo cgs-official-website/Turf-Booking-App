@@ -105,61 +105,57 @@ const deleteTurf = async (turfId, requesterId, requesterRole) => {
 
 // ─────────────────────────────────────────────
 // GET available slots for a turf on a given date
-// Hybrid Model: 1-hour base slots, dynamically split and merged
 // ─────────────────────────────────────────────
 const getAvailableSlots = async (turfId, date) => {
   const turf = await Turf.findById(turfId);
   if (!turf) throw new ApiError(404, "Turf not found");
 
+  const queryDate = new Date(date);
+  if (isNaN(queryDate.getTime())) {
+    throw new ApiError(400, "Invalid date format");
+  }
+
+  // Define 24-hour window for the queried date
+  const startOfDay = new Date(queryDate);
+  startOfDay.setHours(0, 0, 0, 0);
+
+  const endOfDay = new Date(queryDate);
+  endOfDay.setHours(24, 0, 0, 0);
+
+  // Find all bookings that overlap with this day
   const bookedSlots = await Booking.find({
     turf: turfId,
-    bookingDate: new Date(date),
-    bookingStatus: { $ne: "cancelled" },
-  }).select("startTime endTime").sort({ startTime: 1 });
+    bookingStatus: { $in: ["pending", "confirmed"] },
+    startDateTime: { $lt: endOfDay },
+    endDateTime: { $gt: startOfDay },
+  }).select("startDateTime endDateTime").sort({ startDateTime: 1 });
 
-  // 1. Merge overlapping/consecutive bookings
-  const mergedBookings = [];
-  let currentBooking = null;
-  for (const b of bookedSlots) {
-    if (!currentBooking) {
-      currentBooking = { startTime: b.startTime, endTime: b.endTime };
-    } else if (currentBooking.endTime >= b.startTime) {
-      if (currentBooking.endTime < b.endTime) {
-        currentBooking.endTime = b.endTime;
-      }
-    } else {
-      mergedBookings.push(currentBooking);
-      currentBooking = { startTime: b.startTime, endTime: b.endTime };
-    }
-  }
-  if (currentBooking) {
-    mergedBookings.push(currentBooking);
-  }
-
-  // 2. Collect unique time boundaries (hourly + bookings)
-  const timePoints = new Set();
-  for (let h = 1; h <= 24; h++) {
-    timePoints.add(`${String(h).padStart(2, "0")}:00`);
-  }
-  for (const b of mergedBookings) {
-    timePoints.add(b.startTime);
-    timePoints.add(b.endTime);
-  }
-  
-  const sortedPoints = Array.from(timePoints).sort();
-  const validPoints = sortedPoints.filter(p => p >= "01:00" && p <= "2:00");
-
-  // 3. Generate raw segments
+  // Generate hourly blocks from startOfDay to endOfDay
   const rawSegments = [];
-  for (let i = 0; i < validPoints.length - 1; i++) {
-    const start = validPoints[i];
-    const end = validPoints[i + 1];
+  let current = new Date(startOfDay);
 
-    const isBooked = mergedBookings.some(
-      (b) => b.startTime <= start && b.endTime >= end
+  while (current < endOfDay) {
+    const nextHour = new Date(current);
+    nextHour.setHours(current.getHours() + 1, current.getMinutes(), current.getSeconds(), 0);
+    const segmentEnd = nextHour > endOfDay ? endOfDay : nextHour;
+
+    // Check if this segment overlaps with any booking
+    const isBooked = bookedSlots.some(
+      (b) => b.startDateTime < segmentEnd && b.endDateTime > current
     );
 
-    rawSegments.push({ startTime: start, endTime: end, isAvailable: !isBooked });
+    // Format times for backward compatibility visually
+    const formatTime = (d) => `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+    
+    rawSegments.push({
+      startTime: formatTime(current),
+      endTime: formatTime(segmentEnd),
+      isAvailable: !isBooked,
+      startDateTime: current,
+      endDateTime: segmentEnd,
+    });
+
+    current = segmentEnd;
   }
 
   return rawSegments;

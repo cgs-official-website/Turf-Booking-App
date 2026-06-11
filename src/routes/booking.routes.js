@@ -10,7 +10,8 @@ const {
   getMyBookings,
   getTurfBookings,
   getBookingById,
-  cancelBooking,
+  confirmBooking,
+  rejectBooking,
 } = require("../controllers/booking.controller");
 
 const { protect, authorizeRoles } = require("../middlewares/auth.middleware");
@@ -23,7 +24,8 @@ router.post("/", protect, validate(createBookingSchema), createBooking);
 router.get("/my", protect, getMyBookings);
 router.get("/turf/:turfId", protect, authorizeRoles("vendor", "admin"), getTurfBookings);
 router.get("/:id", protect, getBookingById);
-router.patch("/:id/cancel", protect, cancelBooking);
+router.put("/:id/confirm", protect, authorizeRoles("vendor", "admin"), confirmBooking);
+router.put("/:id/reject", protect, authorizeRoles("vendor", "admin"), rejectBooking);
 
 // Logged-in user's bookings (handled by /my)
 

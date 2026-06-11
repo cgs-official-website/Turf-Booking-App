@@ -6,30 +6,18 @@ const createBookingSchema = Joi.object({
     "string.length": "turfId must be a valid MongoDB ObjectId",
   }),
 
-  bookingDate: Joi.date().iso().required(),
+  startDateTime: Joi.string().isoDate().required(),
 
-  startTime: Joi.string()
-    .pattern(/^([01]\d|2[0-3]):[0-5]\d$/)
-    .required()
-    .messages({
-      "string.pattern.base": "startTime must be in HH:MM format (e.g. 09:00)",
-    }),
-
-  endTime: Joi.string()
-    .pattern(/^([01]\d|2[0-3]):[0-5]\d$/)
-    .required()
-    .messages({
-      "string.pattern.base": "endTime must be in HH:MM format (e.g. 10:00)",
-    }),
+  endDateTime: Joi.string().isoDate().required(),
 })
   .custom((value, helpers) => {
-    if (value.startTime >= value.endTime) {
+    if (new Date(value.startDateTime) >= new Date(value.endDateTime)) {
       return helpers.error("any.invalid");
     }
     return value;
   })
   .messages({
-    "any.invalid": "endTime must be later than startTime",
+    "any.invalid": "endDateTime must be strictly later than startDateTime",
   });
 
 module.exports = {

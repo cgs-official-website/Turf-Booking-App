@@ -14,19 +14,14 @@ const bookingSchema = new mongoose.Schema(
       required: [true, "Turf is required"],
     },
 
-    bookingDate: {
+    startDateTime: {
       type: Date,
-      required: [true, "Booking date is required"],
+      required: [true, "Start datetime is required"],
     },
 
-    startTime: {
-      type: String,
-      required: [true, "Start time is required"],
-    },
-
-    endTime: {
-      type: String,
-      required: [true, "End time is required"],
+    endDateTime: {
+      type: Date,
+      required: [true, "End datetime is required"],
     },
 
     totalAmount: {
@@ -36,7 +31,7 @@ const bookingSchema = new mongoose.Schema(
 
     bookingStatus: {
       type: String,
-      enum: ["pending", "confirmed", "cancelled"],
+      enum: ["pending", "confirmed", "rejected"],
       default: "pending",
     },
 
