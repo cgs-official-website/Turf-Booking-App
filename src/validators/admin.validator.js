@@ -1,17 +1,21 @@
 const Joi = require("joi");
 
-// const createAdminSchema = Joi.object({
-//   name: Joi.string().min(3).max(50).required(),
-//   email: Joi.string().email().required(),
-//   password: Joi.string().min(6).required(),
-// });
-
 const loginAdminSchema = Joi.object({
-  email: Joi.string().email().required(),
-  password: Joi.string().required(),
+  email: Joi.string()
+    .email()
+    .required()
+    .messages({
+      "string.email": "Please enter a valid email address",
+      "any.required": "Email is required",
+    }),
+
+  password: Joi.string()
+    .min(8)
+    .required()
+    .messages({
+      "string.min": "Password must be at least 8 characters long",
+      "any.required": "Password is required",
+    }),
 });
 
-module.exports = {
-  // createAdminSchema,
-  loginAdminSchema,
-};
+module.exports = { loginAdminSchema };
