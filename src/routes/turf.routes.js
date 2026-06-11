@@ -7,6 +7,7 @@ const router = express.Router();
 
 const {
   getAllTurfs,
+  searchTurfs,
   getTurfById,
   getAvailableSlots,
   addTurf,
@@ -20,6 +21,7 @@ const { addTurfSchema, updateTurfSchema } = require("../validators/turf.validato
 
 // Public routes
 router.get("/", getAllTurfs);
+router.get("/search", searchTurfs);
 router.get("/:id", getTurfById);
 router.get("/:id/slots", getAvailableSlots);
 

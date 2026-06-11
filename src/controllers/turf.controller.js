@@ -24,6 +24,30 @@ const getAllTurfs = async (req, res, next) => {
   }
 };
 
+// Search Turfs
+const searchTurfs = async (req, res, next) => {
+  try {
+    const { q } = req.query;
+
+    if (!q) {
+      return res.status(400).json({
+        success: false,
+        message: "Search query is required",
+      });
+    }
+
+    const suggestions = await turfService.searchTurfs(q);
+
+    return res.status(200).json({
+      success: true,
+      count: suggestions.length,
+      suggestions,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 // Get Turf By Id
 const getTurfById = async (req, res, next) => {
   try {
@@ -115,6 +139,7 @@ const deleteTurf = async (req, res, next) => {
 
 module.exports = {
   getAllTurfs,
+  searchTurfs,
   getTurfById,
   getAvailableSlots,
   addTurf,

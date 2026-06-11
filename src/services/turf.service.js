@@ -57,6 +57,22 @@ const getAllTurfs = async ({ location, minPrice, maxPrice, sportType } = {}) => 
 };
 
 // ─────────────────────────────────────────────
+// SEARCH turfs by name
+// ─────────────────────────────────────────────
+const searchTurfs = async (query) => {
+  const turfs = await Turf.find({
+    name: {
+      $regex: `^${query}`,
+      $options: "i",
+    },
+  })
+    .select("name")
+    .limit(10);
+
+  return turfs.map((turf) => turf.name);
+};
+
+// ─────────────────────────────────────────────
 // GET single turf by ID
 // ─────────────────────────────────────────────
 const getTurfById = async (turfId) => {
@@ -161,4 +177,4 @@ const getAvailableSlots = async (turfId, date) => {
   return rawSegments;
 };
 
-module.exports = { addTurf, getAllTurfs, getTurfById, updateTurf, deleteTurf, getAvailableSlots };
+module.exports = { addTurf, getAllTurfs, searchTurfs, getTurfById, updateTurf, deleteTurf, getAvailableSlots };
