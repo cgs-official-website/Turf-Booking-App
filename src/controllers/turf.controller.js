@@ -17,7 +17,7 @@ const getAllTurfs = async (req, res, next) => {
       new ApiResponse(200, "Turfs fetched successfully", {
         count: turfs.length,
         turfs,
-      })
+      }),
     );
   } catch (error) {
     next(error);
@@ -30,19 +30,61 @@ const searchTurfs = async (req, res, next) => {
     const { q } = req.query;
 
     if (!q) {
-      return res.status(400).json({
-        success: false,
-        message: "Search query is required",
-      });
+      return res
+        .status(400)
+        .json(new ApiResponse(400, "Search query is required"));
     }
 
     const suggestions = await turfService.searchTurfs(q);
 
-    return res.status(200).json({
-      success: true,
-      count: suggestions.length,
-      suggestions,
-    });
+    return res.status(200).json(
+      new ApiResponse(200, "Search results fetched successfully", {
+        count: suggestions.length,
+        suggestions,
+      }),
+    );
+  } catch (error) {
+    next(error);
+  }
+};
+
+// Get Pending Turfs (Admin)
+const getPendingTurfs = async (req, res, next) => {
+  try {
+    const turfs = await turfService.getPendingTurfs();
+
+    return res.status(200).json(
+      new ApiResponse(200, "Pending turfs fetched successfully", {
+        count: turfs.length,
+        turfs,
+      }),
+    );
+  } catch (error) {
+    next(error);
+  }
+};
+
+// Approve Turf (Admin)
+const approveTurf = async (req, res, next) => {
+  try {
+    const result = await turfService.approveTurf(req.params.id);
+
+    return res
+      .status(200)
+      .json(new ApiResponse(200, "Turf approved successfully", result));
+  } catch (error) {
+    next(error);
+  }
+};
+
+// Reject Turf (Admin)
+const rejectTurf = async (req, res, next) => {
+  try {
+    const result = await turfService.rejectTurf(req.params.id);
+
+    return res
+      .status(200)
+      .json(new ApiResponse(200, "Turf rejected successfully", result));
   } catch (error) {
     next(error);
   }
@@ -53,9 +95,9 @@ const getTurfById = async (req, res, next) => {
   try {
     const turf = await turfService.getTurfById(req.params.id);
 
-    return res.status(200).json(
-      new ApiResponse(200, "Turf fetched successfully", turf)
-    );
+    return res
+      .status(200)
+      .json(new ApiResponse(200, "Turf fetched successfully", turf));
   } catch (error) {
     next(error);
   }
@@ -67,9 +109,9 @@ const getAvailableSlots = async (req, res, next) => {
     const { date } = req.query;
 
     if (!date) {
-      return res.status(400).json(
-        new ApiResponse(400, "Date query parameter is required")
-      );
+      return res
+        .status(400)
+        .json(new ApiResponse(400, "Date query parameter is required"));
     }
 
     const slots = await turfService.getAvailableSlots(req.params.id, date);
@@ -79,7 +121,7 @@ const getAvailableSlots = async (req, res, next) => {
         turfId: req.params.id,
         date,
         slots,
-      })
+      }),
     );
   } catch (error) {
     next(error);
@@ -94,9 +136,9 @@ const addTurf = async (req, res, next) => {
       ownerId: req.user.id,
     });
 
-    return res.status(201).json(
-      new ApiResponse(201, "Turf added successfully", result)
-    );
+    return res
+      .status(201)
+      .json(new ApiResponse(201, "Turf added successfully", result));
   } catch (error) {
     next(error);
   }
@@ -109,12 +151,12 @@ const updateTurf = async (req, res, next) => {
       req.params.id,
       req.user.id,
       req.user.role,
-      req.body
+      req.body,
     );
 
-    return res.status(200).json(
-      new ApiResponse(200, "Turf updated successfully", result)
-    );
+    return res
+      .status(200)
+      .json(new ApiResponse(200, "Turf updated successfully", result));
   } catch (error) {
     next(error);
   }
@@ -126,12 +168,12 @@ const deleteTurf = async (req, res, next) => {
     const result = await turfService.deleteTurf(
       req.params.id,
       req.user.id,
-      req.user.role
+      req.user.role,
     );
 
-    return res.status(200).json(
-      new ApiResponse(200, "Turf deleted successfully", result)
-    );
+    return res
+      .status(200)
+      .json(new ApiResponse(200, "Turf deleted successfully", result));
   } catch (error) {
     next(error);
   }
@@ -140,6 +182,9 @@ const deleteTurf = async (req, res, next) => {
 module.exports = {
   getAllTurfs,
   searchTurfs,
+  getPendingTurfs,
+  approveTurf,
+  rejectTurf,
   getTurfById,
   getAvailableSlots,
   addTurf,

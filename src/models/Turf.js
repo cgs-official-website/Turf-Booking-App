@@ -68,6 +68,11 @@ const turfSchema = new mongoose.Schema(
       ref: "User",
       required: [true, "Owner is required"],
     },
+    approvalStatus: {
+      type: String,
+      enum: ["pending", "approved", "rejected"],
+      default: "pending",
+    },
   },
   {
     timestamps: true,

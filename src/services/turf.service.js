@@ -3,17 +3,30 @@
 // =============================================
 
 const Turf = require("../models/Turf");
-
 const Booking = require("../models/Booking");
 const ApiError = require("../utils/ApiError");
 
 // ─────────────────────────────────────────────
 // ADD a new turf
 // ─────────────────────────────────────────────
-const addTurf = async ({ name, location, sportType, pricePerHour, description, amenities, mainImage, secondaryImages, ownerId }) => {
+const addTurf = async ({
+  name,
+  location,
+  sportType,
+  pricePerHour,
+  description,
+  amenities,
+  mainImage,
+  secondaryImages,
+  ownerId,
+}) => {
   const existing = await Turf.findOne({ name, location });
+
   if (existing) {
-    throw new ApiError(400, "A turf with this name already exists at this location");
+    throw new ApiError(
+      400,
+      "A turf with this name already exists at this location",
+    );
   }
 
   const turf = await Turf.create({
@@ -27,20 +40,34 @@ const addTurf = async ({ name, location, sportType, pricePerHour, description, a
     secondaryImages: secondaryImages || [],
     owner: ownerId,
     isAvailable: true,
+    approvalStatus: "pending",
   });
 
-  return { message: "Turf added successfully", turf };
+  return {
+    message: "Turf created successfully and waiting for admin approval",
+    turf,
+  };
 };
 
 // ─────────────────────────────────────────────
-// GET all available turfs (with optional filters)
-// Supports: ?location=chennai&minPrice=500&maxPrice=2000&sportType=football
+// GET all approved turfs
 // ─────────────────────────────────────────────
-const getAllTurfs = async ({ location, minPrice, maxPrice, sportType } = {}) => {
-  const query = { isAvailable: true };
+const getAllTurfs = async ({
+  location,
+  minPrice,
+  maxPrice,
+  sportType,
+} = {}) => {
+  const query = {
+    isAvailable: true,
+    approvalStatus: "approved",
+  };
 
   if (location) {
-    query.location = { $regex: location, $options: "i" };
+    query.location = {
+      $regex: location,
+      $options: "i",
+    };
   }
 
   if (sportType) {
@@ -48,12 +75,21 @@ const getAllTurfs = async ({ location, minPrice, maxPrice, sportType } = {}) => 
   }
 
   if (minPrice || maxPrice) {
-    query.pricePerHour = {};
-    if (minPrice) query.pricePerHour.$gte = Number(minPrice);
-    if (maxPrice) query.pricePerHour.$lte = Number(maxPrice);
+    query["pricePerHour.basePrice"] = {};
+
+    if (minPrice) {
+      query["pricePerHour.basePrice"].$gte = Number(minPrice);
+    }
+
+    if (maxPrice) {
+      query["pricePerHour.basePrice"].$lte = Number(maxPrice);
+    }
   }
 
-  return await Turf.find(query).populate("owner", "name email").select("-__v");
+  return await Turf.find(query)
+    .populate("owner", "name email")
+    .select("-__v")
+    .sort({ createdAt: -1 });
 };
 
 // ─────────────────────────────────────────────
@@ -61,120 +97,242 @@ const getAllTurfs = async ({ location, minPrice, maxPrice, sportType } = {}) => 
 // ─────────────────────────────────────────────
 const searchTurfs = async (query) => {
   const turfs = await Turf.find({
+    approvalStatus: "approved",
+    isAvailable: true,
     name: {
-      $regex: `^${query}`,
+      $regex: query,
       $options: "i",
     },
   })
-    .select("name")
+    .select("_id name")
     .limit(10);
 
-  return turfs.map((turf) => turf.name);
+  return turfs.map((turf) => ({
+    id: turf._id,
+    name: turf.name,
+  }));
+};
+// ─────────────────────────────────────────────
+// GET pending turfs (Admin)
+// ─────────────────────────────────────────────
+const getPendingTurfs = async () => {
+  return await Turf.find({
+    approvalStatus: "pending",
+  })
+    .populate("owner", "name email")
+    .select("-__v")
+    .sort({ createdAt: -1 });
+};
+
+// ─────────────────────────────────────────────
+// APPROVE turf
+// ─────────────────────────────────────────────
+const approveTurf = async (turfId) => {
+  const turf = await Turf.findById(turfId);
+
+  if (!turf) {
+    throw new ApiError(404, "Turf not found");
+  }
+
+  if (turf.approvalStatus === "approved") {
+    throw new ApiError(400, "Turf is already approved");
+  }
+
+  turf.approvalStatus = "approved";
+
+  await turf.save();
+
+  return {
+    message: "Turf approved successfully",
+    turf,
+  };
+};
+
+// ─────────────────────────────────────────────
+// REJECT turf
+// ─────────────────────────────────────────────
+const rejectTurf = async (turfId) => {
+  const turf = await Turf.findById(turfId);
+
+  if (!turf) {
+    throw new ApiError(404, "Turf not found");
+  }
+
+  if (turf.approvalStatus === "rejected") {
+    throw new ApiError(400, "Turf is already rejected");
+  }
+
+  turf.approvalStatus = "rejected";
+
+  await turf.save();
+
+  return {
+    message: "Turf rejected successfully",
+    turf,
+  };
 };
 
 // ─────────────────────────────────────────────
 // GET single turf by ID
 // ─────────────────────────────────────────────
 const getTurfById = async (turfId) => {
-  const turf = await Turf.findById(turfId).populate("owner", "name email");
-  if (!turf) throw new ApiError(404, "Turf not found");
+  const turf = await Turf.findById(turfId).populate(
+    "owner",
+    "name email"
+  );
+
+  if (!turf) {
+    throw new ApiError(404, "Turf not found");
+  }
+
+  if (turf.approvalStatus !== "approved") {
+    throw new ApiError(404, "Turf not found");
+  }
+
   return turf;
 };
 
 // ─────────────────────────────────────────────
-// UPDATE turf (owner or admin only)
+// UPDATE turf
 // ─────────────────────────────────────────────
 const updateTurf = async (turfId, requesterId, requesterRole, updateData) => {
   const turf = await Turf.findById(turfId);
-  if (!turf) throw new ApiError(404, "Turf not found");
 
-  // Admins can update any turf; vendors can only update their own
-  if (requesterRole !== "admin" && turf.owner.toString() !== requesterId.toString()) {
+  if (!turf) {
+    throw new ApiError(404, "Turf not found");
+  }
+
+  if (
+    requesterRole !== "admin" &&
+    turf.owner.toString() !== requesterId.toString()
+  ) {
     throw new ApiError(403, "Not authorised to update this turf");
   }
 
-  const allowedFields = ["name", "location", "sportType", "pricePerHour", "description", "amenities", "mainImage", "secondaryImages", "isAvailable"];
+  const allowedFields = [
+    "name",
+    "location",
+    "sportType",
+    "pricePerHour",
+    "description",
+    "amenities",
+    "mainImage",
+    "secondaryImages",
+    "isAvailable",
+  ];
+
   allowedFields.forEach((field) => {
     if (updateData[field] !== undefined) {
       turf[field] = updateData[field];
     }
   });
 
+  // Re-approval required after update
+  if (requesterRole === "vendor") {
+    turf.approvalStatus = "pending";
+  }
+
   await turf.save();
-  return { message: "Turf updated successfully", turf };
+
+  return {
+    message: "Turf updated successfully",
+    turf,
+  };
 };
 
 // ─────────────────────────────────────────────
-// DELETE turf (owner or admin only)
+// DELETE turf
 // ─────────────────────────────────────────────
 const deleteTurf = async (turfId, requesterId, requesterRole) => {
   const turf = await Turf.findById(turfId);
-  if (!turf) throw new ApiError(404, "Turf not found");
 
-  if (requesterRole !== "admin" && turf.owner.toString() !== requesterId.toString()) {
+  if (!turf) {
+    throw new ApiError(404, "Turf not found");
+  }
+
+  if (
+    requesterRole !== "admin" &&
+    turf.owner.toString() !== requesterId.toString()
+  ) {
     throw new ApiError(403, "Not authorised to delete this turf");
   }
 
   await turf.deleteOne();
-  return { message: "Turf deleted successfully" };
+
+  return {
+    message: "Turf deleted successfully",
+  };
 };
 
 // ─────────────────────────────────────────────
-// GET available slots for a turf on a given date
+// GET available slots
 // ─────────────────────────────────────────────
 const getAvailableSlots = async (turfId, date) => {
   const turf = await Turf.findById(turfId);
-  if (!turf) throw new ApiError(404, "Turf not found");
+
+  if (!turf) {
+    throw new ApiError(404, "Turf not found");
+  }
 
   const queryDate = new Date(date);
+
   if (isNaN(queryDate.getTime())) {
     throw new ApiError(400, "Invalid date format");
   }
 
-  // Use UTC boundaries for the queried date to prevent timezone offsets
   const startOfDay = new Date(queryDate);
   startOfDay.setUTCHours(0, 0, 0, 0);
 
   const endOfDay = new Date(queryDate);
   endOfDay.setUTCHours(24, 0, 0, 0);
 
-  // Find all bookings that overlap with this day
   const bookedSlots = await Booking.find({
     turf: turfId,
-    bookingStatus: { $in: ["pending", "confirmed"] },
-    startDateTime: { $lt: endOfDay },
-    endDateTime: { $gt: startOfDay },
-  }).select("startDateTime endDateTime").sort({ startDateTime: 1 });
+    bookingStatus: {
+      $in: ["pending", "confirmed"],
+    },
+    startDateTime: {
+      $lt: endOfDay,
+    },
+    endDateTime: {
+      $gt: startOfDay,
+    },
+  })
+    .select("startDateTime endDateTime")
+    .sort({ startDateTime: 1 });
 
-  // Generate hourly blocks from startOfDay to endOfDay using UTC
   const rawSegments = [];
   let current = new Date(startOfDay);
 
   while (current < endOfDay) {
     const nextHour = new Date(current);
-    nextHour.setUTCHours(current.getUTCHours() + 1, current.getUTCMinutes(), current.getUTCSeconds(), 0);
-    const segmentEnd = nextHour > endOfDay ? endOfDay : nextHour;
+    nextHour.setUTCHours(nextHour.getUTCHours() + 1);
 
-    // Check if this segment overlaps with any booking
     const isBooked = bookedSlots.some(
-      (b) => b.startDateTime < segmentEnd && b.endDateTime > current
+      (b) => b.startDateTime < nextHour && b.endDateTime > current,
     );
 
-    // Format times using UTC to match startDateTime accurately
-    const formatTime = (d) => `${String(d.getUTCHours()).padStart(2, '0')}:${String(d.getUTCMinutes()).padStart(2, '0')}`;
-    
     rawSegments.push({
-      startTime: formatTime(current),
-      endTime: formatTime(segmentEnd),
+      startTime: current.toISOString(),
+      endTime: nextHour.toISOString(),
       isAvailable: !isBooked,
-      startDateTime: current,
-      endDateTime: segmentEnd,
     });
 
-    current = segmentEnd;
+    current = nextHour;
   }
 
   return rawSegments;
 };
 
-module.exports = { addTurf, getAllTurfs, searchTurfs, getTurfById, updateTurf, deleteTurf, getAvailableSlots };
+module.exports = {
+  addTurf,
+  getAllTurfs,
+  searchTurfs,
+  getPendingTurfs,
+  approveTurf,
+  rejectTurf,
+  getTurfById,
+  updateTurf,
+  deleteTurf,
+  getAvailableSlots,
+};
