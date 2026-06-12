@@ -46,8 +46,23 @@ const getDashboardStats = async (req, res, next) => {
   }
 };
 
+const getAllVendors = async (req, res, next) => {
+  try {
+    const vendors = await adminService.getAllVendors();
+
+    res.status(200).json({
+      success: true,
+      count: vendors.length,
+      vendors,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   loginAdmin,
   getProfile,
   getDashboardStats,
+  getAllVendors,
 };

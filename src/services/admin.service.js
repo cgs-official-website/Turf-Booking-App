@@ -1,36 +1,21 @@
 const bcrypt = require("bcryptjs");
 const ApiError = require("../utils/ApiError");
 const { generateToken } = require("../utils/jwt");
+
 const Admin = require("../models/Admin");
-
-// const createAdmin = async ({ name, email, password }) => {
-//   const existingAdmin = await Admin.findOne({ email });
-//   if (existingAdmin) {
-//     throw new ApiError(400, "Email is already registered");
-//   }
-
-//   const hashedPassword = await bcrypt.hash(password, 10);
-
-//   const admin = await Admin.create({
-//     name,
-//     email,
-//     password: hashedPassword,
-//     role: "admin",
-//   });
-
-//   return {
-//     success: true,
-//     message: "Admin created successfully"
-//   };
-// };
+const User = require("../models/User");
+const Turf = require("../models/Turf");
+const Booking = require("../models/Booking");
 
 const loginAdmin = async ({ email, password }) => {
   const admin = await Admin.findOne({ email });
+
   if (!admin) {
     throw new ApiError(401, "Invalid email or password");
   }
 
   const isMatch = await bcrypt.compare(password, admin.password);
+
   if (!isMatch) {
     throw new ApiError(401, "Invalid email or password");
   }
@@ -49,7 +34,71 @@ const loginAdmin = async ({ email, password }) => {
   };
 };
 
-module.exports = { 
-  // createAdmin, 
-  loginAdmin 
+const getDashboardStats = async () => {
+  const totalVendors = await User.countDocuments({
+    role: "vendor",
+  });
+
+  const totalTurfs = await Turf.countDocuments();
+
+  const revenueData = await Booking.aggregate([
+    {
+      $match: {
+        bookingStatus: "confirmed",
+      },
+    },
+    {
+      $group: {
+        _id: null,
+        totalRevenue: {
+          $sum: "$totalAmount",
+        },
+      },
+    },
+  ]);
+
+  const totalRevenue = revenueData.length > 0 ? revenueData[0].totalRevenue : 0;
+
+  const activeSubscriptions = await User.countDocuments({
+    subscriptionStatus: "active",
+  });
+
+  return {
+    totalVendors,
+    totalTurfs,
+    totalRevenue,
+    activeSubscriptions,
+  };
+};
+
+const getAllVendors = async () => {
+  const vendors = await User.find({
+    role: "vendor",
+  }).select("name email phone location");
+
+  const result = await Promise.all(
+    vendors.map(async (vendor, index) => {
+      const turfCount = await Turf.countDocuments({
+        owner: vendor._id,
+      });
+
+      return {
+        vendorId: `V${1001 + index}`,
+        id: vendor._id,
+        name: vendor.name,
+        email: vendor.email,
+        phone: vendor.phone,
+        location: vendor.location,
+        turfCount,
+      };
+    }),
+  );
+
+  return result;
+};
+
+module.exports = {
+  loginAdmin,
+  getDashboardStats,
+  getAllVendors,
 };
