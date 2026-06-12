@@ -16,12 +16,19 @@ const createBooking = async ({
   const turf = await Turf.findById(turfId);
 
   if (!turf) {
-    throw new ApiError(404, "Turf not found");
-  }
+  throw new ApiError(404, "Turf not found");
+}
 
-  if (!turf.isAvailable) {
-    throw new ApiError(400, "This turf is currently unavailable");
-  }
+if (!turf.isAvailable) {
+  throw new ApiError(400, "This turf is currently unavailable");
+}
+
+if (turf.approvalStatus !== "approved") {
+  throw new ApiError(
+    403,
+    "This turf is not approved for booking"
+  );
+}
 
   // 2. Validate start < end
   const ensureUTC = (dateStr) => {
@@ -200,6 +207,25 @@ const confirmBooking = async (
       "Only pending bookings can be confirmed"
     );
   }
+
+  const conflict = await Booking.findOne({
+  turf: booking.turf._id,
+  bookingStatus: "confirmed",
+  _id: { $ne: booking._id },
+  startDateTime: {
+    $lt: booking.endDateTime,
+  },
+  endDateTime: {
+    $gt: booking.startDateTime,
+  },
+});
+
+if (conflict) {
+  throw new ApiError(
+    400,
+    "Another booking has already been confirmed for this slot"
+  );
+}
 
   booking.bookingStatus = "confirmed";
 
