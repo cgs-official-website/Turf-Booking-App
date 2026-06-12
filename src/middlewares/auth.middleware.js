@@ -4,15 +4,14 @@
 //  authorizeRoles → role-based access control
 // =============================================
 
-
 const User = require("../models/User");
+const Admin = require("../models/Admin");
 const { verifyToken } = require("../utils/jwt");
 const ApiError = require("../utils/ApiError");
 
 const jwt = require("jsonwebtoken");
 
 const JWT_SECRET = process.env.JWT_SECRET || "your_jwt_secret_key";
-
 
 // ─────────────────────────────────────────────
 // protect — attach req.user from valid JWT
@@ -22,15 +21,22 @@ const protect = async (req, res, next) => {
     const authHeader = req.headers.authorization;
 
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
-      return next(~new ApiError(401, "Access denied. No token provided."));
+      return next(new ApiError(401, "Access denied. No token provided."));
     }
 
     const token = authHeader.split(" ")[1];
     const decoded = verifyToken(token);
 
-    const user = await User.findById(decoded.id).select("-password");
+    let user = await User.findById(decoded.id).select("-password");
+
     if (!user) {
-      return next(new ApiError(401, "User no longer exists. Please log in again."));
+      user = await Admin.findById(decoded.id).select("-password");
+    }
+
+    if (!user) {
+      return next(
+        new ApiError(401, "User no longer exists. Please log in again."),
+      );
     }
 
     req.user = user;
@@ -54,7 +60,10 @@ const authorizeRoles = (...roles) => {
   return (req, res, next) => {
     if (!roles.includes(req.user.role)) {
       return next(
-        new ApiError(403, `Access denied. Only ${roles.join(" or ")} can perform this action.`)
+        new ApiError(
+          403,
+          `Access denied. Only ${roles.join(" or ")} can perform this action.`,
+        ),
       );
     }
     next();
