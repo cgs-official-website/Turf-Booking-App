@@ -84,6 +84,15 @@ const deleteUser = async (req, res, next) => {
   }
 };
 
+const getVendorDashboard = async (req, res, next) => {
+  try {
+    const stats = await userService.getVendorDashboardStats(req.user.id);
+    return res.status(200).json(stats); // API response directly format without wrapping as per requirement
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   getMyProfile,
   updateMyProfile,
@@ -91,4 +100,5 @@ module.exports = {
   getAllUsers,
   getUserById,
   deleteUser,
+  getVendorDashboard,
 };

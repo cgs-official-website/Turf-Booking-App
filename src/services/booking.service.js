@@ -1,16 +1,11 @@
-// =============================================
-//  BOOKING SERVICE — Create, Cancel, Fetch
-// =============================================
-
+// 
 const Booking = require("../models/Booking");
 const Turf = require("../models/Turf");
 const ApiError = require("../utils/ApiError");
 
 const pricingConfig = require("../config/pricing");
 
-// ─────────────────────────────────────────────
-// CREATE a new booking
-// ─────────────────────────────────────────────
+// 
 const createBooking = async ({
   userId,
   turfId,
@@ -120,9 +115,7 @@ const createBooking = async ({
   };
 };
 
-// ─────────────────────────────────────────────
-// GET all bookings for logged-in user
-// ─────────────────────────────────────────────
+// 
 const getUserBookings = async (userId) => {
   return await Booking.find({
     user: userId,
@@ -136,9 +129,7 @@ const getUserBookings = async (userId) => {
     });
 };
 
-// ─────────────────────────────────────────────
-// GET all bookings for a turf
-// ─────────────────────────────────────────────
+// 
 const getTurfBookings = async (turfId) => {
   const turf = await Turf.findById(turfId);
 
@@ -158,9 +149,7 @@ const getTurfBookings = async (turfId) => {
     });
 };
 
-// ─────────────────────────────────────────────
-// GET single booking by ID
-// ─────────────────────────────────────────────
+// 
 const getBookingById = async (bookingId) => {
   const booking = await Booking.findById(
     bookingId
@@ -181,9 +170,7 @@ const getBookingById = async (bookingId) => {
   return booking;
 };
 
-// ─────────────────────────────────────────────
-// CONFIRM booking
-// ─────────────────────────────────────────────
+// 
 const confirmBooking = async (
   bookingId,
   vendorId,
@@ -224,9 +211,7 @@ const confirmBooking = async (
   };
 };
 
-// ─────────────────────────────────────────────
-// REJECT booking
-// ─────────────────────────────────────────────
+// 
 const rejectBooking = async (
   bookingId,
   vendorId,
@@ -267,6 +252,25 @@ const rejectBooking = async (
   };
 };
 
+// 
+const expireBookings = async () => {
+  const now = new Date();
+  const oneHourFromNow = new Date(now.getTime() + 60 * 60 * 1000);
+  
+  const result = await Booking.updateMany(
+    {
+      bookingStatus: "pending",
+      startDateTime: { $lte: oneHourFromNow }
+    },
+    {
+      $set: { bookingStatus: "expired" }
+    }
+  );
+  if (result.modifiedCount > 0) {
+    console.log(`Expired ${result.modifiedCount} pending bookings.`);
+  }
+};
+
 module.exports = {
   createBooking,
   getUserBookings,
@@ -274,5 +278,5 @@ module.exports = {
   getBookingById,
   confirmBooking,
   rejectBooking,
+  expireBookings,
 };
-

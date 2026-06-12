@@ -179,6 +179,56 @@ const deleteTurf = async (req, res, next) => {
   }
 };
 
+// Add Review
+const addReview = async (req, res, next) => {
+  try {
+    const { turfId, rating, comment } = req.body;
+    const review = await turfService.addReview(
+      req.user.id,
+      turfId,
+      rating,
+      comment,
+    );
+    return res.status(201).json(review);
+  } catch (error) {
+    next(error);
+  }
+};
+
+// Get Turf Reviews
+const getTurfReviews = async (req, res, next) => {
+  try {
+    const reviews = await turfService.getTurfReviews(req.params.turfId);
+    return res.status(200).json(reviews);
+  } catch (error) {
+    next(error);
+  }
+};
+
+// Get My Reviews
+const getMyReviews = async (req, res, next) => {
+  try {
+    const reviews = await turfService.getMyReviews(req.user.id);
+    return res.status(200).json(reviews);
+  } catch (error) {
+    next(error);
+  }
+};
+
+// Delete Review
+const deleteReview = async (req, res, next) => {
+  try {
+    const result = await turfService.deleteReview(
+      req.user.id,
+      req.params.id,
+      req.user.role,
+    );
+    return res.status(200).json(result);
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   getAllTurfs,
   searchTurfs,
@@ -190,4 +240,8 @@ module.exports = {
   addTurf,
   updateTurf,
   deleteTurf,
+  addReview,
+  getTurfReviews,
+  getMyReviews,
+  deleteReview,
 };

@@ -6,18 +6,14 @@
 
 const { NODE_ENV } = require("../config/env");
 
-// ─────────────────────────────────────────────
-// 404 — Route not found
-// ─────────────────────────────────────────────
+// 
 const notFound = (req, res, next) => {
   const error = new Error(`Route not found: ${req.method} ${req.originalUrl}`);
   error.statusCode = 404;
   next(error);
 };
 
-// ─────────────────────────────────────────────
-// GLOBAL ERROR HANDLER
-// ─────────────────────────────────────────────
+// 
 const errorHandler = (err, req, res, next) => {
   let statusCode = err.statusCode || 500;
   let message = err.message || "Internal Server Error";
