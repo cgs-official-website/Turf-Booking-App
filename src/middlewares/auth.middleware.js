@@ -14,9 +14,7 @@ const jwt = require("jsonwebtoken");
 const JWT_SECRET = process.env.JWT_SECRET || "your_jwt_secret_key";
 
 
-// ─────────────────────────────────────────────
-// protect — attach req.user from valid JWT
-// ─────────────────────────────────────────────
+// 
 const protect = async (req, res, next) => {
   try {
     const authHeader = req.headers.authorization;

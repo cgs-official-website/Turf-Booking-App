@@ -1,15 +1,11 @@
-// =============================================
-//  TURF SERVICE — Add, List, Update, Delete, Slots
-// =============================================
-
+// 
+const mongoose = require("mongoose");
 const Turf = require("../models/Turf");
 
 const Booking = require("../models/Booking");
 const ApiError = require("../utils/ApiError");
 
-// ─────────────────────────────────────────────
-// ADD a new turf
-// ─────────────────────────────────────────────
+// 
 const addTurf = async ({ name, location, sportType, pricePerHour, description, amenities, mainImage, secondaryImages, ownerId }) => {
   const existing = await Turf.findOne({ name, location });
   if (existing) {
@@ -56,9 +52,7 @@ const getAllTurfs = async ({ location, minPrice, maxPrice, sportType } = {}) => 
   return await Turf.find(query).populate("owner", "name email").select("-__v");
 };
 
-// ─────────────────────────────────────────────
-// SEARCH turfs by name
-// ─────────────────────────────────────────────
+// 
 const searchTurfs = async (query) => {
   const turfs = await Turf.find({
     name: {
@@ -72,18 +66,14 @@ const searchTurfs = async (query) => {
   return turfs.map((turf) => turf.name);
 };
 
-// ─────────────────────────────────────────────
-// GET single turf by ID
-// ─────────────────────────────────────────────
+// 
 const getTurfById = async (turfId) => {
   const turf = await Turf.findById(turfId).populate("owner", "name email");
   if (!turf) throw new ApiError(404, "Turf not found");
   return turf;
 };
 
-// ─────────────────────────────────────────────
-// UPDATE turf (owner or admin only)
-// ─────────────────────────────────────────────
+// 
 const updateTurf = async (turfId, requesterId, requesterRole, updateData) => {
   const turf = await Turf.findById(turfId);
   if (!turf) throw new ApiError(404, "Turf not found");
@@ -104,9 +94,7 @@ const updateTurf = async (turfId, requesterId, requesterRole, updateData) => {
   return { message: "Turf updated successfully", turf };
 };
 
-// ─────────────────────────────────────────────
-// DELETE turf (owner or admin only)
-// ─────────────────────────────────────────────
+// 
 const deleteTurf = async (turfId, requesterId, requesterRole) => {
   const turf = await Turf.findById(turfId);
   if (!turf) throw new ApiError(404, "Turf not found");
@@ -119,9 +107,7 @@ const deleteTurf = async (turfId, requesterId, requesterRole) => {
   return { message: "Turf deleted successfully" };
 };
 
-// ─────────────────────────────────────────────
-// GET available slots for a turf on a given date
-// ─────────────────────────────────────────────
+// 
 const getAvailableSlots = async (turfId, date) => {
   const turf = await Turf.findById(turfId);
   if (!turf) throw new ApiError(404, "Turf not found");
@@ -131,7 +117,7 @@ const getAvailableSlots = async (turfId, date) => {
     throw new ApiError(400, "Invalid date format");
   }
 
-  // Use UTC boundaries for the queried date to prevent timezone offsets
+  // Create day range
   const startOfDay = new Date(queryDate);
   startOfDay.setUTCHours(0, 0, 0, 0);
 
@@ -177,4 +163,104 @@ const getAvailableSlots = async (turfId, date) => {
   return rawSegments;
 };
 
-module.exports = { addTurf, getAllTurfs, searchTurfs, getTurfById, updateTurf, deleteTurf, getAvailableSlots };
+// 
+const addReview = async (userId, turfId, rating, comment) => {
+  const Review = require("../models/Review");
+
+  // User can review only after confirmed booking
+  const confirmedBooking = await Booking.findOne({
+    user: userId,
+    turf: turfId,
+    bookingStatus: "confirmed"
+  });
+
+  if (!confirmedBooking) {
+    throw new ApiError(403, "You can only review a turf after a confirmed booking");
+  }
+
+  // User can review turf only once
+  const existingReview = await Review.findOne({ user: userId, turf: turfId });
+  if (existingReview) {
+    throw new ApiError(400, "You have already reviewed this turf");
+  }
+
+  const review = await Review.create({
+    user: userId,
+    turf: turfId,
+    rating,
+    comment
+  });
+
+  // Automatically recalculate averageRating and totalReviews
+  const stats = await Review.aggregate([
+    { $match: { turf: new mongoose.Types.ObjectId(turfId) } },
+    {
+      $group: {
+        _id: "$turf",
+        averageRating: { $avg: "$rating" },
+        totalReviews: { $sum: 1 }
+      }
+    }
+  ]);
+
+  if (stats.length > 0) {
+    await Turf.findByIdAndUpdate(turfId, {
+      averageRating: stats[0].averageRating,
+      totalReviews: stats[0].totalReviews
+    });
+  }
+
+  await review.populate("user", "name");
+  return review;
+};
+
+const getTurfReviews = async (turfId) => {
+  const Review = require("../models/Review");
+  return await Review.find({ turf: turfId }).populate("user", "name").sort({ createdAt: -1 });
+};
+
+const getMyReviews = async (userId) => {
+  const Review = require("../models/Review");
+  return await Review.find({ user: userId }).populate("turf", "name location").sort({ createdAt: -1 });
+};
+
+const deleteReview = async (userId, reviewId, userRole) => {
+  const Review = require("../models/Review");
+  const review = await Review.findById(reviewId);
+  if (!review) throw new ApiError(404, "Review not found");
+
+  if (userRole !== "admin" && review.user.toString() !== userId.toString()) {
+    throw new ApiError(403, "Not authorised to delete this review");
+  }
+
+  const turfId = review.turf;
+  await review.deleteOne();
+
+  // Recalculate stats
+  const stats = await Review.aggregate([
+    { $match: { turf: new mongoose.Types.ObjectId(turfId) } },
+    {
+      $group: {
+        _id: "$turf",
+        averageRating: { $avg: "$rating" },
+        totalReviews: { $sum: 1 }
+      }
+    }
+  ]);
+
+  if (stats.length > 0) {
+    await Turf.findByIdAndUpdate(turfId, {
+      averageRating: stats[0].averageRating,
+      totalReviews: stats[0].totalReviews
+    });
+  } else {
+    await Turf.findByIdAndUpdate(turfId, {
+      averageRating: 0,
+      totalReviews: 0
+    });
+  }
+
+  return { message: "Review deleted successfully" };
+};
+
+module.exports = { addTurf, getAllTurfs, searchTurfs, getTurfById, updateTurf, deleteTurf, getAvailableSlots, addReview, getTurfReviews, getMyReviews, deleteReview };

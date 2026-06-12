@@ -1,7 +1,4 @@
-// =============================================
-//  AUTH SERVICE — Register, Login
-// =============================================
-
+// 
 const bcrypt = require("bcryptjs");
 
 const ApiError = require("../utils/ApiError");
@@ -14,9 +11,7 @@ const JWT_SECRET = process.env.JWT_SECRET || "your_jwt_secret_key";
 const JWT_EXPIRES_IN = "7d";
 
 
-// ─────────────────────────────────────────────
-// REGISTER
-// ─────────────────────────────────────────────
+// 
 const registerUser = async ({ name, email, password, phone, role = "user" }) => {
   const existingUser = await User.findOne({ email });
   if (existingUser) {
@@ -48,9 +43,7 @@ const registerUser = async ({ name, email, password, phone, role = "user" }) => 
   };
 };
 
-// ─────────────────────────────────────────────
-// LOGIN
-// ─────────────────────────────────────────────
+// 
 const loginUser = async ({ email, password }) => {
   const user = await User.findOne({ email });
   if (!user) {
