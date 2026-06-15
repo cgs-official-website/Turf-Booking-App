@@ -6,20 +6,10 @@ const {
   markAsRead,
 } = require("../controllers/notification.controller");
 
-const {
-  protect,
-} = require("../middlewares/auth.middleware");
+const { protect } = require("../middlewares/auth.middleware");
 
-router.get(
-  "/",
-  protect,
-  getMyNotifications
-);
+router.get("/", protect, getMyNotifications);
 
-router.patch(
-  "/:id/read",
-  protect,
-  markAsRead
-);
+router.patch("/:id/read", protect, markAsRead);
 
 module.exports = router;

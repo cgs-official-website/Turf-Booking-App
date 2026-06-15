@@ -7,17 +7,14 @@ const notificationSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
-
     title: {
       type: String,
       required: true,
     },
-
     message: {
       type: String,
       required: true,
     },
-
     type: {
       type: String,
       enum: [
@@ -28,7 +25,6 @@ const notificationSchema = new mongoose.Schema(
       ],
       required: true,
     },
-
     isRead: {
       type: Boolean,
       default: false,
@@ -39,7 +35,6 @@ const notificationSchema = new mongoose.Schema(
   }
 );
 
-module.exports = mongoose.model(
-  "Notification",
-  notificationSchema
-);
+module.exports =
+  mongoose.models.Notification ||
+  mongoose.model("Notification", notificationSchema);
