@@ -6,6 +6,7 @@ const connectDB = require("./config/db");
 const routes = require("./routes");
 const adminRoutes = require("./routes/admin.routes");
 const notificationRoutes = require("./routes/notification.routes");
+const subscriptionRoutes = require("./routes/subscription.routes");
 
 
 
@@ -17,6 +18,7 @@ app.use("/notifications", notificationRoutes);
 
 const cron = require("node-cron");
 const bookingService = require("./services/booking.service");
+app.use("/api/subscriptions", subscriptionRoutes);
 
 connectDB();
 
@@ -28,3 +30,6 @@ cron.schedule("*/5 * * * *", () => {
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
+
+
+
