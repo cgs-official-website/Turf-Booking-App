@@ -5,11 +5,15 @@ const connectDB = require("./config/db");
 
 const routes = require("./routes");
 const adminRoutes = require("./routes/admin.routes");
+const notificationRoutes = require("./routes/notification.routes");
+
+
 
 const PORT = process.env.PORT || 5000;
 
 app.use("/", routes);
 app.use("/admin", adminRoutes);
+app.use("/notifications", notificationRoutes);
 
 const cron = require("node-cron");
 const bookingService = require("./services/booking.service");

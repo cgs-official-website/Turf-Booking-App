@@ -45,8 +45,7 @@ router.get(
 
 router.get(
   "/vendors",
-  protect,
-  authorizeRoles("admin"),
+  authorizeAdmin,
   getAllVendors
 );
 

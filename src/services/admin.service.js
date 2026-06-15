@@ -72,29 +72,35 @@ const getDashboardStats = async () => {
 };
 
 const getAllVendors = async () => {
-  const vendors = await User.find({
-    role: "vendor",
-  }).select("name email phone location");
+  const vendors = await User.find({ role: "vendor" })
+    .select("name email phone location")
+    .lean();
 
-  const result = await Promise.all(
+  const vendorData = await Promise.all(
     vendors.map(async (vendor, index) => {
-      const turfCount = await Turf.countDocuments({
-        owner: vendor._id,
-      });
+      const turfs = await Turf.find({ owner: vendor._id })
+        .select("name location sportType pricePerHour.basePrice approvalStatus")
+        .lean();
 
       return {
-        vendorId: `V${1001 + index}`,
-        id: vendor._id,
-        name: vendor.name,
+        vendorId: 1001 + index,
+        vendorName: vendor.name,
         email: vendor.email,
         phone: vendor.phone,
         location: vendor.location,
-        turfCount,
+        turfCount: turfs.length,
+        turfs: turfs.map((turf) => ({
+          turfName: turf.name,
+          location: turf.location,
+          sportType: turf.sportType,
+          pricePerHour: turf.pricePerHour?.basePrice || 0,
+          approvalStatus: turf.approvalStatus,
+        })),
       };
     }),
   );
 
-  return result;
+  return vendorData;
 };
 
 module.exports = {
