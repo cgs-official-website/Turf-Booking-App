@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const Turf = require("../models/Turf");
 const Booking = require("../models/Booking");
 const ApiError = require("../utils/ApiError");
+const Notification = require("../models/notification");
 
 // ─────────────────────────────────────────────
 // ADD a new turf
@@ -138,6 +139,13 @@ const approveTurf = async (turfId) => {
 
   await turf.save();
 
+  await Notification.create({
+    user: turf.owner,
+    title: "Turf Approved",
+    message: `${turf.name} has been approved by admin`,
+    type: "TURF_APPROVED",
+  });
+
   return {
     message: "Turf approved successfully",
     turf,
@@ -161,6 +169,13 @@ const rejectTurf = async (turfId) => {
   turf.approvalStatus = "rejected";
 
   await turf.save();
+
+  await Notification.create({
+    user: turf.owner,
+    title: "Turf Rejected",
+    message: `${turf.name} has been rejected by admin`,
+    type: "TURF_REJECTED",
+  });
 
   return {
     message: "Turf rejected successfully",

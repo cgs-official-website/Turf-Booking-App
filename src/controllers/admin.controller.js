@@ -50,11 +50,13 @@ const getAllVendors = async (req, res, next) => {
   try {
     const vendors = await adminService.getAllVendors();
 
-    res.status(200).json({
-      success: true,
-      count: vendors.length,
-      vendors,
-    });
+    res.status(200).json(
+      new ApiResponse(
+        200,
+        "Vendor list fetched successfully",
+        vendors
+      )
+    );
   } catch (error) {
     next(error);
   }

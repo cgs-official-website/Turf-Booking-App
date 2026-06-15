@@ -1,73 +1,110 @@
-// 
 const bcrypt = require("bcryptjs");
-
 const ApiError = require("../utils/ApiError");
 const { generateToken } = require("../utils/jwt");
 
-const jwt = require("jsonwebtoken");
-const User = require("../models/User"); // your Mongoose/Sequelize model
+const Admin = require("../models/Admin");
+const User = require("../models/User");
+const Turf = require("../models/Turf");
+const Booking = require("../models/Booking");
 
-const JWT_SECRET = process.env.JWT_SECRET || "your_jwt_secret_key";
-const JWT_EXPIRES_IN = "7d";
+const loginAdmin = async ({ email, password }) => {
+  const admin = await Admin.findOne({ email });
 
-
-// 
-const registerUser = async ({ name, email, password, phone, role = "user" }) => {
-  const existingUser = await User.findOne({ email });
-  if (existingUser) {
-    throw new ApiError(400, "Email is already registered");
-  }
-
-  const hashedPassword = await bcrypt.hash(password, 10);
-
-  const user = await User.create({
-    name,
-    email,
-    password: hashedPassword,
-    phone,
-    role,
-  });
-
-  const token = generateToken(user);
-
-  return {
-    message: "Registration successful",
-    token,
-    user: {
-      id: user._id,
-      name: user.name,
-      email: user.email,
-      phone: user.phone,
-      role: user.role,
-    },
-  };
-};
-
-// 
-const loginUser = async ({ email, password }) => {
-  const user = await User.findOne({ email });
-  if (!user) {
+  if (!admin) {
     throw new ApiError(401, "Invalid email or password");
   }
 
-  const isMatch = await bcrypt.compare(password, user.password);
+  const isMatch = await bcrypt.compare(password, admin.password);
+
   if (!isMatch) {
     throw new ApiError(401, "Invalid email or password");
   }
 
-  const token = generateToken(user);
+  const token = generateToken(admin);
 
   return {
-    message: "Login successful",
+    success: true,
     token,
-    user: {
-      id: user._id,
-      name: user.name,
-      email: user.email,
-      phone: user.phone,
-      role: user.role,
+    admin: {
+      id: admin._id,
+      name: admin.name,
+      email: admin.email,
+      role: admin.role,
     },
   };
 };
 
-module.exports = { registerUser, loginUser };
+const getDashboardStats = async () => {
+  const totalVendors = await User.countDocuments({
+    role: "vendor",
+  });
+
+  const totalTurfs = await Turf.countDocuments();
+
+  const revenueData = await Booking.aggregate([
+    {
+      $match: {
+        bookingStatus: "confirmed",
+      },
+    },
+    {
+      $group: {
+        _id: null,
+        totalRevenue: {
+          $sum: "$totalAmount",
+        },
+      },
+    },
+  ]);
+
+  const totalRevenue = revenueData.length > 0 ? revenueData[0].totalRevenue : 0;
+
+  const activeSubscriptions = await User.countDocuments({
+    subscriptionStatus: "active",
+  });
+
+  return {
+    totalVendors,
+    totalTurfs,
+    totalRevenue,
+    activeSubscriptions,
+  };
+};
+
+const getAllVendors = async () => {
+  const vendors = await User.find({ role: "vendor" })
+    .select("name email phone location")
+    .lean();
+
+  const vendorData = await Promise.all(
+    vendors.map(async (vendor, index) => {
+      const turfs = await Turf.find({ owner: vendor._id })
+        .select("name location sportType pricePerHour.basePrice approvalStatus")
+        .lean();
+
+      return {
+        vendorId: 1001 + index,
+        vendorName: vendor.name,
+        email: vendor.email,
+        phone: vendor.phone,
+        location: vendor.location,
+        turfCount: turfs.length,
+        turfs: turfs.map((turf) => ({
+          turfName: turf.name,
+          location: turf.location,
+          sportType: turf.sportType,
+          pricePerHour: turf.pricePerHour?.basePrice || 0,
+          approvalStatus: turf.approvalStatus,
+        })),
+      };
+    }),
+  );
+
+  return vendorData;
+};
+
+module.exports = {
+  loginAdmin,
+  getDashboardStats,
+  getAllVendors,
+};
