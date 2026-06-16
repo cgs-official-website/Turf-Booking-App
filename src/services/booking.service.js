@@ -2,7 +2,7 @@
 const Booking = require("../models/Booking");
 const Turf = require("../models/Turf");
 const ApiError = require("../utils/ApiError");
-const Notification = require("../models/Notification");
+const Notification = require("../models/notification");
 const pricingConfig = require("../config/pricing");
 
 //
