@@ -2,7 +2,7 @@
 const Booking = require("../models/Booking");
 const Turf = require("../models/Turf");
 const ApiError = require("../utils/ApiError");
-const Notification = require("../models/notification");
+const Notification = require("../models/Notification");
 const pricingConfig = require("../config/pricing");
 
 //
@@ -220,11 +220,11 @@ const confirmBooking = async (bookingId, vendorId, userRole) => {
 
   await booking.save();
   await Notification.create({
-    user: booking.user,
-    title: "Booking Approved",
-    message: "Your booking has been approved by vendor",
-    type: "BOOKING_APPROVED",
-  });
+  user: booking.user,
+  title: "Booking Approved",
+  message: "Your booking has been approved by vendor",
+  type: "BOOKING_APPROVED",
+});
 
   return {
     message: "Booking confirmed successfully",

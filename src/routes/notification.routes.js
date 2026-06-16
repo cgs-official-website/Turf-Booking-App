@@ -9,7 +9,6 @@ const {
 const { protect } = require("../middlewares/auth.middleware");
 
 router.get("/", protect, getMyNotifications);
-
 router.patch("/:id/read", protect, markAsRead);
 
 module.exports = router;
