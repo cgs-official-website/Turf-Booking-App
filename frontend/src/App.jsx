@@ -1,11 +1,7 @@
-import React from 'react'
+import AdminRoutes from "./routes/AdminRoutes";
 
 function App() {
-  return (
-    <div>
-      Admin Web Frontend
-    </div>
-  )
+  return <AdminRoutes />;
 }
 
-export default App
+export default App;
