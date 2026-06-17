@@ -41,10 +41,32 @@ const userSchema = new mongoose.Schema(
       enum: ["user", "vendor"],
       default: "user",
     },
+
+    gstNumber: {
+      type: String,
+      required: function () {
+        return this.role === "vendor";
+      },
+    },
+
+    panNumber: {
+      type: String,
+      required: function () {
+        return this.role === "vendor";
+      },
+    },
+
+    aadhaarNumber: {
+      type: String,
+      required: function () {
+        return this.role === "vendor";
+      },
+    },
+
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 module.exports = mongoose.model("User", userSchema);
