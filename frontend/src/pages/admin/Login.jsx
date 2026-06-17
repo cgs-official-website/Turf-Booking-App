@@ -1,22 +1,43 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import logo from "../../assets/images/logo.png";
 import "../../assets/styles/login.css";
+import { adminLogin } from "../../services/adminApi";
 
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  
+  const navigate = useNavigate();
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
+    setError("");
 
-    console.log("Login Data:", {
-      email,
-      password,
-    });
+    if (!email || !password) {
+      setError("Please fill in all fields");
+      return;
+    }
 
-    // TODO:
-    // Call login API here
-    // Navigate to dashboard after success
+    try {
+      setLoading(true);
+      const data = await adminLogin({ email, password });
+      
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("admin", JSON.stringify(data.admin));
+      
+      navigate("/admin/dashboard");
+    } catch (err) {
+      setError(
+        err.response && err.response.data && err.response.data.message
+          ? err.response.data.message
+          : "Login failed. Please try again."
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -39,6 +60,12 @@ function Login() {
 
         <div className="login-card">
           <form className="login-form" onSubmit={handleLogin}>
+            {error && (
+              <div style={{ color: "#d93025", fontSize: "14px", textAlign: "center", marginBottom: "10px" }}>
+                {error}
+              </div>
+            )}
+            
             <div className="form-group">
               <label>E-mail Address</label>
               <input
@@ -47,6 +74,7 @@ function Login() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
+                disabled={loading}
               />
             </div>
 
@@ -58,6 +86,7 @@ function Login() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
+                disabled={loading}
               />
             </div>
 
@@ -68,8 +97,9 @@ function Login() {
             <button
               type="submit"
               className="login-btn"
+              disabled={loading}
             >
-              Log In
+              {loading ? "Logging in..." : "Log In"}
             </button>
           </form>
         </div>
