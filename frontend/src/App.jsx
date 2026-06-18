@@ -1,18 +1,19 @@
-import React from 'react'
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import DashBoard from "./pages/admin/DashBoard";
-import TurfApprovals from './pages/admin/TurfApprovals'
+import React from "react";
+import { BrowserRouter } from "react-router-dom";
+import AdminRoutes from "./routes/AdminRoutes";
 
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<DashBoard />}/>
-        <Route path="/TurfApprovals" element={<TurfApprovals />}/>
-      </Routes>
+    <BrowserRouter
+      future={{
+        v7_startTransition: true,
+        v7_relativeSplatPath: true,
+      }}
+    >
+      <AdminRoutes />
     </BrowserRouter>
-  
-  )
+  );
 }
 
-export default App
+export default App;
+  

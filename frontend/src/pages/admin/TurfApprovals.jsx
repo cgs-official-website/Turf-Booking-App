@@ -1,41 +1,19 @@
 // TurfApprovals.jsx
 // API routes:
 //   GET   /turfs/pending        → pending turfs (admin)
-//   GET   /turfs                → all turfs (approved + rejected counts)
-//   PATCH /turfs/:id/approve    → approve
-//   PATCH /turfs/:id/reject     → reject
+//   GET   /turfs                → all turfs
+//   Falls back to mock data if backend is unreachable / returns 401
 
 import { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
+import axiosInstance from "../../services/axiosInstance";
+import { MOCK_TURFS } from "../../data/mockTurfs";
 import "../../assets/styles/turfApprovals.css";
 
-const BASE_URL = "http://localhost:5000";
-const PAGE_SIZE = 5;
+const PAGE_SIZE = 8;
+const ROW_HEIGHT = 52; // px — must match ta-table td padding in CSS
 
-// ── API helper ────────────────────────────────────────────────────────────────
-async function apiFetch(path, options = {}) {
-  const { signal, ...rest } = options;
-
-  try {
-    const res = await fetch(`${BASE_URL}${path}`, {
-      signal,
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${localStorage.getItem("adminToken") ?? ""}`,
-        ...rest.headers,
-      },
-      ...rest,
-    });
-    if (!res.ok) return null;
-    return await res.json();
-  } catch (err) {
-    if (err?.name !== "AbortError") {
-      console.warn(`[TurfApprovals] ${path} failed:`, err.message);
-    }
-    return null;
-  }
-}
-
-// ── Normalize raw API turf → component shape ──────────────────────────────────
+// ── Normalize raw API turf → component shape ─────────────────────────────────
 function normalizeTurf(t) {
   return {
     ...t,
@@ -75,83 +53,6 @@ function StatusBadge({ status }) {
   );
 }
 
-function ReviewModal({ turf, onClose, onApprove, onReject, loading }) {
-  if (!turf) return null;
-  const isPending = turf.approvalStatus === "pending";
-
-  const rows = [
-    ["Vendor",        turf.vendor],
-    ["Location",      turf.location ?? turf.city],
-    ["Sport",         turf.sportType ? turf.sportType.charAt(0).toUpperCase() + turf.sportType.slice(1) : "—"],
-    ["Base price",    turf.pricePerHour?.basePrice    != null ? `₹${turf.pricePerHour.basePrice}/hr`    : "—"],
-    ["Evening price", turf.pricePerHour?.eveningPrice != null ? `₹${turf.pricePerHour.eveningPrice}/hr` : "—"],
-    ["Weekend price", turf.pricePerHour?.weekendPrice != null ? `₹${turf.pricePerHour.weekendPrice}/hr` : "—"],
-    ["Submitted",     turf.date],
-  ];
-
-  return (
-    <div
-      className="ta-modal-overlay"
-      onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
-    >
-      <div className="ta-modal-box" role="dialog" aria-modal="true" aria-label={`Review ${turf.name}`}>
-        <div className="ta-modal-header">
-          <div>
-            <p className="ta-modal-title">{turf.name}</p>
-            <p className="ta-modal-subtitle">{turf.displayId} · {turf.city}</p>
-          </div>
-          <button className="ta-modal-close" onClick={onClose} aria-label="Close">
-            <i className="bi bi-x" />
-          </button>
-        </div>
-
-        <div className="ta-modal-body">
-          {rows.map(([label, value]) => (
-            <div className="ta-modal-row" key={label}>
-              <span className="ta-modal-row__label">{label}</span>
-              <span className="ta-modal-row__value">{value}</span>
-            </div>
-          ))}
-          <div className="ta-modal-row">
-            <span className="ta-modal-row__label">Status</span>
-            <span className="ta-modal-row__value">
-              <StatusBadge status={turf.approvalStatus} />
-            </span>
-          </div>
-        </div>
-
-        <div className="ta-modal-actions">
-          {isPending ? (
-            <>
-              <button
-                className="ta-modal-btn ta-modal-btn--approve"
-                onClick={() => onApprove(turf._id)}
-                disabled={loading}
-              >
-                {loading
-                  ? <span className="ta-spinner" />
-                  : <i className="bi bi-check-lg" />}
-                Approve
-              </button>
-              <button
-                className="ta-modal-btn ta-modal-btn--reject"
-                onClick={() => onReject(turf._id)}
-                disabled={loading}
-              >
-                <i className="bi bi-x-lg" /> Reject
-              </button>
-            </>
-          ) : (
-            <button className="ta-modal-btn ta-modal-btn--close" onClick={onClose}>
-              <i className="bi bi-arrow-left" /> Back
-            </button>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-}
-
 function Toast({ toasts, remove }) {
   const ICON = {
     approved: "bi-check-circle-fill",
@@ -179,15 +80,15 @@ function Toast({ toasts, remove }) {
 // ── Main component ────────────────────────────────────────────────────────────
 
 export default function TurfApprovals() {
-  const [turfs,         setTurfs]         = useState([]);
-  const [loading,       setLoading]       = useState(true);
-  const [error,         setError]         = useState(null);
-  const [actionLoading, setActionLoading] = useState(false);
-  const [selectedTurf,  setSelectedTurf]  = useState(null);
+  const navigate = useNavigate();
+
+  const [turfs,   setTurfs]   = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error,   setError]   = useState(null);
+  const [usingMock, setUsingMock] = useState(false);
 
   // filters
   const [search,       setSearch]       = useState("");
-  const [dateFilter,   setDateFilter]   = useState("All");
   const [cityFilter,   setCityFilter]   = useState("All");
   const [statusFilter, setStatusFilter] = useState("All");
   const [page,         setPage]         = useState(1);
@@ -202,80 +103,53 @@ export default function TurfApprovals() {
     setTimeout(() => setToasts((p) => p.filter((t) => t.id !== id)), 3500);
   }
 
-  // ── Load from DB ────────────────────────────────────────────────────────────
-  async function loadTurfs(signal) {
-    setLoading(true);
-    setError(null);
-
-    const [pending, all] = await Promise.all([
-      apiFetch("/turfs/pending", { signal }),
-      apiFetch("/turfs",         { signal }),
-    ]);
-
-    if (signal?.aborted) return;
-
-    if (!pending && !all) {
-      setError("Could not reach the server. Check that the backend is running.");
-      setLoading(false);
-      return;
-    }
-
-    const combined = [
-      ...(Array.isArray(pending) ? pending : []),
-      ...(Array.isArray(all)     ? all     : []),
-    ];
-    const unique = combined.filter(
-      (t, i, arr) => arr.findIndex((x) => x._id === t._id) === i
-    );
-    setTurfs(unique.map(normalizeTurf));
-    setLoading(false);
-  }
-
+  // ── Load from API, fallback to mock ─────────────────────────────────────────
   useEffect(() => {
     const ctrl = new AbortController();
-    loadTurfs(ctrl.signal);
+
+    async function loadTurfs() {
+      setLoading(true);
+      setError(null);
+
+      try {
+        const [pendingRes, allRes] = await Promise.all([
+          axiosInstance.get("/turfs/pending", { signal: ctrl.signal }),
+          axiosInstance.get("/turfs",          { signal: ctrl.signal }),
+        ]);
+
+        const combined = [
+          ...(Array.isArray(pendingRes.data) ? pendingRes.data : []),
+          ...(Array.isArray(allRes.data)     ? allRes.data     : []),
+        ];
+        const unique = combined.filter(
+          (t, i, arr) => arr.findIndex((x) => x._id === t._id) === i
+        );
+        setTurfs(unique.map(normalizeTurf));
+        setUsingMock(false);
+      } catch (err) {
+        if (err?.name === "CanceledError") return;
+        // ── Backend unreachable or 401 → use mock data ──
+        console.warn("[TurfApprovals] Backend unavailable — using mock data.");
+        setTurfs(MOCK_TURFS.map(normalizeTurf));
+        setUsingMock(true);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadTurfs();
     return () => ctrl.abort();
   }, []);
 
-  // ── Approve  PATCH /turfs/:id/approve ────────────────────────────────────
-  async function handleApprove(id) {
-    setActionLoading(true);
-    const res = await apiFetch(`/turfs/${id}/approve`, { method: "PATCH" });
-    if (res) {
-      setTurfs((p) => p.map((t) => t._id === id ? { ...t, approvalStatus: "approved" } : t));
-      addToast("Turf approved successfully", "approved");
-    } else {
-      addToast("Failed to approve turf", "error");
-    }
-    setSelectedTurf(null);
-    setActionLoading(false);
-  }
-
-  // ── Reject   PATCH /turfs/:id/reject ─────────────────────────────────────
-  async function handleReject(id) {
-    setActionLoading(true);
-    const res = await apiFetch(`/turfs/${id}/reject`, { method: "PATCH" });
-    if (res) {
-      setTurfs((p) => p.map((t) => t._id === id ? { ...t, approvalStatus: "rejected" } : t));
-      addToast("Turf rejected", "rejected");
-    } else {
-      addToast("Failed to reject turf", "error");
-    }
-    setSelectedTurf(null);
-    setActionLoading(false);
-  }
-
   // ── Derived state ──────────────────────────────────────────────────────────
   const cities = ["All", ...Array.from(new Set(turfs.map((t) => t.city))).sort()];
-  const dates  = ["All", ...Array.from(new Set(turfs.map((t) => t.date))).sort()];
 
   const filtered = turfs.filter((t) => {
-    const q  = search.toLowerCase();
-    const ms = !q || t.name.toLowerCase().includes(q) || t.vendor.toLowerCase().includes(q);
-    const md = dateFilter   === "All" || t.date === dateFilter;
-    const mc = cityFilter   === "All" || t.city === cityFilter;
+    const q   = search.toLowerCase();
+    const ms  = !q || t.name.toLowerCase().includes(q) || t.vendor.toLowerCase().includes(q);
+    const mc  = cityFilter   === "All" || t.city === cityFilter;
     const mst = statusFilter === "All" || t.approvalStatus === statusFilter.toLowerCase();
-    return ms && md && mc && mst;
+    return ms && mc && mst;
   });
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
@@ -288,7 +162,7 @@ export default function TurfApprovals() {
   };
 
   function resetFilters() {
-    setSearch(""); setDateFilter("All"); setCityFilter("All"); setStatusFilter("All"); setPage(1);
+    setSearch(""); setCityFilter("All"); setStatusFilter("All"); setPage(1);
   }
 
   // ── Render ─────────────────────────────────────────────────────────────────
@@ -296,14 +170,16 @@ export default function TurfApprovals() {
     <div className="ta-page">
       <Toast toasts={toasts} remove={(id) => setToasts((p) => p.filter((t) => t.id !== id))} />
 
-      {selectedTurf && (
-        <ReviewModal
-          turf={selectedTurf}
-          onClose={() => setSelectedTurf(null)}
-          onApprove={handleApprove}
-          onReject={handleReject}
-          loading={actionLoading}
-        />
+      {/* Mock data banner */}
+      {usingMock && (
+        <div style={{
+          background: "#fffbe6", border: "1px solid #ffe58f", borderRadius: 8,
+          padding: "8px 14px", fontSize: 12, color: "#7c5800", marginBottom: 16,
+          display: "flex", alignItems: "center", gap: 8,
+        }}>
+          <i className="bi bi-exclamation-triangle" />
+          Backend not connected — showing demo data. Connect your server to see live turfs.
+        </div>
       )}
 
       {/* Page title */}
@@ -311,9 +187,9 @@ export default function TurfApprovals() {
 
       {/* Stat cards */}
       <div className="ta-stat-grid">
-        <StatCard label="Pending approvals" value={counts.pending}  iconClass="bi-clock"         variant="pending"  />
+        <StatCard label="Pending approvals" value={counts.pending}  iconClass="bi-clock"            variant="pending"  />
         <StatCard label="Approved turfs"    value={counts.approved} iconClass="bi-check-circle-fill" variant="approved" />
-        <StatCard label="Rejected turfs"    value={counts.rejected} iconClass="bi-x-circle"  variant="rejected" />
+        <StatCard label="Rejected turfs"    value={counts.rejected} iconClass="bi-x-circle"          variant="rejected" />
       </div>
 
       {/* Toolbar */}
@@ -329,17 +205,6 @@ export default function TurfApprovals() {
             aria-label="Search turfs"
           />
         </div>
-
-        {/* <select
-          className="ta-select"
-          value={dateFilter}
-          onChange={(e) => { setDateFilter(e.target.value); setPage(1); }}
-          aria-label="Filter by date"
-        >
-          {dates.map((d) => (
-            <option key={d} value={d}>{d === "All" ? "Date" : d}</option>
-          ))}
-        </select> */}
 
         <select
           className="ta-select"
@@ -387,50 +252,60 @@ export default function TurfApprovals() {
           </thead>
           <tbody>
             {loading ? (
-              <tr className="ta-state-row">
-                <td colSpan={7}><span className="ta-spinner" /></td>
-              </tr>
-            ) : error ? (
-              <tr className="ta-state-row">
-                <td colSpan={7}>
-                  <i className="bi bi-wifi-off" />
-                  <span>{error}</span>
-                </td>
-              </tr>
+              <>
+                <tr className="ta-state-row">
+                  <td colSpan={7}><span className="ta-spinner" /></td>
+                </tr>
+                {Array.from({ length: PAGE_SIZE - 1 }).map((_, i) => (
+                  <tr key={`ghost-load-${i}`} className="ta-ghost-row"><td colSpan={7} /></tr>
+                ))}
+              </>
             ) : paginated.length === 0 ? (
-              <tr className="ta-state-row">
-                <td colSpan={7}>
-                  <i className="bi bi-search" />
-                  <span>No turfs match your filters.</span>
-                </td>
-              </tr>
-            ) : paginated.map((turf) => (
-              <tr key={turf._id}>
-                <td className="ta-td-id">{turf.displayId}</td>
-                <td className="ta-td-name">{turf.name}</td>
-                <td className="ta-td-vendor">{turf.vendor}</td>
-                <td>{turf.city}</td>
-                <td className="ta-td-date">{turf.date}</td>
-                <td><StatusBadge status={turf.approvalStatus} /></td>
-                <td>
-                  {turf.approvalStatus === "pending" ? (
-                    <button
-                      className="ta-action-btn ta-action-btn--review"
-                      onClick={() => setSelectedTurf(turf)}
-                    >
-                      Review
-                    </button>
-                  ) : (
-                    <button
-                      className="ta-action-btn ta-action-btn--view"
-                      onClick={() => setSelectedTurf(turf)}
-                    >
-                      View Details
-                    </button>
-                  )}
-                </td>
-              </tr>
-            ))}
+              <>
+                <tr className="ta-state-row">
+                  <td colSpan={7}>
+                    <i className="bi bi-search" />
+                    <span>No turfs match your filters.</span>
+                  </td>
+                </tr>
+                {Array.from({ length: PAGE_SIZE - 1 }).map((_, i) => (
+                  <tr key={`ghost-empty-${i}`} className="ta-ghost-row"><td colSpan={7} /></tr>
+                ))}
+              </>
+            ) : (
+              <>
+                {paginated.map((turf) => (
+                  <tr key={turf._id}>
+                    <td className="ta-td-id">{turf.displayId}</td>
+                    <td className="ta-td-name">{turf.name}</td>
+                    <td className="ta-td-vendor">{turf.vendor}</td>
+                    <td>{turf.city}</td>
+                    <td className="ta-td-date">{turf.date}</td>
+                    <td><StatusBadge status={turf.approvalStatus} /></td>
+                    <td>
+                      {turf.approvalStatus === "pending" ? (
+                        <button
+                          className="ta-action-btn ta-action-btn--review"
+                          onClick={() => navigate(`/admin/turf/${turf._id}`)}
+                        >
+                          Review
+                        </button>
+                      ) : (
+                        <button
+                          className="ta-action-btn ta-action-btn--view"
+                          onClick={() => navigate(`/admin/turf/${turf._id}`)}
+                        >
+                          View Details
+                        </button>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+                {Array.from({ length: PAGE_SIZE - paginated.length }).map((_, i) => (
+                  <tr key={`ghost-${i}`} className="ta-ghost-row"><td colSpan={7} /></tr>
+                ))}
+              </>
+            )}
           </tbody>
         </table>
       </div>

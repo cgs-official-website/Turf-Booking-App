@@ -713,6 +713,16 @@
   border-left: 3px solid var(--clr-rejected-border);
 }
 
+.ta-ghost-row {
+  pointer-events: none;
+}
+ 
+.ta-ghost-row td {
+  height: 52px;   /* matches real row height: padding 13px top+bottom + ~26px content */
+  padding: 0 !important;
+  border-bottom: 1px solid #f8f8f8;
+}
+  
 @keyframes ta-slide-in {
   from {
     opacity: 0;
