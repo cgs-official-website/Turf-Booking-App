@@ -1,4 +1,5 @@
 import React from 'react';
+import { Outlet } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import Navbar from './Navbar';
 import '../../assets/styles/layout.css';
@@ -10,7 +11,7 @@ export default function AdminLayout({ children }) {
       <div className="layout-main">
         <Navbar />
         <main className="layout-content">
-          {children}
+          {children || <Outlet />}
         </main>
       </div>
     </div>

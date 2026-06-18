@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axiosInstance from '../../services/axiosInstance';
+import { getLoginActivity } from '../../services/adminApi';
 import '../../assets/styles/settings.css';
 
 const Settings = () => {
@@ -8,17 +9,51 @@ const Settings = () => {
   const [admin, setAdmin] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-
-  const [notifications, setNotifications] = useState({
-    email: true,
-    vendor: true,
-    booking: true,
-    payment: false,
-  });
+  
+  const [loginActivity, setLoginActivity] = useState([]);
+  const [activityLoading, setActivityLoading] = useState(true);
+  const [activityError, setActivityError] = useState("");
 
   useEffect(() => {
     fetchAdminProfile();
+    fetchActivity();
   }, []);
+
+  const fetchActivity = async () => {
+    try {
+      setActivityLoading(true);
+      const data = await getLoginActivity();
+      
+      let list = [];
+      if (Array.isArray(data)) list = data;
+      else if (data.data && Array.isArray(data.data)) list = data.data;
+      else if (data.activities && Array.isArray(data.activities)) list = data.activities;
+      else if (data.data && data.data.activities && Array.isArray(data.data.activities)) list = data.data.activities;
+      
+      // Sort newest first
+      list.sort((a, b) => new Date(b.loginTime) - new Date(a.loginTime));
+      
+      // Filter for unique devices (browser + os)
+      const seenDevices = new Set();
+      const uniqueList = [];
+      
+      for (const activity of list) {
+        const deviceKey = `${activity.browser || 'Unknown'}-${activity.os || 'Unknown'}`;
+        if (!seenDevices.has(deviceKey)) {
+          seenDevices.add(deviceKey);
+          uniqueList.push(activity);
+        }
+      }
+      
+      // Keep up to 10 unique recent devices
+      setLoginActivity(uniqueList.slice(0, 10));
+    } catch (err) {
+      console.error("Failed to fetch login activity:", err);
+      setActivityError("Failed to load activity");
+    } finally {
+      setActivityLoading(false);
+    }
+  };
 
   const fetchAdminProfile = async () => {
     try {
@@ -26,9 +61,6 @@ const Settings = () => {
       setError("");
       const response = await axiosInstance.get('/admin/profile');
       
-      console.log("PROFILE RESPONSE:", response.data);
-      
-      // Extract the actual admin object from the backend response wrapper
       const adminData = response.data.data || response.data;
       
       if (adminData) {
@@ -53,17 +85,22 @@ const Settings = () => {
     }
   };
 
-  const handleToggle = (key) => {
-    setNotifications((prev) => ({
-      ...prev,
-      [key]: !prev[key],
-    }));
-  };
-
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("admin");
     navigate("/admin/login");
+  };
+
+  const formatDate = (isoString) => {
+    if (!isoString) return "Unknown Time";
+    const date = new Date(isoString);
+    if (isNaN(date.getTime())) return "Unknown Time";
+    
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = date.toLocaleString('default', { month: 'short' });
+    const year = date.getFullYear();
+    const time = date.toLocaleString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+    return `${day} ${month} ${year}, ${time}`;
   };
 
   if (loading) {
@@ -104,24 +141,24 @@ const Settings = () => {
       <div className="settings-content">
         <div className="profile-banner">
           <div className="profile-info">
-            <div className="profile-image">
+            <div className="profile-image-container">
               <img 
                 src={`https://ui-avatars.com/api/?name=${encodeURIComponent(admin?.name || 'Admin')}&background=0D8B41&color=fff`} 
                 alt={admin?.name || 'Admin'} 
               />
+              <div className="upload-icon">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="12" y1="5" x2="12" y2="19"></line>
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+              </div>
             </div>
             <div className="profile-details">
               <h2>{admin?.name}</h2>
-              <p>{admin?.email}</p>
+              <p className="profile-role">Admin</p>
+              <p className="profile-email">{admin?.email}</p>
             </div>
           </div>
-          <button className="btn-edit-profile">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-            </svg>
-            Edit Profile
-          </button>
         </div>
 
         <div className="settings-two-column">
@@ -151,83 +188,32 @@ const Settings = () => {
             </div>
             <div className="login-activity">
               <h4>Recent Login Activity</h4>
-              <div className="device-item">
-                <div className="device-icon">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
-                    <line x1="8" y1="21" x2="16" y2="21"></line>
-                    <line x1="12" y1="17" x2="12" y2="21"></line>
-                  </svg>
-                </div>
-                <div className="device-info">
-                  <p className="device-name">Chrome on MacOS</p>
-                  <p className="device-location">Palo Alto, CA • <span className="active-status">Active Now</span></p>
-                </div>
-              </div>
-              <div className="device-item">
-                <div className="device-icon">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
-                    <line x1="12" y1="18" x2="12.01" y2="18"></line>
-                  </svg>
-                </div>
-                <div className="device-info">
-                  <p className="device-name">iPhone 14 Pro</p>
-                  <p className="device-location">Palo Alto, CA • 2 hours ago</p>
-                </div>
-              </div>
+              
+              {activityLoading ? (
+                <div style={{ padding: '20px 0', fontSize: '14px', color: '#666' }}>Loading activity...</div>
+              ) : activityError ? (
+                <div style={{ padding: '20px 0', fontSize: '14px', color: '#ef4444' }}>{activityError}</div>
+              ) : loginActivity.length === 0 ? (
+                <div style={{ padding: '20px 0', fontSize: '14px', color: '#666' }}>No recent login activity found</div>
+              ) : (
+                loginActivity.map((activity, index) => (
+                  <div className="device-item" key={index}>
+                    <div className="device-icon">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                        <line x1="8" y1="21" x2="16" y2="21"></line>
+                        <line x1="12" y1="17" x2="12" y2="21"></line>
+                      </svg>
+                    </div>
+                    <div className="device-info">
+                      <p className="device-name">{activity.browser || 'Unknown'} &bull; {activity.os || 'Unknown'}</p>
+                      <p className="device-location">{formatDate(activity.loginTime)}</p>
+                    </div>
+                  </div>
+                ))
+              )}
             </div>
             <button className="btn-logout-all" onClick={handleLogout}>Log out from All Devices</button>
-          </div>
-        </div>
-
-        <div className="settings-card notifications-card">
-          <div className="card-header">
-            <h3>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0A9847" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
-                <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
-              </svg>
-              System Notifications
-            </h3>
-          </div>
-          <div className="notification-list">
-            <div className="notification-item">
-              <div className="notification-info">
-                <h4>Email Notifications</h4>
-                <p>Get weekly digest and system status updates.</p>
-              </div>
-              <div className={`toggle-switch ${notifications.email ? 'active' : ''}`} onClick={() => handleToggle('email')}>
-                <div className="toggle-slider"></div>
-              </div>
-            </div>
-            <div className="notification-item">
-              <div className="notification-info">
-                <h4>Vendor Registration Alerts</h4>
-                <p>Instant alerts when a new vendor signs up for verification.</p>
-              </div>
-              <div className={`toggle-switch ${notifications.vendor ? 'active' : ''}`} onClick={() => handleToggle('vendor')}>
-                <div className="toggle-slider"></div>
-              </div>
-            </div>
-            <div className="notification-item">
-              <div className="notification-info">
-                <h4>Booking Issue Alerts</h4>
-                <p>Notifications for disputed or cancelled bookings.</p>
-              </div>
-              <div className={`toggle-switch ${notifications.booking ? 'active' : ''}`} onClick={() => handleToggle('booking')}>
-                <div className="toggle-slider"></div>
-              </div>
-            </div>
-            <div className="notification-item">
-              <div className="notification-info">
-                <h4>Payment Alerts</h4>
-                <p>High-value transaction Premium Plans</p>
-              </div>
-              <div className={`toggle-switch ${notifications.payment ? 'active' : ''}`} onClick={() => handleToggle('payment')}>
-                <div className="toggle-slider"></div>
-              </div>
-            </div>
           </div>
         </div>
       </div>
