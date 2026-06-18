@@ -1,48 +1,45 @@
+// routes/AdminRoutes.jsx
+
 import React from "react";
 import { Routes, Route } from "react-router-dom";
 
-// Admin Pages
-import Login from "../pages/admin/Login";
-import Dashboard from "../pages/admin/Dashboard";
-import Vendors from "../pages/admin/Vendors";
-// import Bookings from "../pages/admin/Bookings";
-// import Turfs from "../pages/admin/Turfs";
-// import Profile from "../pages/admin/Profile";
-// import Notifications from "../pages/admin/Notifications";
-// import Subscriptions from "../pages/admin/Subscriptions";
-
-// Detail Pages
-import TurfDetails from "../pages/admin/TurfDetails";
-// import VendorDetails from "../pages/admin/VendorDetails";
-// import BookingDetails from "../pages/admin/BookingDetails";
+import Login        from "../pages/admin/Login";
+import Dashboard    from "../pages/admin/Dashboard";
+import Vendors      from "../pages/admin/Vendors";
 import TurfApprovals from "../pages/admin/TurfApprovals";
+import TurfDetails  from "../pages/admin/TurfDetails";
+
+// import Bookings       from "../pages/admin/Bookings";
+// import BookingDetails from "../pages/admin/BookingDetails";
+// import Profile        from "../pages/admin/Profile";
+// import Notifications  from "../pages/admin/Notifications";
+// import Subscriptions  from "../pages/admin/Subscriptions";
 
 const AdminRoutes = () => {
   return (
     <Routes>
       {/* Auth */}
-      <Route path="/" element={<Login />} />
-      <Route path="/admin/login" element={<Login />} />
+      <Route path="/"                   element={<Login />} />
+      <Route path="/admin/login"        element={<Login />} />
 
-      {/* Dashboard */}
-      <Route path="/admin/dashboard" element={<Dashboard />} />
+      {/* Core admin */}
+      <Route path="/admin/dashboard"    element={<Dashboard />} />
+      <Route path="/admin/vendors"      element={<Vendors />} />
 
-      {/* Vendors */}
-      <Route path="/admin/vendors" element={<Vendors />} />
-      {/* <Route path="/admin/vendors/:id" element={<VendorDetails />} /> */}
+      {/* Turf approvals list  →  /admin/turf-approvals */}
+      <Route path="/admin/turf-approvals"      element={<TurfApprovals />} />
 
-      {/* Turfs */}
-      <Route path="/admin/turfs" element={<TurfApprovals />} />
-      <Route path="/admin/turf/:id" element={<TurfDetails />} />
+      {/* Turf detail page  →  /admin/turf-approvals/:id */}
+      <Route path="/admin/turf-approvals/:id"  element={<TurfDetails />} />
 
-      {/* Bookings */}
-      {/* <Route path="/admin/bookings" element={<Bookings />} /> */}
-      {/* <Route path="/admin/bookings/:id" element={<BookingDetails />} /> */}
+      {/* Bookings (uncomment when ready) */}
+      {/* <Route path="/admin/bookings"         element={<Bookings />} /> */}
+      {/* <Route path="/admin/bookings/:id"     element={<BookingDetails />} /> */}
 
-      {/* Other Pages */}
-      {/* <Route path="/admin/profile" element={<Profile />} />
-      <Route path="/admin/notifications" element={<Notifications />} />
-      <Route path="/admin/subscriptions" element={<Subscriptions />} /> */}
+      {/* Other pages */}
+      {/* <Route path="/admin/profile"          element={<Profile />} /> */}
+      {/* <Route path="/admin/notifications"    element={<Notifications />} /> */}
+      {/* <Route path="/admin/subscriptions"    element={<Subscriptions />} /> */}
     </Routes>
   );
 };

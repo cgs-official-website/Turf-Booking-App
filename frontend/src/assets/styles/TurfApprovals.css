@@ -11,6 +11,8 @@
   --clr-pending-txt: #EDB200;
   --clr-pending-border: #f59f00;
 
+  --clr-review:#2563EB;
+
   --clr-approved-bg: #ECFDF5;
   --clr-approved-txt: #0a9847;
   --clr-approved-border: green;
@@ -401,7 +403,7 @@
 }
 
 .ta-action-btn--review {
-  color: var(--clr-brand);
+  color: var(--clr-review);
 }
 
 .ta-action-btn--review:hover {
@@ -409,7 +411,7 @@
 }
 
 .ta-action-btn--view {
-  color: var(--clr-text-secondary);
+  color: var(--clr-review);
 }
 
 .ta-action-btn--view:hover {
