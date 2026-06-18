@@ -25,8 +25,15 @@ function Login() {
       setLoading(true);
       const data = await adminLogin({ email, password });
       
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("admin", JSON.stringify(data.admin));
+      console.log("LOGIN RESPONSE:", data);
+      console.log("Stored Token:", data.data.token);
+      console.log("Stored Admin:", data.data.admin);
+      
+      localStorage.setItem("token", data.data.token);
+      localStorage.setItem("admin", JSON.stringify(data.data.admin));
+      
+      console.log(localStorage.getItem("token"));
+      console.log(localStorage.getItem("admin"));
       
       navigate("/admin/dashboard");
     } catch (err) {
