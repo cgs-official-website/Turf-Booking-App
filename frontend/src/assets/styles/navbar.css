@@ -3,7 +3,7 @@
    =========================== */
 
 :root {
-  --navbar-height: 72px;
+  
   --primary-green: #22c55e;
   --primary-green-light: #D0FFD3;
   --primary-hover: #E8E3FF;
@@ -20,7 +20,7 @@
 }
 
 .navbar {
-  height: var(--navbar-height);
+  height: 76.5px;
   background: #ffffff;
   border-bottom: 1px solid var(--gray-200);
   display: flex;
