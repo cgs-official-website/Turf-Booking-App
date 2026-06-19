@@ -9,7 +9,7 @@ import Vendors      from "../pages/admin/Vendors";
 import TurfApprovals from "../pages/admin/TurfApprovals";
 import TurfDetails  from "../pages/admin/TurfDetails";
 
-// import Bookings       from "../pages/admin/Bookings";
+import Bookings       from "../pages/admin/Bookings";
 // import BookingDetails from "../pages/admin/BookingDetails";
 // import Profile        from "../pages/admin/Profile";
 // import Notifications  from "../pages/admin/Notifications";
@@ -33,7 +33,7 @@ const AdminRoutes = () => {
       <Route path="/admin/turf-approvals/:id"  element={<TurfDetails />} />
 
       {/* Bookings (uncomment when ready) */}
-      {/* <Route path="/admin/bookings"         element={<Bookings />} /> */}
+      <Route path="/admin/bookings"         element={<Bookings />} />
       {/* <Route path="/admin/bookings/:id"     element={<BookingDetails />} /> */}
 
       {/* Other pages */}
