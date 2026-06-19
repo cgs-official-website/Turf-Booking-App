@@ -134,12 +134,11 @@
   border-radius: 10px;
   padding: 0 14px;
   height: 42px;
-  flex: 1 1 260px;     /* was: flex: 1 */
-  max-width: 360px;    /* NEW — stops it stretching on wide screens */
+  flex: 1 1 260px;
+  max-width: 360px;
   min-width: 200px;
   transition: border-color 0.2s;
 }
-
 
 .sub-search:focus-within {
   border-color: #22c55e;
@@ -173,8 +172,8 @@
   background: #fff;
   outline: none;
   cursor: pointer;
-  width: 150px;         /* was: min-width: 120px — fixes the Location width bug */
-  flex-shrink: 0;        /* NEW — keeps it from getting squeezed unevenly */
+  width: 150px;
+  flex-shrink: 0;
   transition: border-color 0.2s;
 }
 .sub-select:focus {
@@ -290,6 +289,9 @@
 /* ── Plan Management tab ── */
 .sub-plan-management {
   padding-top: 8px;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
 .sub-plan-management__header {
@@ -319,20 +321,41 @@
 }
 
 .sub-plan-management__grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  display: flex;
   gap: 24px;
-  align-items: stretch;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: visible;
+  padding: 4px 4px 16px;
+  scroll-snap-type: x proximity;
+  -webkit-overflow-scrolling: touch;
 }
 
-@media (max-width: 1024px) {
-  .sub-plan-management__grid {
-    grid-template-columns: repeat(2, 1fr);
+.sub-plan-management__grid > * {
+  flex: 0 0 340px;
+  max-width: 340px;
+  scroll-snap-align: start;
+}
+
+@media (max-width: 480px) {
+  .sub-plan-management__grid > * {
+    flex-basis: 280px;
+    max-width: 280px;
   }
 }
 
-@media (max-width: 768px) {
-  .sub-plan-management__grid {
-    grid-template-columns: 1fr;
-  }
+.sub-plan-management__grid::-webkit-scrollbar {
+  height: 6px;
+}
+.sub-plan-management__grid::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+.sub-plan-management__grid::-webkit-scrollbar-thumb {
+  background: #bbf7d0;
+  border-radius: 10px;
+}
+.sub-plan-management__grid::-webkit-scrollbar-thumb:hover {
+  background: #86efac;
 }
