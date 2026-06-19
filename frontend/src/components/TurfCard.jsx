@@ -1,4 +1,5 @@
-import { useState, useRef } from "react";
+import { HiOutlinePhotograph } from "react-icons/hi";
+import { HiOutlineOfficeBuilding } from "react-icons/hi";
 import '../assets/styles/TurfCard.css';
 
 export default function TurfCard({
@@ -10,67 +11,30 @@ export default function TurfCard({
   endDate = "01 / 01 / 2027",
   location = "Erode",
   planDuration = "1 Year",
-  defaultImage = null,
-  defaultLogo = null,
+  turfImage = null,
+  logoImage = null,
 }) {
-  const [turfImage, setTurfImage] = useState(defaultImage);
-  const [logoImage, setLogoImage] = useState(defaultLogo);
-  const turfInputRef = useRef(null);
-  const logoInputRef = useRef(null);
-
-  const handleFileChange = (e, setter) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (ev) => setter(ev.target.result);
-    reader.readAsDataURL(file);
-  };
-
   return (
     <div className="turf-card">
 
       {/* Image Section */}
       <div className="turf-card__image-wrapper">
-        <input
-          ref={turfInputRef}
-          type="file"
-          accept="image/*"
-          className="turf-card__file-input"
-          onChange={(e) => handleFileChange(e, setTurfImage)}
-        />
         {turfImage ? (
-          <img
-            src={turfImage}
-            alt="Turf"
-            className="turf-card__image"
-            onClick={() => turfInputRef.current.click()}
-          />
+          <img src={turfImage} alt={title} className="turf-card__image" />
         ) : (
-          <div
-            className="turf-card__image-placeholder"
-            onClick={() => turfInputRef.current.click()}
-          >
-            <span className="turf-card__upload-icon">⬆</span>
-            <span className="turf-card__upload-label">Upload turf image</span>
+          <div className="turf-card__image-placeholder">
+            <HiOutlinePhotograph className="turf-card__image-placeholder-icon" />
           </div>
         )}
 
         {/* Logo Circle */}
-        <div
-          className="turf-card__logo-circle"
-          onClick={() => logoInputRef.current.click()}
-        >
-          <input
-            ref={logoInputRef}
-            type="file"
-            accept="image/*"
-            className="turf-card__file-input"
-            onChange={(e) => handleFileChange(e, setLogoImage)}
-          />
+        <div className="turf-card__logo-circle">
           {logoImage ? (
-            <img src={logoImage} alt="Logo" className="turf-card__logo-img" />
+            <img src={logoImage} alt={`${title} logo`} className="turf-card__logo-img" />
           ) : (
-            <span className="turf-card__logo-placeholder">Logo</span>
+            <div className="turf-card__logo-placeholder">
+              <HiOutlineOfficeBuilding className="turf-card__logo-placeholder-icon" />
+            </div>
           )}
         </div>
       </div>

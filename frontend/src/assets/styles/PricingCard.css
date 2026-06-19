@@ -2,13 +2,13 @@
 
 .pricing-card {
   background: #ffffff;
-  border: 1.5px solid #e5e7eb;
-  border-radius: 20px;
-  padding: 28px 24px;
+  border: 1.5px solid #e8e8e8;
+  border-radius: 18px;
+  padding: 28px 26px;
   width: 100%;
   max-width: 320px;
   position: relative;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
   transition: all 0.2s ease;
   display: flex;
   flex-direction: column;
@@ -16,31 +16,29 @@
 
 /* Most Popular variant */
 .pricing-card--popular {
-  border: 2.5px solid #22c55e;
-  box-shadow:
-    0 0 0 3px rgba(34, 197, 94, 0.12),
-    0 4px 24px rgba(34, 197, 94, 0.12);
+  border: 2px solid #22c55e;
+  box-shadow: 0 4px 20px rgba(34, 197, 94, 0.1);
 }
 
 /* Badge */
 .pricing-card-badge {
   position: absolute;
-  top: 16px;
-  right: 16px;
-  background: #d0ffd3;
+  top: 18px;
+  right: 18px;
+  background: #d6f5e3;
   color: #16a34a;
   font-size: 12px;
   font-weight: 600;
-  padding: 4px 14px;
+  padding: 5px 14px;
   border-radius: 999px;
 }
 
 /* Title */
 .pricing-card-title {
-  font-size: 22px;
+  font-size: 20px;
   font-weight: 700;
   color: #111827;
-  margin: 0 0 6px;
+  margin: 0 0 4px;
 }
 
 .pricing-card-title--popular {
@@ -50,8 +48,8 @@
 /* Billing label */
 .pricing-card-billing {
   font-size: 14px;
-  color: #6b7280;
-  margin: 0 0 20px;
+  color: #9ca3af;
+  margin: 0 0 18px;
 }
 
 /* Price row */
@@ -59,17 +57,17 @@
   display: flex;
   align-items: baseline;
   gap: 4px;
-  margin-bottom: 24px;
+  margin-bottom: 22px;
 }
 
 .pricing-card-currency {
-  font-size: 28px;
+  font-size: 26px;
   font-weight: 700;
   color: #111827;
 }
 
 .pricing-card-amount {
-  font-size: 56px;
+  font-size: 44px;
   font-weight: 800;
   color: #111827;
   line-height: 1;
@@ -80,8 +78,8 @@
 }
 
 .pricing-card-per {
-  font-size: 15px;
-  color: #6b7280;
+  font-size: 14px;
+  color: #9ca3af;
   margin-left: 4px;
 }
 
@@ -92,16 +90,16 @@
   margin: 0;
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 13px;
   flex: 1;
 }
 
 .pricing-card-feature-item {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   font-size: 14px;
-  color: #111827;
+  color: #1f2937;
 }
 
 .pricing-card-check {

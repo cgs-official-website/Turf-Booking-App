@@ -1,4 +1,3 @@
-import React from 'react';
 import '../assets/styles/PricingCard.css';
 
 export default function PricingCard({
@@ -42,12 +41,12 @@ export default function PricingCard({
           <li key={index} className="pricing-card-feature-item">
             <svg
               className="pricing-card-check"
-              width="18"
-              height="18"
+              width="16"
+              height="16"
               fill="none"
               viewBox="0 0 24 24"
               stroke="#22c55e"
-              strokeWidth="2.5"
+              strokeWidth="3"
             >
               <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
             </svg>
@@ -56,7 +55,7 @@ export default function PricingCard({
         ))}
       </ul>
 
-      {/* Admin Toggle — only shown when editing */}
+      {/* Admin Toggle — only shown when explicitly editing */}
       {showAdminControls && (
         <button
           className={`pricing-card-toggle-btn ${isMostPopular ? 'pricing-card-toggle-btn--remove' : ''}`}
