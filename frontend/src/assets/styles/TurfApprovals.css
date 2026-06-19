@@ -475,7 +475,7 @@
   border: 1px solid var(--clr-border);
   border-radius: 6px;
   font-size: 12px;
-  background: var(--clr-card-bg);
+  /* background: var(--clr-card-bg); */
   color: var(--clr-text-secondary);
   cursor: pointer;
   font-family: inherit;

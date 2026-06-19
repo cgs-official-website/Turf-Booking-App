@@ -25,7 +25,7 @@
 
 /* ── Page shell ───────────────────────────────────────────────────────────── */
 .td-page {
-  background: var(--td-page-bg);
+  /* background: var(--td-page-bg); */
   padding: 28px 32px 48px;
   min-height: 100vh;
   font-family: "Inter", system-ui, sans-serif;

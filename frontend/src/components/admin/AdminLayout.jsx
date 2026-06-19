@@ -1,13 +1,19 @@
-import React from 'react'
-import Sidebar from './Sidebar'
-import Navbar from './Navbar'
+import React from 'react';
+import { Outlet } from 'react-router-dom';
+import Sidebar from './Sidebar';
+import Navbar from './Navbar';
+import '../../assets/styles/layout.css';
 
 export default function AdminLayout({ children }) {
   return (
-    <div>
-      <Navbar />
+    <div className="layout">
       <Sidebar />
-      <main>{children}</main>
+      <div className="layout-main">
+        <Navbar />
+        <main className="layout-content">
+          {children || <Outlet />}
+        </main>
+      </div>
     </div>
-  )
+  );
 }
