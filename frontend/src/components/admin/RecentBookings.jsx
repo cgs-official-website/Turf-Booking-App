@@ -1,101 +1,62 @@
 // RecentBookings.jsx
-// A dashboard widget showing the latest platform bookings.
+// Dashboard widget — shows the latest N bookings from the platform.
 // Props:
-//   limit      {number}  – max rows to show (default 5)
-//   showHeader {boolean} – show card header (default true)
+//   limit      {number}  – max rows to show (default 3)
+//   showHeader {boolean} – show card header  (default true)
 
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../services/axiosInstance";
-import "../../assets/styles/bookings.css";
+import "../../assets/styles/recentBookings.css";
 
 /* ── Mock fallback ── */
 const MOCK_RECENT = [
-  {
-    _id: "r001",
-    displayId: "BKG-5001",
-    userName: "Rahul Sharma",
-    date: "Jun 5, 2026",
-    status: "confirmed",
-  },
-  {
-    _id: "r002",
-    displayId: "BKG-5002",
-    userName: "Priya Patel",
-    date: "Jun 6, 2026",
-    status: "confirmed",
-  },
-  {
-    _id: "r003",
-    displayId: "BKG-5003",
-    userName: "Amit Kumar",
-    date: "Jun 7, 2026",
-    status: "pending",
-  },
-  {
-    _id: "r004",
-    displayId: "BKG-5004",
-    userName: "Sneha Reddy",
-    date: "Jun 8, 2026",
-    status: "confirmed",
-  },
-  {
-    _id: "r005",
-    displayId: "BKG-5005",
-    userName: "Vikram Singh",
-    date: "Jun 9, 2026",
-    status: "rejected",
-  },
+  { _id: "r001", displayId: "BKG-5001", userName: "Rahul Sharma", date: "Jun 5, 2026",  status: "confirmed" },
+  { _id: "r002", displayId: "BKG-5002", userName: "Priya Patel",  date: "Jun 6, 2026",  status: "pending"   },
+  { _id: "r003", displayId: "BKG-5003", userName: "Amit Kumar",   date: "Jun 7, 2026",  status: "rejected"  },
 ];
 
+/* ── Normalise ── */
 function normalizeRecent(b) {
-  const status = (b.status ?? b.bookingStatus ?? "pending").toLowerCase();
+  const status = (b.bookingStatus ?? b.status ?? "pending").toLowerCase();
   return {
     ...b,
-    displayId:
-      b.displayId ??
-      "BKG-" + (b._id?.slice(-4).toUpperCase() ?? "????"),
-    userName:
-      b.userName ?? b.user?.name ?? b.customerName ?? "—",
-    date: b.date
-      ? b.date
+    displayId: b.displayId ?? "BKG-" + (b._id?.slice(-4).toUpperCase() ?? "????"),
+    userName:  b.user?.name ?? b.userName ?? b.customerName ?? "—",
+    turfName:  b.turf?.name ?? b.turfName ?? "—",
+    date: b.createdAt
+      ? new Date(b.createdAt).toLocaleDateString("en-IN", {
+          day: "numeric", month: "short", year: "numeric",
+        })
       : b.bookingDate
       ? new Date(b.bookingDate).toLocaleDateString("en-IN", {
-          day: "numeric",
-          month: "short",
-          year: "numeric",
+          day: "numeric", month: "short", year: "numeric",
         })
-      : b.createdAt
-      ? new Date(b.createdAt).toLocaleDateString("en-IN", {
-          day: "numeric",
-          month: "short",
-          year: "numeric",
-        })
-      : "—",
+      : b.date ?? "—",
     status,
   };
 }
 
+/* ── Badge ── */
 function RbBadge({ status }) {
-  const label =
-    status === "confirmed" ? "Confirmed" :
-    status === "pending"   ? "Pending"   :
-    status === "rejected"  ? "Rejected"  :
-    status.charAt(0).toUpperCase() + status.slice(1);
+  const labels = {
+    confirmed: "Confirmed",
+    pending:   "Pending",
+    rejected:  "Rejected",
+    expired:   "Expired",
+  };
   return (
     <span className={`rb-badge rb-badge--${status}`}>
-      {label}
+      {labels[status] ?? status.charAt(0).toUpperCase() + status.slice(1)}
     </span>
   );
 }
 
-export default function RecentBookings({
-  limit = 5,
-  showHeader = true,
-}) {
+/* ── Main ── */
+export default function RecentBookings({ limit = 3, showHeader = true }) {
   const navigate = useNavigate();
   const [bookings, setBookings] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading,  setLoading]  = useState(true);
 
   useEffect(() => {
     const ctrl = new AbortController();
@@ -107,16 +68,16 @@ export default function RecentBookings({
           signal: ctrl.signal,
         });
         if (ctrl.signal.aborted) return;
+
         const list = Array.isArray(data) ? data : [];
-        // Sort newest first and slice
-        const sorted = [...list]
-          .sort((a, b) => {
-            const da = a.bookingDate ?? a.createdAt ?? 0;
-            const db = b.bookingDate ?? b.createdAt ?? 0;
-            return new Date(db) - new Date(da);
-          })
-          .slice(0, limit);
-        setBookings(sorted.map(normalizeRecent));
+
+        // Sort by createdAt descending (newest first) then take only `limit` rows
+        const recent = [...list]
+          .sort((a, b) => new Date(b.createdAt ?? 0) - new Date(a.createdAt ?? 0))
+          .slice(0, limit)
+          .map(normalizeRecent);
+
+        setBookings(recent);
       } catch (err) {
         if (err?.name === "CanceledError" || err?.name === "AbortError") return;
         setBookings(MOCK_RECENT.slice(0, limit).map(normalizeRecent));
@@ -133,14 +94,11 @@ export default function RecentBookings({
     <div className="rb-card">
       {showHeader && (
         <div className="rb-card-header">
-          <h2 className="rb-card-title">Recent Platform Bookings</h2>
+          <h2 className="rb-card-title">Recent Bookings</h2>
           <a
             href="#"
             className="rb-view-all"
-            onClick={(e) => {
-              e.preventDefault();
-              navigate("/admin/bookings");
-            }}
+            onClick={(e) => { e.preventDefault(); navigate("/admin/bookings"); }}
             aria-label="View all bookings"
           >
             View all →
@@ -149,7 +107,7 @@ export default function RecentBookings({
       )}
 
       {loading ? (
-        <div className="rb-spinner" aria-label="Loading bookings" />
+        <div className="rb-loading"><span className="rb-spinner" aria-label="Loading" /></div>
       ) : bookings.length === 0 ? (
         <p className="rb-empty">No recent bookings found.</p>
       ) : (
@@ -157,6 +115,7 @@ export default function RecentBookings({
           <thead>
             <tr>
               <th>Booking ID</th>
+              <th>Turf</th>
               <th>User</th>
               <th>Date</th>
               <th>Status</th>
@@ -166,11 +125,10 @@ export default function RecentBookings({
             {bookings.map((bk) => (
               <tr key={bk._id}>
                 <td className="rb-td-id">{bk.displayId}</td>
+                <td className="rb-td-turf">{bk.turfName}</td>
                 <td className="rb-td-user">{bk.userName}</td>
                 <td className="rb-td-date">{bk.date}</td>
-                <td>
-                  <RbBadge status={bk.status} />
-                </td>
+                <td><RbBadge status={bk.status} /></td>
               </tr>
             ))}
           </tbody>

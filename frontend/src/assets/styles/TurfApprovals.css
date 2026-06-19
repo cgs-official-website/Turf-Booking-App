@@ -68,15 +68,11 @@
 }
 
 .ta-page-title {
-  font-size: 2.2rem;
-  font-weight: 500;
+  font-size: 2rem;
+  font-weight: 600;
   color: var(--clr-text-primary);
   letter-spacing: -0.3px;
-  display: flex;
-  align-items: center;
-  gap: 9px;
-  margin: 0;
-  padding-bottom: 2rem;
+  margin: 0 0 24px;
 }
 
 .ta-page-title i {
@@ -202,7 +198,7 @@
     height: 50px;
     border: 1px solid var(--clr-border);
     border-radius: var(--radius-btn);
-    padding: 10px 15px;
+    padding: 5px 15px;
     font-size: 13px;
     background: var(--clr-card-bg);
     color: var(--clr-text-primary);
@@ -237,6 +233,7 @@
 .ta-reset-btn:hover {
   background: var(--clr-brand-light);
 }
+
 
 .ta-refresh-btn {
   height: 38px;

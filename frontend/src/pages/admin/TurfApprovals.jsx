@@ -179,7 +179,7 @@ export default function TurfApprovals() {
           ))}
         </select>
         <button className="ta-reset-btn" onClick={resetFilters}>
-          <i className="bi bi-arrow-clockwise" aria-hidden="true" /> Reset
+          <i className="bi bi-arrow-clockwise" aria-hidden="true" /> Reset Filter
         </button>
       </div>
       <div className="ta-table-wrap">

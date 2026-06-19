@@ -11,11 +11,13 @@ import TurfApprovals from "../pages/admin/TurfApprovals";
 import TurfDetails from "../pages/admin/TurfDetails";
 import Subscriptions from "../pages/admin/Subscriptions";
 import Reports from "../pages/admin/Reports";
+import ReportDetails from "../pages/admin/ReportDetails";
 import ForgotPassword from "../pages/admin/ForgotPassword";
 import ForgotPasswordSuccess from "../pages/admin/ForgotPasswordSuccess";
 import ResetPassword from "../pages/admin/ResetPassword";
 import ProtectedRoute from "./ProtectedRoute";
 import AdminLayout from "../components/admin/AdminLayout";
+import Payment from "../pages/admin/Payment";
 
 const AdminRoutes = () => {
   return (
@@ -62,7 +64,12 @@ const AdminRoutes = () => {
           path="/admin/subscriptions"
           element={<Subscriptions />}
         />
+        <Route
+          path="/admin/payment"
+          element={<Payment />}
+        />
         <Route path="/admin/reports" element={<Reports />} />
+        <Route path="/admin/reports/:id" element={<ReportDetails />} />
         <Route path="/admin/settings" element={<Settings />} />
       </Route>
     </Routes>

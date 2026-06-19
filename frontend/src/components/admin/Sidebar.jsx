@@ -40,16 +40,23 @@ const navItems = [
     ),
   },
   {
-    id: "turfs",
-    label: "Turf approvals",
-    path: "/admin/turf-approvals",            // ✅ FIXED: was /admin/turf-approvals
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M9 12l2 2 4-4" />
-        <circle cx="12" cy="12" r="9" />
-      </svg>
-    ),
-  },
+  id: "turfs",
+  label: "Turf Approvals",
+  path: "/admin/turf-approvals",
+  icon: (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M12 2l2.5 2.5L18 4l1 3.5L22 10l-3 2.5L18 16l-3.5-.5L12 18l-2.5-2.5L6 16l-1-3.5L2 10l3-2.5L6 4l3.5.5L12 2z" />
+      <path d="M9 12l2 2 4-4" />
+    </svg>
+  ),
+},
   {
     id: "bookings",
     label: "Bookings",
@@ -62,27 +69,43 @@ const navItems = [
     ),
   },
   {
-    id: "notifications",
-    label: "Notifications",
-    path: "/admin/notifications",    // ✅ FIXED: was /admin/payment-history
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
-        <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
-      </svg>
-    ),
-  },
+  id: "payment",
+  label: "Payment History",
+  path: "/admin/payment",
+  icon: (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M3 3v5h5" />
+      <path d="M3.05 13A9 9 0 1 0 6 6.3L3 8" />
+      <path d="M12 7v5l3 3" />
+    </svg>
+  ),
+},
   {
-    id: "profile",
-    label: "Profile",
-    path: "/admin/profile",          // ✅ FIXED: was /admin/reports
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-        <circle cx="12" cy="7" r="4" />
-      </svg>
-    ),
-  },
+  id: "reports",
+  label: "Reports",
+  path: "/admin/reports",
+  icon: (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M7.86 2h8.28L22 7.86v8.28L16.14 22H7.86L2 16.14V7.86L7.86 2z" />
+      <line x1="12" y1="7" x2="12" y2="13" />
+      <circle cx="12" cy="17" r="1" />
+    </svg>
+  ),
+},
   {
     id: "settings",
     label: "Settings",
