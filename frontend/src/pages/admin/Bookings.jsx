@@ -155,7 +155,9 @@ function StatusBadge({ status }) {
         ? "Pending"
         : status === "rejected"
           ? "Rejected"
-          : status.charAt(0).toUpperCase() + status.slice(1);
+          : status === "expired"
+            ? "Expired"
+            : status.charAt(0).toUpperCase() + status.slice(1);
   return <span className={`bk-badge bk-badge--${status}`}>{label}</span>;
 }
 
@@ -316,7 +318,7 @@ export default function Bookings() {
           }}
           aria-label="Filter by status"
         >
-          {["All", "confirmed", "pending", "rejected"].map((s) => (
+          {["All", "confirmed", "pending", "rejected", "expired"].map((s) => (
             <option key={s} value={s}>
               {s === "All" ? "Status" : s.charAt(0).toUpperCase() + s.slice(1)}
             </option>

@@ -18,6 +18,10 @@
   --bk-rejected-txt:  #E11D48;
   --bk-rejected-border:#e03131;
 
+  --bk-expired-bg:    #F0F0F0;
+  --bk-expired-txt:   #888888;
+  --bk-expired-border:#cccccc;
+
   --bk-page-bg:    #f4f6f8;
   --bk-card-bg:    #ffffff;
   --bk-border:     #ebebeb;
@@ -152,25 +156,26 @@
 
 .bk-select {
   height: 44px;
-  border: 1px solid var(--bk-border);
+  border: 1.5px solid var(--bk-border);
   border-radius: var(--bk-radius-btn);
-  padding: 0 14px;
+  padding: 0 38px 0 14px;
   font-size: 13px;
+  font-weight: 500;
   background: var(--bk-card-bg);
   color: var(--bk-text-primary);
   cursor: pointer;
   font-family: inherit;
   outline: none;
-  transition: border-color 0.15s;
+  transition: border-color 0.2s;
   appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23aaa' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
-  background-position: right 10px center;
-  padding-right: 32px;
+  background-position: right 12px center;
 }
 
-.bk-select:focus {
-  border-color: var(--bk-brand);
+.bk-select:hover {
+  border-color: #bbb;
 }
 
 .bk-reset-btn {
@@ -188,11 +193,17 @@
   font-family: inherit;
   font-weight: 600;
   white-space: nowrap;
-  transition: background 0.15s;
+  outline: none;
+  transition: background 0.15s, box-shadow 0.2s;
 }
 
 .bk-reset-btn:hover {
   background: #f5f3ff;
+}
+
+.bk-reset-btn:focus-visible {
+  border-color: var(--bk-brand);
+  box-shadow: 0 0 0 3px rgba(10, 152, 71, 0.12);
 }
 
 /* ── 6. Table ─────────────────────────── */
@@ -337,6 +348,11 @@
   color: var(--bk-rejected-txt);
 }
 
+.bk-badge--expired {
+  background: var(--bk-expired-bg);
+  color: var(--bk-expired-txt);
+}
+
 /* ── 8. Table Footer / Pagination ───── */
 .bk-table-footer {
   display: flex;
@@ -370,11 +386,17 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  outline: none;
   transition: all 0.12s;
 }
 
 .bk-page-btn:hover:not(:disabled) {
   background: #f5f5f5;
+}
+
+.bk-page-btn:focus-visible {
+  border-color: var(--bk-brand);
+  box-shadow: 0 0 0 3px rgba(10, 152, 71, 0.12);
 }
 
 .bk-page-btn--active {

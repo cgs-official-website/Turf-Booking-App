@@ -1,8 +1,9 @@
-// Reports.jsx
-// Admin Reports page
-// Columns: Vendor ID | Vendor Name | Turf Name | Location | Category | Date | Status | Action
-// Pending rows → eye icon → opens Report Detail modal popup
-// Other rows → external-link icon
+// Reports.jsx — Admin Reports page
+// API:
+//   GET    /reports/admin/all        → ADMIN — all reports
+//   GET    /reports/admin/:id        → ADMIN — single report
+//   PATCH  /reports/admin/:id/resolve → ADMIN — resolve
+//   DELETE /reports/admin/:id        → ADMIN — delete
 
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
@@ -11,184 +12,392 @@ import "../../assets/styles/reports.css";
 
 const PAGE_SIZE = 8;
 
-/* ── Mock data ── */
+/* ── Mock data ────────────────────────────────────────────────────────────── */
 const MOCK_REPORTS = [
-  { _id: "r01", reportId: "#RP-398", vendorName: "Sarah Miller", vendorAvatar: null, turfName: "Enjoy turf", location: "Chennai", category: "System bug",         date: "12/12/2026", status: "under-review", description: "The booking system is not responding properly when selecting slots after 8 PM. Multiple users reported the same issue.", resolveNote: "" },
-  { _id: "r02", reportId: "#RP-399", vendorName: "Sarah Miller", vendorAvatar: null, turfName: "Enjoy turf", location: "Chennai", category: "Over charged",       date: "12/12/2026", status: "under-review", description: "A user was charged twice for the same booking slot on June 10, 2026.", resolveNote: "" },
-  { _id: "r03", reportId: "#RP-400", vendorName: "Sarah Miller", vendorAvatar: null, turfName: "Enjoy turf", location: "Chennai", category: "Request slot Issue",  date: "12/12/2026", status: "solved",       description: "Slot request was not being reflected in the vendor dashboard.", resolveNote: "Issue resolved by resetting slot cache." },
-  { _id: "r04", reportId: "#RP-401", vendorName: "Sarah Miller", vendorAvatar: null, turfName: "Enjoy turf", location: "Chennai", category: "System bug",         date: "12/12/2026", status: "under-review", description: "Login page shows blank screen after incorrect password attempt.", resolveNote: "" },
-  { _id: "r05", reportId: "#RP-402", vendorName: "Sarah Miller", vendorAvatar: null, turfName: "Enjoy turf", location: "Chennai", category: "Request slot Issue",  date: "12/12/2026", status: "pending",      description: "The netting on Field 3 is torn in several places along the north perimeter. It looks like it happened during the high-wind storm last night. It poses a safety risk for spectators as balls could pass through the gaps. Requesting immediate repair before the weekend tournament.", resolveNote: "" },
-  { _id: "r06", reportId: "#RP-403", vendorName: "Sarah Miller", vendorAvatar: null, turfName: "Enjoy turf", location: "Chennai", category: "System bug",         date: "12/12/2026", status: "under-review", description: "Admin dashboard graphs are not loading correctly.", resolveNote: "" },
-  { _id: "r07", reportId: "#RP-404", vendorName: "Sarah Miller", vendorAvatar: null, turfName: "Enjoy turf", location: "Chennai", category: "System bug",         date: "12/12/2026", status: "under-review", description: "Search filter is returning incorrect turf results.", resolveNote: "" },
-  { _id: "r08", reportId: "#RP-405", vendorName: "Sarah Miller", vendorAvatar: null, turfName: "Enjoy turf", location: "Chennai", category: "System bug",         date: "12/12/2026", status: "under-review", description: "Notification emails are delayed by more than 2 hours.", resolveNote: "" },
-  { _id: "r09", reportId: "#RP-406", vendorName: "John Dorsey",  vendorAvatar: null, turfName: "Qube Sportz Arena", location: "Perundurai", category: "Facility Damage", date: "17/06/2026", status: "pending", description: "The netting on Field 3 is torn in several places along the north perimeter. Requesting immediate repair before the weekend tournament.", resolveNote: "" },
-  { _id: "r10", reportId: "#RP-407", vendorName: "Rahul Sharma", vendorAvatar: null, turfName: "Green Garden", location: "Perundurai", category: "System bug", date: "05/06/2026", status: "solved", description: "Booking confirmation was not sent via email.", resolveNote: "Fixed email service integration." },
+  {
+    _id: "r01",
+    reportId: "#RP-398",
+    vendor: { name: "Sarah Miller", email: "sarah.miller@example.com" },
+    turf: {
+      name: "Enjoy turf",
+      location: "Chennai, Tamil Nadu, India",
+      mainImage: null,
+    },
+    category: "System bug",
+    createdAt: "2026-12-12",
+    status: "under-review",
+    description:
+      "The booking system is not responding properly when selecting slots after 8 PM.",
+    resolveNote: "",
+  },
+  {
+    _id: "r02",
+    reportId: "#RP-399",
+    vendor: { name: "Sarah Miller", email: "sarah.miller@example.com" },
+    turf: {
+      name: "Enjoy turf",
+      location: "Chennai, Tamil Nadu, India",
+      mainImage: null,
+    },
+    category: "Over charged",
+    createdAt: "2026-12-12",
+    status: "under-review",
+    description:
+      "A user was charged twice for the same booking slot on June 10, 2026.",
+    resolveNote: "",
+  },
+  {
+    _id: "r03",
+    reportId: "#RP-400",
+    vendor: { name: "Sarah Miller", email: "sarah.miller@example.com" },
+    turf: {
+      name: "Enjoy turf",
+      location: "Chennai, Tamil Nadu, India",
+      mainImage: null,
+    },
+    category: "Request slot Issue",
+    createdAt: "2026-12-12",
+    status: "solved",
+    description:
+      "Slot request was not being reflected in the vendor dashboard.",
+    resolveNote: "Issue resolved by resetting slot cache.",
+  },
+  {
+    _id: "r04",
+    reportId: "#RP-401",
+    vendor: { name: "Sarah Miller", email: "sarah.miller@example.com" },
+    turf: {
+      name: "Enjoy turf",
+      location: "Chennai, Tamil Nadu, India",
+      mainImage: null,
+    },
+    category: "System bug",
+    createdAt: "2026-12-12",
+    status: "under-review",
+    description:
+      "Login page shows blank screen after incorrect password attempt.",
+    resolveNote: "",
+  },
+  {
+    _id: "r05",
+    reportId: "#RP-402",
+    vendor: { name: "Sarah Miller", email: "sarah.miller@example.com" },
+    turf: {
+      name: "Enjoy turf",
+      location: "Chennai, Tamil Nadu, India",
+      mainImage: null,
+    },
+    category: "Request slot Issue",
+    createdAt: "2026-12-12",
+    status: "pending",
+    description:
+      "The netting on Field 3 is torn in several places along the north perimeter. It looks like it happened during the high-wind storm last night. It poses a safety risk for spectators as balls could pass through the gaps. Requesting immediate repair before the weekend tournament.",
+    resolveNote: "",
+  },
+  {
+    _id: "r06",
+    reportId: "#RP-403",
+    vendor: { name: "Sarah Miller", email: "sarah.miller@example.com" },
+    turf: {
+      name: "Enjoy turf",
+      location: "Chennai, Tamil Nadu, India",
+      mainImage: null,
+    },
+    category: "System bug",
+    createdAt: "2026-12-12",
+    status: "under-review",
+    description: "Admin dashboard graphs are not loading correctly.",
+    resolveNote: "",
+  },
+  {
+    _id: "r07",
+    reportId: "#RP-404",
+    vendor: { name: "Sarah Miller", email: "sarah.miller@example.com" },
+    turf: {
+      name: "Enjoy turf",
+      location: "Chennai, Tamil Nadu, India",
+      mainImage: null,
+    },
+    category: "System bug",
+    createdAt: "2026-12-12",
+    status: "under-review",
+    description: "Search filter is returning incorrect turf results.",
+    resolveNote: "",
+  },
+  {
+    _id: "r08",
+    reportId: "#RP-405",
+    vendor: { name: "Sarah Miller", email: "sarah.miller@example.com" },
+    turf: {
+      name: "Enjoy turf",
+      location: "Chennai, Tamil Nadu, India",
+      mainImage: null,
+    },
+    category: "System bug",
+    createdAt: "2026-12-12",
+    status: "under-review",
+    description: "Notification emails are delayed by more than 2 hours.",
+    resolveNote: "",
+  },
+  {
+    _id: "r09",
+    reportId: "#RP-406",
+    vendor: { name: "John Dorsey", email: "john.dorsey@example.com" },
+    turf: {
+      name: "Qube Sportz Arena",
+      location: "Perundurai TamilNadu India",
+      mainImage: null,
+    },
+    category: "Facility Damage",
+    createdAt: "2026-06-17",
+    status: "pending",
+    description:
+      "The netting on Field 3 is torn in several places along the north perimeter. Requesting immediate repair before the weekend tournament.",
+    resolveNote: "",
+  },
+  {
+    _id: "r10",
+    reportId: "#RP-407",
+    vendor: { name: "Rahul Sharma", email: "rahul.sharma@example.com" },
+    turf: {
+      name: "Green Garden",
+      location: "Perundurai, Tamil Nadu, India",
+      mainImage: null,
+    },
+    category: "System bug",
+    createdAt: "2026-06-05",
+    status: "solved",
+    description: "Booking confirmation was not sent via email.",
+    resolveNote: "Fixed email service integration.",
+  },
 ];
 
+/* ── Normalise ────────────────────────────────────────────────────────────── */
 function normalizeReport(r) {
+  const vendor = r.vendor ?? {};
+  const turf = r.turf ?? {};
   return {
     ...r,
-    reportId:    r.reportId    ?? "#RP-" + (r._id?.slice(-4) ?? "????"),
-    vendorName:  r.vendorName  ?? r.vendor?.name  ?? "—",
-    turfName:    r.turfName    ?? r.turf?.name     ?? "—",
-    location:    r.location    ?? r.turf?.city     ?? "—",
-    category:    r.category    ?? r.type           ?? "—",
-    date:        r.date        ?? (r.createdAt ? new Date(r.createdAt).toLocaleDateString("en-IN") : "—"),
-    status:      (r.status     ?? "pending").toLowerCase().replace(/ /g, "-"),
+    reportId: r.reportId ?? "#RP-" + (r._id?.slice(-4) ?? "????"),
+    vendorName: vendor.name ?? r.vendorName ?? "—",
+    vendorEmail: vendor.email ?? r.vendorEmail ?? "—",
+    turfName: turf.name ?? r.turfName ?? "—",
+    turfLocation: turf.location ?? r.location ?? "—",
+    turfImage: turf.mainImage ?? r.turfImage ?? null,
+    category: r.category ?? r.type ?? "—",
+    date: r.createdAt
+      ? new Date(r.createdAt).toLocaleDateString("en-IN", {
+          day: "numeric",
+          month: "short",
+          year: "numeric",
+        })
+      : (r.date ?? "—"),
+    status: (r.status ?? "pending").toLowerCase().replace(/ /g, "-"),
+    description: r.description ?? "",
     resolveNote: r.resolveNote ?? "",
   };
 }
 
-/* ── Vendor avatar ── */
+/* ── Avatar ───────────────────────────────────────────────────────────────── */
 function VendorAvatar({ name, src }) {
   const [err, setErr] = useState(false);
-  const initials = name?.split(" ").map((w) => w[0]).slice(0, 2).join("") ?? "?";
-  if (!src || err) {
+  const initials =
+    name
+      ?.split(" ")
+      .map((w) => w[0])
+      .slice(0, 2)
+      .join("")
+      .toUpperCase() ?? "?";
+  if (!src || err)
     return <div className="rp-vendor-avatar-placeholder">{initials}</div>;
-  }
-  return <img src={src} alt={name} className="rp-vendor-avatar" onError={() => setErr(true)} />;
+  return (
+    <img
+      src={src}
+      alt={name}
+      className="rp-vendor-avatar"
+      onError={() => setErr(true)}
+    />
+  );
 }
 
-/* ── Status badge ── */
+/* ── Status badge ─────────────────────────────────────────────────────────── */
 function StatusBadge({ status }) {
-  const map = { pending: "Pending", "under-review": "Under Review", solved: "Solved" };
-  return <span className={`rp-badge rp-badge--${status}`}>{map[status] ?? status}</span>;
+  const map = {
+    pending: "Pending",
+    "under-review": "Under Review",
+    solved: "Solved",
+  };
+  return (
+    <span className={`rp-badge rp-badge--${status}`}>
+      {map[status] ?? status}
+    </span>
+  );
 }
 
-/* ── Report Detail Modal ── */
-function ReportDetailModal({ report, onClose }) {
-  const [note, setNote] = useState(report.resolveNote ?? "");
+/* ── Turf image ───────────────────────────────────────────────────────────── */
+function TurfImg({ src, alt }) {
+  const [err, setErr] = useState(false);
+  if (!src || err) {
+    return (
+      <div className="rp-modal-turf-img-placeholder">
+        <i className="bi bi-image" />
+      </div>
+    );
+  }
+  return (
+    <img
+      src={src}
+      alt={alt}
+      className="rp-modal-turf-img"
+      onError={() => setErr(true)}
+    />
+  );
+}
 
-  function handleSend() {
-    // TODO: call PATCH /reports/:id/resolve with note
-    console.log("[Reports] Resolve note:", note);
-    onClose();
+/* ── Report Detail Modal ──────────────────────────────────────────────────── */
+function ReportDetailModal({ report, onClose, onResolved }) {
+  const [note, setNote] = useState(report.resolveNote ?? "");
+  const [status, setStatus] = useState(
+    report.status === "solved" ? "solved" : "under-review",
+  );
+  const [sending, setSending] = useState(false);
+
+  const isDone = report.status === "solved";
+
+  async function handleSend() {
+    if (!note.trim()) return;
+    setSending(true);
+    try {
+      await axiosInstance.patch(`/reports/admin/${report._id}/resolve`, {
+        resolveNote: note,
+        status: "solved",
+      });
+      onResolved(report._id, note);
+      onClose();
+    } catch (err) {
+      console.error(
+        "[Reports] resolve failed:",
+        err?.response?.data?.message ?? err.message,
+      );
+    } finally {
+      setSending(false);
+    }
   }
 
-  const initials = report.vendorName?.split(" ").map((w) => w[0]).slice(0, 2).join("") ?? "?";
+  const initials =
+    report.vendorName
+      ?.split(" ")
+      .map((w) => w[0])
+      .slice(0, 2)
+      .join("")
+      .toUpperCase() ?? "?";
 
   return (
-    <div className="rp-modal-overlay" onClick={(e) => e.target === e.currentTarget && onClose()}>
+    <div
+      className="rp-modal-overlay"
+      onClick={(e) => e.target === e.currentTarget && onClose()}
+    >
       <div className="rp-modal">
-        {/* Header */}
+        {/* ── Header ── */}
         <div className="rp-modal-header">
-          <button className="rp-modal-back" onClick={onClose}>
-            <i className="bi bi-arrow-left" />
-            <span>Report Details</span>
+          <div className="rp-modal-header-left">
+            <button className="rp-modal-back-btn" onClick={onClose}>
+              <i className="bi bi-arrow-left" />
+            </button>
+            <span className="rp-modal-title">Report Details</span>
+          </div>
+          <button
+            className="rp-modal-close-btn"
+            onClick={onClose}
+            aria-label="Close"
+          >
+            <i className="bi bi-x-lg" />
           </button>
-          <button className="rp-modal-close" onClick={onClose} aria-label="Close">✕</button>
         </div>
 
         <p className="rp-modal-meta">
-          Report ID: <strong>{report.reportId}</strong> &bull;{" "}
-          {report.date}
+          Report ID: <strong>{report.reportId}</strong> &bull; {report.date}
         </p>
 
-        {/* User Details */}
-        <p className="rp-modal-section-label">User Details</p>
+        {/* ── User (Vendor) Details ── */}
+        <p className="rp-modal-section-label">USER DETAILS</p>
         <div className="rp-modal-user-card">
           <div className="rp-modal-user-avatar">{initials}</div>
-          <div>
+          <div className="rp-modal-user-info">
             <p className="rp-modal-user-name">{report.vendorName}</p>
-            <p className="rp-modal-user-email">
-              {report.vendorEmail ?? `${report.vendorName?.toLowerCase().replace(" ", ".")}@example.com`}
+            <p className="rp-modal-user-email">{report.vendorEmail}</p>
+          </div>
+        </div>
+
+        {/* ── Turf Information ── */}
+        <p className="rp-modal-section-label">TURF INFORMATION</p>
+        <div className="rp-modal-turf-card">
+          <TurfImg src={report.turfImage} alt={report.turfName} />
+          <div className="rp-modal-turf-text">
+            <p className="rp-modal-turf-name">{report.turfName}</p>
+            <p className="rp-modal-turf-loc">
+              <i className="bi bi-geo-alt-fill" /> {report.turfLocation}
             </p>
           </div>
         </div>
 
-        {/* Turf Information */}
-        <p className="rp-modal-section-label">Turf Information</p>
-        <div className="rp-modal-turf-card">
-          <div className="rp-modal-turf-img-wrap">
-            <div className="rp-modal-turf-img">
-              <i className="bi bi-image" />
-            </div>
-            <div className="rp-modal-turf-info">
-              <p className="rp-modal-turf-name">{report.turfName}</p>
-              <p className="rp-modal-turf-loc">
-                <i className="bi bi-geo-alt-fill" />
-                {report.location}
-              </p>
-              <p className="rp-modal-turf-dist">
-                <i className="bi bi-geo" />
-                {report.distance ?? "2.4 Km"}
-              </p>
-              <p className="rp-modal-turf-price">
-                ₹ {report.price ?? "1200"}
-              </p>
-            </div>
-          </div>
-          <div className="rp-modal-turf-meta">
-            <span>
-              <i className="bi bi-calendar3" />
-              Date: {report.date}
-            </span>
-            <span>
-              <i className="bi bi-clock" />
-              Time: {report.time ?? "07:30"}
-            </span>
-            <span>
-              <i className="bi bi-people" />
-              {report.players ?? "10"} Players
-            </span>
-          </div>
-        </div>
-
-        {/* Report Description */}
-        <p className="rp-modal-section-label">Report Description</p>
+        {/* ── Report Description ── */}
+        <p className="rp-modal-section-label">REPORT DESCRIPTION</p>
         <div className="rp-modal-desc-card">
-          <span className="rp-modal-category-tag">{report.category}</span>
+          <span className="rp-modal-category-tag">
+            {report.category?.toUpperCase()}
+          </span>
           <p className="rp-modal-desc-text">{report.description}</p>
         </div>
 
-        {/* Resolve Queries */}
-        <p className="rp-modal-resolve-label">Resolve Queries</p>
+        {/* ── Resolve Queries ── */}
+        <p className="rp-modal-section-label">RESOLVE QUERIES</p>
         <textarea
           className="rp-modal-textarea"
           rows={4}
           placeholder="Add a note for the internal team..."
           value={note}
           onChange={(e) => setNote(e.target.value)}
+          disabled={isDone}
         />
 
-        {/* Footer */}
+        {/* ── Footer ── */}
         <div className="rp-modal-footer">
-          <button className="rp-modal-btn rp-modal-btn--cancel" onClick={onClose}>Cancel</button>
-          <button className="rp-modal-btn rp-modal-btn--send" onClick={handleSend}>Send</button>
+          <button
+            className="rp-modal-btn rp-modal-btn--cancel"
+            onClick={onClose}
+            disabled={sending}
+          >
+            Cancel
+          </button>
+          <button
+            className="rp-modal-btn rp-modal-btn--send"
+            onClick={handleSend}
+            disabled={sending || isDone || !note.trim()}
+          >
+            {sending ? <span className="rp-spinner-sm" /> : "Send"}
+          </button>
         </div>
       </div>
     </div>
   );
 }
 
-/* ── Main component ── */
-const DESKTOP_BREAKPOINT = 1024;
-function isDesktop() { return window.innerWidth >= DESKTOP_BREAKPOINT; }
-
+/* ── Main component ───────────────────────────────────────────────────────── */
 export default function Reports() {
   const navigate = useNavigate();
 
-  const [reports,   setReports]   = useState([]);
-  const [loading,   setLoading]   = useState(true);
+  const [reports, setReports] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [usingMock, setUsingMock] = useState(false);
 
-  const [search,         setSearch]         = useState("");
-  const [dateFilter,     setDateFilter]     = useState("All");
+  const [search, setSearch] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("All");
   const [locationFilter, setLocationFilter] = useState("All");
-  const [statusFilter,   setStatusFilter]   = useState("All");
-  const [page,           setPage]           = useState(1);
+  const [statusFilter, setStatusFilter] = useState("All");
+  const [page, setPage] = useState(1);
 
-  const [selectedReport, setSelectedReport] = useState(null); // desktop modal only
-
-  /* ── Open report: modal on desktop, page on mobile ── */
-  function openReport(rpt) {
-    if (isDesktop()) {
-      setSelectedReport(rpt);
-    } else {
-      navigate(`/admin/reports/${rpt._id}`, { state: { report: rpt } });
-    }
-  }
+  const [selectedReport, setSelectedReport] = useState(null);
 
   /* ── Fetch ── */
   useEffect(() => {
@@ -196,16 +405,20 @@ export default function Reports() {
     async function load() {
       setLoading(true);
       const token = localStorage.getItem("token");
-      if (!token) { navigate("/admin/login"); return; }
+      if (!token) {
+        navigate("/admin/login");
+        return;
+      }
       try {
-        const { data } = await axiosInstance.get("/reports/admin/all", { signal: ctrl.signal });
+        const { data } = await axiosInstance.get("/reports/admin/all", {
+          signal: ctrl.signal,
+        });
         if (ctrl.signal.aborted) return;
         const list = Array.isArray(data) ? data : [];
         setReports(list.map(normalizeReport));
         setUsingMock(false);
       } catch (err) {
         if (err?.name === "CanceledError" || err?.name === "AbortError") return;
-        console.warn("[Reports] Backend unavailable — using mock data.");
         setReports(MOCK_REPORTS.map(normalizeReport));
         setUsingMock(true);
       } finally {
@@ -216,47 +429,104 @@ export default function Reports() {
     return () => ctrl.abort();
   }, [navigate]);
 
+  /* ── After resolve — update row in local state ── */
+  function handleResolved(id, note) {
+    setReports((prev) =>
+      prev.map((r) =>
+        r._id === id ? { ...r, status: "solved", resolveNote: note } : r,
+      ),
+    );
+  }
+
+  /* ── After delete ── */
+  async function handleDelete(id) {
+    if (!window.confirm("Delete this report?")) return;
+    try {
+      await axiosInstance.delete(`/reports/admin/${id}`);
+    } catch {
+      /* optimistic */
+    }
+    setReports((prev) => prev.filter((r) => r._id !== id));
+  }
+
+  /* ── View report — if pending, bump to under-review first ── */
+  async function handleView(rpt) {
+    if (rpt.status === "pending") {
+      try {
+        await axiosInstance.patch(`/reports/admin/${rpt._id}/resolve`, {
+          resolveNote: rpt.resolveNote || "Under review by admin.",
+          status: "under-review",
+        });
+        const updated = { ...rpt, status: "under-review" };
+        setReports((prev) =>
+          prev.map((r) => (r._id === rpt._id ? updated : r)),
+        );
+        setSelectedReport(updated);
+      } catch {
+        // still open modal even if patch fails
+        setSelectedReport(rpt);
+      }
+    } else {
+      setSelectedReport(rpt);
+    }
+  }
+
   /* ── Derived values ── */
-  const categories = ["All", ...Array.from(new Set(reports.map((r) => r.category).filter(Boolean))).sort()];
-  const locations  = ["All", ...Array.from(new Set(reports.map((r) => r.location).filter(Boolean))).sort()];
+  const categories = [
+    "All",
+    ...Array.from(
+      new Set(reports.map((r) => r.category).filter(Boolean)),
+    ).sort(),
+  ];
+  const locations = [
+    "All",
+    ...Array.from(
+      new Set(reports.map((r) => r.turfLocation).filter(Boolean)),
+    ).sort(),
+  ];
 
   const filtered = reports.filter((r) => {
-    const q   = search.toLowerCase();
-    const ms  = !q || r.turfName?.toLowerCase().includes(q) || r.vendorName?.toLowerCase().includes(q) || r.reportId?.toLowerCase().includes(q);
-    const mc  = categoryFilter === "All" || r.category === categoryFilter;
-    const ml  = locationFilter === "All" || r.location === locationFilter;
-    const mst = statusFilter   === "All" || r.status   === statusFilter;
-    return ms && mc && ml && mst;
+    const q = search.toLowerCase();
+    const ms =
+      !q ||
+      r.turfName?.toLowerCase().includes(q) ||
+      r.vendorName?.toLowerCase().includes(q) ||
+      r.reportId?.toLowerCase().includes(q);
+    const mc = categoryFilter === "All" || r.category === categoryFilter;
+    const ml = locationFilter === "All" || r.turfLocation === locationFilter;
+    const ms2 = statusFilter === "All" || r.status === statusFilter;
+    return ms && mc && ml && ms2;
   });
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
-  const paginated  = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  const paginated = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
   const counts = {
-    total:   reports.length,
+    total: reports.length,
     pending: reports.filter((r) => r.status === "pending").length,
-    review:  reports.filter((r) => r.status === "under-review").length,
-    solved:  reports.filter((r) => r.status === "solved").length,
+    review: reports.filter((r) => r.status === "under-review").length,
+    solved: reports.filter((r) => r.status === "solved").length,
   };
 
   function resetFilters() {
-    setSearch(""); setDateFilter("All"); setCategoryFilter("All");
-    setLocationFilter("All"); setStatusFilter("All"); setPage(1);
+    setSearch("");
+    setCategoryFilter("All");
+    setLocationFilter("All");
+    setStatusFilter("All");
+    setPage(1);
   }
 
   /* ── Render ── */
   return (
     <div className="rp-page">
-
-      {/* Report Detail Modal */}
       {selectedReport && (
         <ReportDetailModal
           report={selectedReport}
           onClose={() => setSelectedReport(null)}
+          onResolved={handleResolved}
         />
       )}
 
-      {/* Mock banner */}
       {usingMock && (
         <div className="rp-mock-banner">
           <i className="bi bi-exclamation-triangle" />
@@ -264,62 +534,51 @@ export default function Reports() {
         </div>
       )}
 
-      {/* Title */}
       <h1 className="rp-page-title">Reports</h1>
 
-      {/* Stat Cards */}
+      {/* Stat cards */}
       <div className="rp-stat-grid">
-        <div className="rp-stat-card">
-          <div>
-            <p className="rp-stat-card__label">Total Report</p>
-            <div className="rp-stat-card__row">
-              <i className="bi bi-people rp-stat-card__icon-sm" />
-              <p className="rp-stat-card__value">{counts.total.toLocaleString()}</p>
+        {[
+          {
+            label: "Total Reports",
+            value: counts.total,
+            icon: "bi-file-earmark-text",
+            variant: "total",
+          },
+          {
+            label: "Pending",
+            value: counts.pending,
+            icon: "bi-emoji-neutral",
+            variant: "pending",
+          },
+          {
+            label: "Under Review",
+            value: counts.review,
+            icon: "bi-eye",
+            variant: "review",
+          },
+          {
+            label: "Resolved",
+            value: counts.solved,
+            icon: "bi-check-circle",
+            variant: "solved",
+          },
+        ].map(({ label, value, icon, variant }) => (
+          <div
+            key={variant}
+            className={`rp-stat-card rp-stat-card--${variant}`}
+          >
+            <div>
+              <p className="rp-stat-card__label">{label}</p>
+              <p className="rp-stat-card__value">{value}</p>
+            </div>
+            <div
+              className={`rp-stat-card__icon rp-stat-card__icon--${variant}`}
+            >
+              <i className={`bi ${icon}`} />
             </div>
           </div>
-          <div className="rp-stat-card__icon rp-stat-card__icon--total">
-            <i className="bi bi-file-earmark-text" />
-          </div>
-        </div>
-
-        <div className="rp-stat-card">
-          <div>
-            <p className="rp-stat-card__label">Pending</p>
-            <div className="rp-stat-card__row">
-              <i className="bi bi-people rp-stat-card__icon-sm" />
-              <p className="rp-stat-card__value">{counts.pending.toLocaleString()}</p>
-            </div>
-          </div>
-          <div className="rp-stat-card__icon rp-stat-card__icon--pending">
-            <i className="bi bi-emoji-neutral" />
-          </div>
-        </div>
-
-        <div className="rp-stat-card">
-          <div>
-            <p className="rp-stat-card__label">Review</p>
-            <div className="rp-stat-card__row">
-              <i className="bi bi-people rp-stat-card__icon-sm" />
-              <p className="rp-stat-card__value">{counts.review.toLocaleString()}</p>
-            </div>
-          </div>
-          <div className="rp-stat-card__icon rp-stat-card__icon--review">
-            <i className="bi bi-eye" />
-          </div>
-        </div>
-
-        <div className="rp-stat-card">
-          <div>
-            <p className="rp-stat-card__label">Resolved</p>
-            <div className="rp-stat-card__row">
-              <i className="bi bi-people rp-stat-card__icon-sm" />
-              <p className="rp-stat-card__value">{counts.solved.toLocaleString()}</p>
-            </div>
-          </div>
-          <div className="rp-stat-card__icon rp-stat-card__icon--solved">
-            <i className="bi bi-check-circle" />
-          </div>
-        </div>
+        ))}
       </div>
 
       {/* Toolbar */}
@@ -327,59 +586,77 @@ export default function Reports() {
         <div className="rp-search-box">
           <i className="bi bi-search" />
           <input
-            id="rp-search"
             type="text"
             className="rp-search-input"
-            placeholder="Search turf by name"
+            placeholder="Search by turf, vendor or report ID"
             value={search}
-            onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-            aria-label="Search reports"
+            onChange={(e) => {
+              setSearch(e.target.value);
+              setPage(1);
+            }}
           />
         </div>
 
-        <select id="rp-date-filter" className="rp-select" value={dateFilter}
-          onChange={(e) => { setDateFilter(e.target.value); setPage(1); }}>
-          <option value="All">Date</option>
-          {["12/12/2026", "17/06/2026", "05/06/2026"].map((d) => (
-            <option key={d} value={d}>{d}</option>
-          ))}
-        </select>
-
-        <select id="rp-category-filter" className="rp-select" value={categoryFilter}
-          onChange={(e) => { setCategoryFilter(e.target.value); setPage(1); }}>
+        <select
+          className="rp-select"
+          value={categoryFilter}
+          onChange={(e) => {
+            setCategoryFilter(e.target.value);
+            setPage(1);
+          }}
+        >
           {categories.map((c) => (
-            <option key={c} value={c}>{c === "All" ? "Category" : c}</option>
-          ))}
-        </select>
-
-        <select id="rp-location-filter" className="rp-select" value={locationFilter}
-          onChange={(e) => { setLocationFilter(e.target.value); setPage(1); }}>
-          {locations.map((l) => (
-            <option key={l} value={l}>{l === "All" ? "Location" : l}</option>
-          ))}
-        </select>
-
-        <select id="rp-status-filter" className="rp-select" value={statusFilter}
-          onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}>
-          {["All", "pending", "under-review", "solved"].map((s) => (
-            <option key={s} value={s}>
-              {s === "All" ? "Status" : s === "under-review" ? "Under Review" : s.charAt(0).toUpperCase() + s.slice(1)}
+            <option key={c} value={c}>
+              {c === "All" ? "Category" : c}
             </option>
           ))}
         </select>
 
-        <button id="rp-reset-btn" className="rp-reset-btn" onClick={resetFilters}>
-          <i className="bi bi-arrow-clockwise" />
-          Reset Filter
+        <select
+          className="rp-select"
+          value={locationFilter}
+          onChange={(e) => {
+            setLocationFilter(e.target.value);
+            setPage(1);
+          }}
+        >
+          {locations.map((l) => (
+            <option key={l} value={l}>
+              {l === "All" ? "Location" : l}
+            </option>
+          ))}
+        </select>
+
+        <select
+          className="rp-select"
+          value={statusFilter}
+          onChange={(e) => {
+            setStatusFilter(e.target.value);
+            setPage(1);
+          }}
+        >
+          {["All", "pending", "under-review", "solved"].map((s) => (
+            <option key={s} value={s}>
+              {s === "All"
+                ? "Status"
+                : s === "under-review"
+                  ? "Under Review"
+                  : s.charAt(0).toUpperCase() + s.slice(1)}
+            </option>
+          ))}
+        </select>
+
+        <button className="rp-reset-btn" onClick={resetFilters}>
+          <i className="bi bi-arrow-clockwise" /> Reset Filter
         </button>
       </div>
 
       {/* Table */}
       <div className="rp-table-wrap">
-        <table className="rp-table" aria-label="All reports">
+        <table className="rp-table">
           <thead>
             <tr>
-              <th>Vendor ID</th>
+              <th>Report ID</th>
               <th>Vendor Name</th>
               <th>Turf Name</th>
               <th>Location</th>
@@ -392,7 +669,9 @@ export default function Reports() {
           <tbody>
             {loading ? (
               <tr className="rp-state-row">
-                <td colSpan={8}><span className="rp-spinner" /></td>
+                <td colSpan={8}>
+                  <span className="rp-spinner" />
+                </td>
               </tr>
             ) : paginated.length === 0 ? (
               <tr className="rp-state-row">
@@ -408,43 +687,35 @@ export default function Reports() {
                     <td className="rp-td-id">{rpt.reportId}</td>
                     <td>
                       <div className="rp-td-vendor">
-                        <VendorAvatar name={rpt.vendorName} src={rpt.vendorAvatar} />
+                        <VendorAvatar
+                          name={rpt.vendorName}
+                          src={rpt.vendorAvatar}
+                        />
                         {rpt.vendorName}
                       </div>
                     </td>
-                    <td>{rpt.turfName}</td>
-                    <td>{rpt.location}</td>
-                    <td>{rpt.category}</td>
-                    <td>{rpt.date}</td>
-                    <td><StatusBadge status={rpt.status} /></td>
+                    <td className="rp-td-turf-name">{rpt.turfName}</td>
+                    <td className="rp-td-location">{rpt.turfLocation}</td>
+                    <td className="rp-td-category">{rpt.category}</td>
+                    <td className="rp-td-date">{rpt.date}</td>
+                    <td>
+                      <StatusBadge status={rpt.status} />
+                    </td>
                     <td>
                       <div className="rp-action-cell">
-                        {/* Eye icon for Pending; open icon for others */}
-                        {rpt.status === "pending" ? (
-                          <button
-                            className="rp-action-btn rp-action-btn--view"
-                            title="View report details"
-                            onClick={() => openReport(rpt)}
-                          >
-                            <i className="bi bi-eye" />
-                          </button>
-                        ) : (
-                          <button
-                            className="rp-action-btn rp-action-btn--open"
-                            title="Open report"
-                            onClick={() => openReport(rpt)}
-                          >
-                            <i className="bi bi-box-arrow-up-right" />
-                          </button>
-                        )}
+                        <button
+                          className={`rp-action-btn ${rpt.status === "pending" ? "rp-action-btn--view" : "rp-action-btn--open"}`}
+                          title="View report"
+                          onClick={() => handleView(rpt)}
+                        >
+                          <i
+                            className={`bi ${rpt.status === "pending" ? "bi-eye" : "bi-box-arrow-up-right"}`}
+                          />
+                        </button>
                         <button
                           className="rp-action-btn rp-action-btn--delete"
                           title="Delete report"
-                          onClick={() => {
-                            if (window.confirm("Delete this report?")) {
-                              setReports((prev) => prev.filter((r) => r._id !== rpt._id));
-                            }
-                          }}
+                          onClick={() => handleDelete(rpt._id)}
                         >
                           <i className="bi bi-trash" />
                         </button>
@@ -452,32 +723,47 @@ export default function Reports() {
                     </td>
                   </tr>
                 ))}
-                {Array.from({ length: PAGE_SIZE - paginated.length }).map((_, i) => (
-                  <tr key={`ghost-${i}`} className="rp-ghost-row">
-                    <td colSpan={8} />
-                  </tr>
-                ))}
+                {Array.from({ length: PAGE_SIZE - paginated.length }).map(
+                  (_, i) => (
+                    <tr key={`ghost-${i}`} className="rp-ghost-row">
+                      <td colSpan={8} />
+                    </tr>
+                  ),
+                )}
               </>
             )}
           </tbody>
         </table>
       </div>
 
-      {/* Footer / Pagination */}
+      {/* Footer */}
       <div className="rp-table-footer">
         <span className="rp-showing-label">
-          Showing {filtered.length} of {reports.length} turf{reports.length !== 1 ? "s" : ""}
+          Showing {filtered.length} of {reports.length} report
+          {reports.length !== 1 ? "s" : ""}
         </span>
         <div className="rp-pagination">
-          <button className="rp-page-btn" onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page === 1}>
+          <button
+            className="rp-page-btn"
+            onClick={() => setPage((p) => Math.max(1, p - 1))}
+            disabled={page === 1}
+          >
             Previous
           </button>
           {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
-            <button key={p} className={`rp-page-btn${p === page ? " rp-page-btn--active" : ""}`} onClick={() => setPage(p)}>
+            <button
+              key={p}
+              className={`rp-page-btn${p === page ? " rp-page-btn--active" : ""}`}
+              onClick={() => setPage(p)}
+            >
               {p}
             </button>
           ))}
-          <button className="rp-page-btn" onClick={() => setPage((p) => Math.min(totalPages, p + 1))} disabled={page === totalPages}>
+          <button
+            className="rp-page-btn"
+            onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+            disabled={page === totalPages}
+          >
             Next
           </button>
         </div>
