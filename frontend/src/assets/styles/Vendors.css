@@ -1,0 +1,243 @@
+/* Your CSS from the design */
+
+.vendor-management-container {
+  padding: 32px;
+  background-color: #f8f8f8;
+  min-height: 100%;
+}
+
+.page-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: #333333;
+  margin: 0 0 32px 0;
+  line-height: 1.2;
+}
+
+/* Filters Section */
+.filters-section {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 32px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.search-wrapper {
+  position: relative;
+  flex: 1;
+  min-width: 300px;
+  max-width: 400px;
+}
+
+.search-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 18px;
+  height: 18px;
+  color: #999999;
+  stroke-width: 2;
+}
+
+.search-input {
+  width: 100%;
+  padding: 10px 16px 10px 40px;
+  border: 1px solid #e5e5e5;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #333333;
+  background-color: #ffffff;
+  font-family: inherit;
+  transition: all 0.2s ease;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #1db854;
+  box-shadow: 0 0 0 2px rgba(29, 184, 84, 0.1);
+}
+
+.search-input::placeholder {
+  color: #999999;
+}
+
+.location-filter {
+  padding: 10px 16px;
+  border: 1px solid #e5e5e5;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #666666;
+  background-color: #ffffff;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.2s ease;
+  min-width: 120px;
+}
+
+.location-filter:focus {
+  outline: none;
+  border-color: #1db854;
+}
+
+.reset-filter-btn {
+  padding: 10px 16px;
+  background-color: transparent;
+  border: none;
+  color: #1db854;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.reset-filter-btn:hover {
+  color: #16a34a;
+}
+
+.reset-filter-btn svg {
+  stroke-width: 2;
+}
+
+/* Vendor Grid */
+.vendor-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+@media (max-width: 1024px) {
+  .vendor-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Pagination */
+.pagination-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 20px;
+  background-color: #ffffff;
+  border-radius: 8px;
+  border: 1px solid #e5e5e5;
+  flex-wrap: wrap;
+}
+
+.pagination-arrow {
+  padding: 8px 12px;
+  border: 1px solid #e5e5e5;
+  background-color: #ffffff;
+  color: #666666;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.pagination-arrow:hover {
+  border-color: #1db854;
+  color: #1db854;
+}
+
+.pagination-arrow:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.page-numbers {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.page-number {
+  padding: 8px 12px;
+  border: 1px solid #e5e5e5;
+  background-color: #ffffff;
+  color: #666666;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  font-family: inherit;
+  font-weight: 500;
+}
+
+.page-number:hover {
+  border-color: #1db854;
+  color: #1db854;
+}
+
+.page-number.active {
+  background-color: #1db854;
+  color: #ffffff;
+  border-color: #1db854;
+}
+
+.pagination-info {
+  font-size: 14px;
+  color: #666666;
+  margin-left: auto;
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.rows-per-page {
+  font-weight: 600;
+  color: #333333;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .vendor-management-container {
+    padding: 16px;
+  }
+
+  .page-title {
+    font-size: 24px;
+    margin-bottom: 24px;
+  }
+
+  .filters-section {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .search-wrapper {
+    max-width: 100%;
+  }
+
+  .location-filter {
+    width: 100%;
+  }
+
+  .reset-filter-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .vendor-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .pagination-container {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .pagination-info {
+    margin-left: 0;
+    text-align: center;
+  }
+}

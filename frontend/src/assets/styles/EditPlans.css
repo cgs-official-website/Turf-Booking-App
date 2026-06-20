@@ -126,6 +126,8 @@
   margin-bottom: 14px;
   max-height: 500px;
   overflow-y: auto;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
 }
 
 /* Plan card – vertical layout */
@@ -150,22 +152,35 @@
   margin-bottom: 8px;
 }
 
-.ep-plan-icon {
+.ep-plan-icon-box {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
   display: flex;
   align-items: center;
+  justify-content: center;
   flex-shrink: 0;
+  background: #f0fdf4;
+  color: #22c55e;
+  transition: background 0.15s, color 0.15s;
 }
 
-/* "Most Popular" badge in left-column card */
+/* "Most Popular" plan icon box — violet accent (left "Select a plan to edit" list only) */
+.ep-plan-icon-box--popular {
+  background: #f5f3ff;
+  color: #7c3aed;
+}
+
+/* "Most Popular" badge in left-column card — violet accent (left "Select a plan to edit" list only) */
 .ep-most-popular-badge {
   display: inline-flex;
   align-items: center;
   gap: 4px;
   font-size: 10px;
   font-weight: 600;
-  color: #22c55e;
-  background: #f0fdf4;
-  border: 1.5px solid #bbf7d0;
+  color: #7c3aed;
+  background: #f5f3ff;
+  border: 1.5px solid #ddd6fe;
   padding: 3px 9px;
   border-radius: 20px;
   letter-spacing: 0.2px;
@@ -234,6 +249,8 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 12px;
 }
 
 .ep-details-title {
@@ -243,6 +260,7 @@
   margin: 0;
 }
 
+/* "Most Popular" toggle button — green accent (was violet) */
 .ep-most-popular-btn {
   padding: 6px 14px;
   border: 1.5px solid #e5e7eb;
@@ -257,8 +275,8 @@
   align-items: center;
   gap: 5px;
 }
-.ep-most-popular-btn:hover { border-color: #22c55e; color: #22c55e; }
-.ep-most-popular-btn-active { background: #f0fdf4; border-color: #22c55e; color: #22c55e; }
+.ep-most-popular-btn:hover { border-color: #22c55e; color: #16a34a; }
+.ep-most-popular-btn-active { background: #f0fdf4; border-color: #22c55e; color: #16a34a; }
 
 .ep-field { margin-bottom: 14px; }
 
@@ -473,14 +491,13 @@
   transition: all 0.3s;
 }
 
-/* "Most Popular" state – green tinted card */
+/* "Most Popular" state – green tinted card (was violet) */
 .ep-preview-popular {
   border-color: #22c55e;
-
-  box-shadow: 0 4px 20px rgba(34, 197, 94, 0.25);
+  box-shadow: 0 4px 20px rgba(34, 197, 94, 0.2);
 }
 
-/* "Most popular" pill – top-right corner, outlined style */
+/* "Most popular" pill – top-right corner, outlined style — green (was violet) */
 .ep-preview-popular-tag {
   position: absolute;
   top: 16px;
@@ -496,7 +513,7 @@
   white-space: nowrap;
 }
 
-/* Plan name – bold, dark; green when popular */
+/* Plan name – bold, dark; green when popular (was violet) */
 .ep-preview-name {
   font-size: 22px;
   font-weight: 800;
@@ -505,9 +522,9 @@
   padding-right: 100px; /* room for the badge */
   line-height: 1.2;
 }
-.ep-preview-popular .ep-preview-name { color: #15803d; }
+.ep-preview-popular .ep-preview-name { color: #16a34a; }
 
-/* Tagline – muted gray normally, green when popular */
+/* Tagline – muted gray normally, green when popular (was violet) */
 .ep-preview-tagline {
   font-size: 13px;
   color: #6b7280;
@@ -529,7 +546,7 @@
   font-weight: 700;
   color: #111827;
 }
-.ep-preview-popular .ep-preview-currency { color: #15803d; }
+.ep-preview-popular .ep-preview-currency { color: #16a34a; }
 
 .ep-preview-amount {
   font-size: 44px;
@@ -537,7 +554,7 @@
   color: #111827;
   line-height: 1;
 }
-.ep-preview-popular .ep-preview-amount { color: #15803d; }
+.ep-preview-popular .ep-preview-amount { color: #16a34a; }
 
 .ep-preview-period {
   font-size: 15px;
@@ -567,9 +584,152 @@
 
 .ep-preview-features li svg { flex-shrink: 0; margin-top: 2px; }
 
-/* ── Scrollbar ── */
-.ep-plans-list::-webkit-scrollbar { width: 4px; }
-.ep-plans-list::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
-.ep-plans-list::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 10px; }
-.ep-plans-list::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
+/* ── Scrollbar (hidden — list still scrolls via mouse/touch) ── */
+.ep-plans-list::-webkit-scrollbar { width: 0; display: none; }
 
+/* EditPlans.css - Additional styles for API integration */
+
+/* Loading State */
+.ep-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  gap: 16px;
+}
+
+.ep-loading-spinner {
+  animation: ep-spin 1s linear infinite;
+  color: #22c55e;
+}
+
+@keyframes ep-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Error State */
+.ep-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  gap: 12px;
+  text-align: center;
+}
+
+.ep-error h3 {
+  color: #ef4444;
+  margin: 0;
+}
+
+.ep-error p {
+  color: #6b7280;
+  max-width: 400px;
+}
+
+.ep-retry-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 20px;
+  background: #22c55e;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.2s;
+}
+
+.ep-retry-btn:hover {
+  background: #16a34a;
+}
+
+/* Unsaved Changes Badge */
+.ep-unsaved-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  background: #fef3c7;
+  color: #d97706;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+  margin-left: 12px;
+}
+
+/* Save Button Loading State */
+.ep-spin {
+  animation: ep-spin 1s linear infinite;
+}
+
+.ep-save-btn:disabled,
+.ep-reset-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* No Plan Selected */
+.ep-no-plan-selected {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+  gap: 16px;
+  color: #6b7280;
+}
+
+.ep-no-plan-selected .ep-add-plan {
+  margin: 0;
+}
+
+/* Preview Empty State */
+.ep-preview-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+  color: #9ca3af;
+  text-align: center;
+  padding: 20px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1200px) {
+  .ep-main {
+    flex-direction: column;
+  }
+
+  .ep-left,
+  .ep-center,
+  .ep-right {
+    width: 100% !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .ep-header {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .ep-header-actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+
+  .ep-two-cols {
+    flex-direction: column;
+  }
+
+  .ep-details-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+}

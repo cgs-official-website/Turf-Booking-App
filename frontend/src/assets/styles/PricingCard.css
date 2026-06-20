@@ -14,10 +14,14 @@
   flex-direction: column;
 }
 
-/* Most Popular variant */
+/* Most Popular variant — visually emphasized: taller, slightly scaled up,
+   raised above the row, stronger glow (matches reference design) */
 .pricing-card--popular {
   border: 2px solid #22c55e;
-  box-shadow: 0 4px 20px rgba(34, 197, 94, 0.1);
+  box-shadow: 0 12px 32px rgba(34, 197, 94, 0.18);
+  transform: scale(1.06);
+  z-index: 1;
+  padding: 34px 30px;
 }
 
 /* Badge */
