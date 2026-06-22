@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
 :root {
   --sidebar-width: 280px;
   --primary-green: #22c55e;
@@ -10,6 +12,25 @@
   --gray-900: #111827;
 }
 
+/* ===========================
+   OVERLAY (mobile/tablet)
+   =========================== */
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 999;
+  backdrop-filter: blur(2px);
+}
+
+.sidebar-overlay.open {
+  display: block;
+}
+
+/* ===========================
+   SIDEBAR
+   =========================== */
 .sidebar {
   width: var(--sidebar-width);
   height: 100vh;
@@ -22,23 +43,16 @@
   top: 0;
   overflow-y: auto;
   z-index: 1000;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Scrollbar styling */
-.sidebar::-webkit-scrollbar {
-  width: 4px;
-}
+.sidebar::-webkit-scrollbar { width: 4px; }
+.sidebar::-webkit-scrollbar-track { background: transparent; }
+.sidebar::-webkit-scrollbar-thumb { background: var(--gray-300); border-radius: 10px; }
 
-.sidebar::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.sidebar::-webkit-scrollbar-thumb {
-  background: var(--gray-300);
-  border-radius: 10px;
-}
-
-/* ===== HEADER - Logo and Title in one row ===== */
+/* ===========================
+   HEADER
+   =========================== */
 .sidebar-header {
   padding: 20px 20px 16px;
   border-bottom: 1px solid var(--gray-200);
@@ -48,7 +62,6 @@
   background: #FFFFFF;
 }
 
-/* Logo section */
 .sidebar-logo-wrapper {
   flex-shrink: 0;
   display: flex;
@@ -61,7 +74,6 @@
   object-fit: contain;
 }
 
-/* Title section */
 .sidebar-title-wrapper {
   display: flex;
   flex-direction: column;
@@ -82,7 +94,9 @@
   color: var(--primary-green);
 }
 
-/* Navigation */
+/* ===========================
+   NAVIGATION
+   =========================== */
 .sidebar-nav {
   flex: 1;
   padding: 12px 16px 16px;
@@ -107,9 +121,10 @@
   font-size: 14px;
   font-weight: 500;
   position: relative;
+  text-align: left;
+  width: 100%;
 }
 
-/* Icon styles - default */
 .sidebar-nav-icon {
   width: 22px;
   height: 22px;
@@ -117,6 +132,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  font-size: 20px;
+  color: #7b7b7b;
+  transition: color 0.2s ease;
 }
 
 .sidebar-nav-icon svg {
@@ -126,7 +144,6 @@
   transition: stroke 0.2s ease;
 }
 
-/* Text styles - default */
 .sidebar-nav-text {
   font-size: 14px;
   font-weight: 500;
@@ -135,12 +152,13 @@
   transition: color 0.2s ease;
 }
 
-/* Hover state - #E8E3FF background, black text and icon */
 .sidebar-nav-item:hover {
   background: #E8E3FF;
 }
 
+.sidebar-nav-item:hover .sidebar-nav-icon,
 .sidebar-nav-item:hover .sidebar-nav-icon svg {
+  color: #000000;
   stroke: #000000;
 }
 
@@ -148,12 +166,13 @@
   color: #000000;
 }
 
-/* Active state - #D0FFD3 background, green text and icon */
 .sidebar-nav-item.active {
   background: #D0FFD3;
 }
 
+.sidebar-nav-item.active .sidebar-nav-icon,
 .sidebar-nav-item.active .sidebar-nav-icon svg {
+  color: var(--primary-green);
   stroke: var(--primary-green);
 }
 
@@ -162,20 +181,9 @@
   font-weight: 600;
 }
 
-/* Active state left indicator */
-.sidebar-nav-item.active::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  /* width: 4px;
-  height: 24px;
-  background: var(--primary-green); */
-  border-radius: 0 4px 4px 0;
-}
-
-/* Footer */
+/* ===========================
+   FOOTER
+   =========================== */
 .sidebar-footer {
   padding: 14px 18px;
   border-top: 1px solid var(--gray-200);
@@ -240,19 +248,25 @@
   justify-content: center;
   transition: all 0.2s ease;
   flex-shrink: 0;
-}
-
-.sidebar-logout svg {
-  width: 20px;
-  height: 20px;
-  stroke: #7b7b7b;
-  transition: stroke 0.2s ease;
+  font-size: 20px;
+  color: #7b7b7b;
 }
 
 .sidebar-logout:hover {
   background: #E8E3FF;
+  color: #000000;
 }
 
-.sidebar-logout:hover svg {
-  stroke: #000000;
+/* ===========================
+   RESPONSIVE — TABLET & MOBILE
+   =========================== */
+@media (max-width: 1024px) {
+  .sidebar {
+    transform: translateX(-100%);
+  }
+
+  .sidebar.open {
+    transform: translateX(0);
+    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.12);
+  }
 }

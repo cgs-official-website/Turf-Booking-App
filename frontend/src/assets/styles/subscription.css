@@ -1,0 +1,379 @@
+/* Subscription.css */
+
+.sub-page {
+  padding: 2px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+/* ── Title ── */
+.sub-page__title {
+  font-size: 28px;
+  font-weight: 800;
+  color: #111;
+  margin: 0 0 1.5rem;
+}
+
+/* ── Stat cards ── */
+.sub-page__stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 1.75rem;
+}
+
+@media (max-width: 1024px) {
+  .sub-page__stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 500px) {
+  .sub-page__stats {
+    grid-template-columns: 1fr;
+  }
+}
+
+.sub-stat-card {
+  background: #fff;
+  border: 1px solid #ececec;
+  border-radius: 14px;
+  padding: 1.1rem 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.sub-stat-card__left {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.sub-stat-card__label {
+  font-size: 12.5px;
+  color: #888;
+  font-weight: 500;
+}
+
+.sub-stat-card__value {
+  font-size: 26px;
+  font-weight: 700;
+  color: #111;
+  line-height: 1.1;
+}
+
+.sub-stat-card__delta {
+  font-size: 11.5px;
+  color: #22c55e;
+  font-weight: 500;
+}
+
+.sub-stat-card__icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  background: #d6f5e3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.sub-stat-card__icon svg {
+  width: 20px;
+  height: 20px;
+  color: #16a34a;
+}
+
+/* ── Tabs ── */
+.sub-page__tabs {
+  display: flex;
+  gap: 32px;
+  border-bottom: 1px solid #e8e8e8;
+  margin-bottom: 1.5rem;
+}
+
+.sub-tab {
+  background: none;
+  border: none;
+  padding: 0 0 12px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  color: #9ca3af;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.sub-tab:hover {
+  color: #6b7280;
+}
+
+.sub-tab--active {
+  color: #22c55e;
+  border-bottom-color: #22c55e;
+}
+
+/* ── Filters ── */
+.sub-page__filters {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 1.5rem;
+  align-items: center;
+}
+
+.sub-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #fff;
+  border: 1.5px solid #e8e8e8;
+  border-radius: 10px;
+  padding: 0 14px;
+  height: 42px;
+  flex: 1 1 260px;
+  max-width: 360px;
+  min-width: 200px;
+  transition: border-color 0.2s;
+}
+
+.sub-search:focus-within {
+  border-color: #22c55e;
+}
+
+.sub-search__icon {
+  font-size: 14px;
+  color: #aaa;
+}
+
+.sub-search__input {
+  border: none;
+  outline: none;
+  font-size: 13px;
+  color: #333;
+  background: transparent;
+  width: 100%;
+}
+
+.sub-search__input::placeholder {
+  color: #bbb;
+}
+
+.sub-select {
+  height: 42px;
+  border: 1.5px solid #e8e8e8;
+  border-radius: 10px;
+  padding: 0 14px;
+  font-size: 13px;
+  color: #555;
+  background: #fff;
+  outline: none;
+  cursor: pointer;
+  width: 150px;
+  flex-shrink: 0;
+  transition: border-color 0.2s;
+}
+.sub-select:focus {
+  border-color: #22c55e;
+}
+
+.sub-reset-btn {
+  height: 42px;
+  padding: 0 18px;
+  border: 1.5px solid #d1fae5;
+  border-radius: 10px;
+  background: #f0fdf4;
+  color: #16a34a;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.sub-reset-btn:hover {
+  background: #dcfce7;
+  border-color: #86efac;
+}
+
+/* ── Grid ── */
+.sub-page__grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 50px;
+  margin-bottom: 2rem;
+  padding: 5rem;
+}
+
+@media (max-width: 768px) {
+  .sub-page__grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.sub-page__empty {
+  grid-column: 1 / -1;
+  text-align: center;
+  color: #aaa;
+  font-size: 14px;
+  padding: 3rem 0;
+}
+
+/* ── Pagination (turf grid) ── */
+.sub-page__pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding-top: 8px;
+  margin-left: 80px;
+  margin-right: 180px;
+  background: #fff;
+}
+
+.sub-page__showing {
+  font-size: 13px;
+  color: #888;
+}
+
+.sub-page__pager {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.sub-pager-btn {
+  height: 36px;
+  padding: 0 16px;
+  border: 1.5px solid #e8e8e8;
+  border-radius: 8px;
+  background: #fff;
+  font-size: 13px;
+  color: #555;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.sub-pager-btn:hover:not(:disabled) {
+  background: #f5f5f5;
+  border-color: #d0d0d0;
+}
+
+.sub-pager-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.sub-pager-btn--num {
+  min-width: 36px;
+  padding: 0;
+  text-align: center;
+}
+
+.sub-pager-btn--active {
+  background: #22c55e;
+  border-color: #22c55e;
+  color: #fff;
+  font-weight: 600;
+}
+
+.sub-pager-btn--active:hover:not(:disabled) {
+  background: #16a34a;
+  border-color: #16a34a;
+}
+
+/* ── Plan Management tab ── */
+.sub-plan-management {
+  padding-top: 8px;
+  width: 100%;
+  max-width: 100%;
+}
+
+.sub-plan-management__header {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 2rem;
+}
+
+.sub-edit-plans-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 40px;
+  padding: 0 20px;
+  border: 1.5px solid #22c55e;
+  border-radius: 10px;
+  background: #fff;
+  color: #22c55e;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.sub-edit-plans-btn:hover {
+  background: #f0fdf4;
+}
+
+/* Row that holds the prev arrow, the 3-card grid, and the next arrow
+   side by side. Arrows only render in the DOM when there's somewhere
+   to go (see Subscriptions.jsx), so there's nothing to hide via CSS. */
+.sub-plan-management__row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+/* Exactly 3 cards, no horizontal scroll, no partial 4th card. */
+.sub-plan-management__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 28px;
+  flex: 1;
+  min-width: 0;
+  padding: 24px 4px 16px;
+  align-items: start;
+}
+
+@media (max-width: 1024px) {
+  .sub-plan-management__grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .sub-plan-management__grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.sub-plan-management__grid > * {
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+.sub-plan-management__arrow {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1.5px solid #e8e8e8;
+  background: #fff;
+  color: #555;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.sub-plan-management__arrow:hover {
+  background: #f0fdf4;
+  border-color: #86efac;
+  color: #16a34a;
+}
