@@ -10,6 +10,7 @@ import {
 import { FaIndianRupeeSign } from "react-icons/fa6";
 import { HiOutlineLocationMarker } from "react-icons/hi";
 import RecentTurfApprovals from "../../components/admin/RecentTurfApprovals";
+import RecentBookings from "../../components/admin/RecentBookings";
 
 const CustomTooltip = ({ active, payload, label }) => {
   if (active && payload && payload.length) {
@@ -218,8 +219,20 @@ export default function Dashboard() {
           </div>
         </div>
 
-        <div className="dashboard-widgets" style={{ marginTop: "24px", display: "grid", gap: "24px", gridTemplateColumns: "1fr" }}>
-          <RecentTurfApprovals limit={5} />
+        <div className="dashboard-turf-approvals">
+          <div className="card">
+            <RecentTurfApprovals />
+          </div>
+        </div>
+
+        <div className="dashboard-bottom-row">
+          <div className="dashboard-recent-bookings">
+            <div className="card">
+              <RecentBookings />
+            </div>
+          </div>
+
+          <div className="dashboard-future-space"></div>
         </div>
       </div>
     </div>

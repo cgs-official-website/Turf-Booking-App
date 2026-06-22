@@ -270,6 +270,88 @@ body,
   margin-top: 40px;
 }
 
+/* =========================
+   TURF APPROVALS
+========================= */
+
+.dashboard-turf-approvals {
+  width: 100%;
+  margin-top: 32px;
+}
+
+.dashboard-turf-approvals > * {
+  width: 100%;
+  min-height: 408px;
+  border: 1px solid #D1D1D1;
+  border-radius: 21.49px;
+  background: #FFFFFF;
+  overflow: hidden;
+}
+
+.dashboard-turf-approvals .card .rta-card {
+  border: none;
+  box-shadow: none;
+  background: transparent;
+}
+
+/* =========================
+   RECENT BOOKINGS
+========================= */
+
+.dashboard-bottom-row {
+  display: flex;
+  gap: 16px;
+  margin-top: 24px;
+}
+
+.dashboard-recent-bookings {
+  width: 512px;
+  flex-shrink: 0;
+}
+
+.dashboard-recent-bookings > * {
+  width: 100%;
+  min-height: 202px;
+
+  border: 1px solid #D1D1D1;
+  border-radius: 13.04px;
+
+  background: #FFFFFF;
+
+  overflow: hidden;
+}
+
+.dashboard-future-space {
+  flex: 1;
+  min-height: 202px;
+}
+
+/* =========================
+   TABLE ALIGNMENT
+========================= */
+
+.dashboard-turf-approvals table,
+.dashboard-recent-bookings table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.dashboard-turf-approvals thead,
+.dashboard-recent-bookings thead {
+  height: 48px;
+}
+
+.dashboard-turf-approvals tbody tr,
+.dashboard-recent-bookings tbody tr {
+  height: 56px;
+}
+
+.dashboard-recent-bookings .card .rb-card {
+  border: none;
+  box-shadow: none;
+  background: transparent;
+}
+
 .custom-tooltip {
   background: #FFFFFF;
   border-radius: 12px;
