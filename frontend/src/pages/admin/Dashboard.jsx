@@ -64,6 +64,10 @@ export default function Dashboard() {
   return (
     <div className="dashboard-wrapper">
       <div className="dashboard-content">
+        <div className="dashboard-header">
+          <h1 className="dashboard-title">Dashboard</h1>
+        </div>
+
         <div className="stats-grid">
           <div className="stat-card">
             <div className="stat-content">
