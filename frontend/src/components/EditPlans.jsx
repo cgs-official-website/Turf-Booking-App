@@ -1090,7 +1090,8 @@ export default function EditPlans({ onBack, onSave }) {
   }
 
   return (
-    <div className="ep-container">
+    <>
+      <div className="ep-container">
         {/* Header */}
         <div className="ep-header">
           <div className="ep-header-left">
@@ -1390,6 +1391,7 @@ export default function EditPlans({ onBack, onSave }) {
             </div>
           </div>
         </div>
-    </div>
+      )}
+    </>
   );
 }
