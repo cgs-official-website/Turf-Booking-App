@@ -436,14 +436,18 @@ export default function Reports() {
   }
 
   /* ── After delete ── */
-  async function handleDelete(id) {
+  async function handleDelete(rpt) {
+    if (rpt.status !== "solved") {
+      alert("Only solved reports can be deleted.");
+      return;
+    }
     if (!window.confirm("Delete this report?")) return;
     try {
-      await axiosInstance.delete(`/reports/admin/${id}`);
+      await axiosInstance.delete(`/reports/admin/${rpt._id}`);
     } catch {
       /* optimistic */
     }
-    setReports((prev) => prev.filter((r) => r._id !== id));
+    setReports((prev) => prev.filter((r) => r._id !== rpt._id));
   }
 
   /* ── View report — if pending, bump to under-review first ── */
@@ -710,8 +714,13 @@ export default function Reports() {
                         </button>
                         <button
                           className="rp-action-btn rp-action-btn--delete"
-                          title="Delete report"
-                          onClick={() => handleDelete(rpt._id)}
+                          title={rpt.status === "solved" ? "Delete report" : "Only solved reports can be deleted"}
+                          onClick={() => handleDelete(rpt)}
+                          disabled={rpt.status !== "solved"}
+                          style={{
+                            opacity: rpt.status !== "solved" ? 0.3 : 1,
+                            cursor: rpt.status !== "solved" ? "not-allowed" : "pointer"
+                          }}
                         >
                           <i className="bi bi-trash" />
                         </button>
