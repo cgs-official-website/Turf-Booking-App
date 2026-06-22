@@ -5,7 +5,22 @@ const { generateToken } = require("../utils/jwt");
 const Admin = require("../models/Admin");
 const User = require("../models/User");
 const Turf = require("../models/Turf");
-const Booking = require("../models/Booking");
+const { Subscription } = require("../models/Subscription");
+
+const MONTH_NAMES = [
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "May",
+  "Jun",
+  "Jul",
+  "Aug",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dec",
+];
 
 const loginAdmin = async ({ email, password }) => {
   const admin = await Admin.findOne({ email });
@@ -35,39 +50,138 @@ const loginAdmin = async ({ email, password }) => {
 };
 
 const getDashboardStats = async () => {
-  const totalVendors = await User.countDocuments({
-    role: "vendor",
-  });
+  const now = new Date();
+  const currentYear = now.getUTCFullYear();
+  const currentMonth = now.getUTCMonth() + 1;
+  const previousMonth = currentMonth === 1 ? 12 : currentMonth - 1;
+  const previousMonthYear = currentMonth === 1 ? currentYear - 1 : currentYear;
 
-  const totalTurfs = await Turf.countDocuments();
+  const startOfCurrentMonth = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1));
 
-  const revenueData = await Booking.aggregate([
-    {
-      $match: {
-        bookingStatus: "confirmed",
-      },
-    },
-    {
-      $group: {
-        _id: null,
-        totalRevenue: {
-          $sum: "$totalAmount",
+  const [
+    totalVendors,
+    totalTurfs,
+    revenueData,
+    activeSubscriptions,
+    vendorGrowthCount,
+    subscriptionGrowthCount,
+    turfGrowthCount,
+  ] = await Promise.all([
+    User.countDocuments({
+      role: "vendor",
+    }),
+    Turf.countDocuments(),
+    Subscription.aggregate([
+        {
+          $match: {
+            paymentStatus: "paid",
+          },
         },
-      },
-    },
-  ]);
+        {
+          $facet: {
+            total: [
+              {
+                $group: {
+                  _id: null,
+                  revenue: {
+                    $sum: "$amountPaid",
+                  },
+                },
+              },
+            ],
+            byMonth: [
+              {
+                $group: {
+                  _id: {
+                    year: {
+                      $year: "$createdAt",
+                    },
+                    month: {
+                      $month: "$createdAt",
+                    },
+                  },
+                  revenue: {
+                    $sum: "$amountPaid",
+                  },
+                },
+              },
+            ],
+          },
+        },
+      ]),
+      Subscription.countDocuments({
+        status: {
+          $in: ["active", "trial"],
+        },
+        endDate: {
+          $gt: now,
+        },
+      }),
+      User.countDocuments({
+        role: "vendor",
+        createdAt: { $gte: startOfCurrentMonth },
+      }),
+      Subscription.countDocuments({
+        status: { $in: ["active", "trial"] },
+        createdAt: { $gte: startOfCurrentMonth },
+      }),
+      Turf.countDocuments({
+        createdAt: { $gte: startOfCurrentMonth },
+      }),
+    ]);
 
-  const totalRevenue = revenueData.length > 0 ? revenueData[0].totalRevenue : 0;
+  const totalRevenue = revenueData[0]?.total[0]?.revenue || 0;
+  const revenueByMonth = new Map(
+    (revenueData[0]?.byMonth || []).map(({ _id, revenue }) => [
+      `${_id.year}-${_id.month}`,
+      revenue,
+    ]),
+  );
 
-  const activeSubscriptions = await User.countDocuments({
-    subscriptionStatus: "active",
-  });
+  const monthlyRevenue = MONTH_NAMES.map((month, index) => ({
+    month,
+    revenue: revenueByMonth.get(`${currentYear}-${index + 1}`) || 0,
+  }));
+
+  const currentMonthRevenue =
+    revenueByMonth.get(`${currentYear}-${currentMonth}`) || 0;
+  const previousMonthRevenue =
+    revenueByMonth.get(`${previousMonthYear}-${previousMonth}`) || 0;
+  const revenueGrowth =
+    previousMonthRevenue === 0
+      ? 0
+      : Number(
+          (
+            ((currentMonthRevenue - previousMonthRevenue) /
+              previousMonthRevenue) *
+            100
+          ).toFixed(1),
+        );
 
   return {
     totalVendors,
     totalTurfs,
     totalRevenue,
-    activeSubscriptions,
+    activeSubscriptions: Number.isFinite(activeSubscriptions)
+      ? activeSubscriptions
+      : 0,
+    vendorGrowth: {
+      count: vendorGrowthCount,
+      type: "month",
+    },
+    revenueGrowth: {
+      percentage: revenueGrowth,
+      type: "month",
+    },
+    subscriptionGrowth: {
+      count: subscriptionGrowthCount,
+      type: "month",
+    },
+    turfGrowth: {
+      count: turfGrowthCount,
+      type: "month",
+    },
+    monthlyRevenue,
   };
 };
 
