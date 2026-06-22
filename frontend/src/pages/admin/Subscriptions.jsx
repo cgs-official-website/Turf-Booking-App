@@ -5,7 +5,6 @@ import { PiWalletDuotone } from "react-icons/pi";
 import { HiOutlineLocationMarker } from "react-icons/hi";
 import { HiOutlineBadgeCheck } from "react-icons/hi";
 import { HiOutlineSearch } from "react-icons/hi";
-import AdminLayout from "../../components/admin/AdminLayout";
 import TurfCard from "../../components/TurfCard";
 import PricingCard from "../../components/PricingCard";
 import EditPlans from '../../components/EditPlans';
@@ -280,8 +279,7 @@ export default function Subscriptions() {
 
   // ── Render ──
   return (
-    <AdminLayout activeNav="subscription">
-      <div className="sub-page">
+    <div className="sub-page">
 
         {/* ── Page Title ── */}
         {activeTab === "subscription" && (
@@ -470,8 +468,7 @@ export default function Subscriptions() {
           </div>
         )}
 
-      </div>
-    </AdminLayout>
+    </div>
   );
 }
 

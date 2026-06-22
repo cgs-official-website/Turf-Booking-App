@@ -118,7 +118,7 @@ const navItems = [
   },
 ];
 
-export default function Sidebar() {
+export default function Sidebar({ sidebarOpen }) {
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -130,7 +130,7 @@ export default function Sidebar() {
   const activePage = getActivePage();
 
   return (
-    <aside className="sidebar">
+    <aside className={`sidebar ${sidebarOpen ? "open" : ""}`}>
       <div className="sidebar-header">
         <div className="sidebar-logo-wrapper">
           <img src={logo} alt="Namma Ooru Turf" className="sidebar-logo-image" />

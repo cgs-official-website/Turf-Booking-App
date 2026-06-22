@@ -1,7 +1,6 @@
 // pages/admin/Vendors.jsx
 import { useState, useEffect, useCallback } from "react";
 import { HiOutlineSearch } from "react-icons/hi";
-import AdminLayout from "../../components/admin/AdminLayout";
 import Card from "../../components/Card";
 import VendorDetail from "../../components/VendorDetail";
 import { getAllVendors } from '../../services/vendors.service';
@@ -113,16 +112,13 @@ export default function Vendors() {
   // ── Show Detail Page if Selected ──
   if (showDetailPage && selectedVendor) {
     return (
-      <AdminLayout activeNav="vendors">
-        <VendorDetail vendor={selectedVendor} onBack={handleBackFromDetail} />
-      </AdminLayout>
+      <VendorDetail vendor={selectedVendor} onBack={handleBackFromDetail} />
     );
   }
 
   // ── Render Vendor List ──
   return (
-    <AdminLayout activeNav="vendors">
-      <div className="vendor-management-container">
+    <div className="vendor-management-container">
         {/* ── Page Title ── */}
         <h1 className="page-title">Vendor Management</h1>
 
@@ -221,7 +217,6 @@ export default function Vendors() {
           </div>
         </div>
       </div>
-    </AdminLayout>
   );
 }
 

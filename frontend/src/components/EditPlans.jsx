@@ -746,7 +746,6 @@ import {
   FiAlertCircle
 } from "react-icons/fi";
 import { toast } from 'react-hot-toast';
-import AdminLayout from '../components/admin/AdminLayout';
 import * as subscriptionApi from '../services/subscription.service';
 import '../assets/styles/EditPlans.css';
 
@@ -1064,39 +1063,34 @@ export default function EditPlans({ onBack, onSave }) {
   // Loading state
   if (isLoading) {
     return (
-      <AdminLayout>
-        <div className="ep-container">
-          <div className="ep-loading">
-            <FiLoader className="ep-loading-spinner" size={40} />
-            <p>Loading plans from backend...</p>
-          </div>
+      <div className="ep-container">
+        <div className="ep-loading">
+          <FiLoader className="ep-loading-spinner" size={40} />
+          <p>Loading plans from backend...</p>
         </div>
-      </AdminLayout>
+      </div>
     );
   }
 
   // Error state
   if (error && plans.length === 0) {
     return (
-      <AdminLayout>
-        <div className="ep-container">
-          <div className="ep-error">
-            <FiAlertCircle size={40} color="#ef4444" />
-            <h3>Failed to load plans</h3>
-            <p>{error}</p>
-            <button className="ep-retry-btn" onClick={reset}>
-              <FiRefreshCw size={16} />
-              Retry
-            </button>
-          </div>
+      <div className="ep-container">
+        <div className="ep-error">
+          <FiAlertCircle size={40} color="#ef4444" />
+          <h3>Failed to load plans</h3>
+          <p>{error}</p>
+          <button className="ep-retry-btn" onClick={reset}>
+            <FiRefreshCw size={16} />
+            Retry
+          </button>
         </div>
-      </AdminLayout>
+      </div>
     );
   }
 
   return (
-    <AdminLayout>
-      <div className="ep-container">
+    <div className="ep-container">
         {/* Header */}
         <div className="ep-header">
           <div className="ep-header-left">
@@ -1396,7 +1390,6 @@ export default function EditPlans({ onBack, onSave }) {
             </div>
           </div>
         </div>
-      )}
-    </AdminLayout>
+    </div>
   );
 }
