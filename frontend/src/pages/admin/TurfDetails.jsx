@@ -492,6 +492,9 @@ export default function TurfDetails() {
             <span className="td-card-title">
               <i className="bi bi-info-circle" /> Turf information
             </span>
+            {/* <button className="td-edit-link">
+              Edit Details
+            </button> */}
           </div>
           <div className="td-info-grid">
             {[
@@ -512,7 +515,7 @@ export default function TurfDetails() {
           </div>
         </div>
 
-        <div className="td-card td-card--photos" ref={photoCardRef}>
+        <div className="td-card td-card--photos" ref={photoCardRef} style={{display:'flex', flexDirection:'column'}}>
           <div className="td-card-header">
             <span className="td-card-title">
               <i className="bi bi-images" /> Uploaded Photos
@@ -521,7 +524,7 @@ export default function TurfDetails() {
               {turf.photos.length} Images Provided
             </span>
           </div>
-          <div className="td-photos-grid">
+          <div className="td-photos-grid" style={{flex:1}}>
             {turf.photos.length > 0
               ? turf.photos.slice(0, 4).map((src, i) => (
                   <img key={i} src={src} alt={`Turf photo ${i + 1}`} className="td-photo" />

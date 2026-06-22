@@ -84,9 +84,11 @@ body,
 .stat-content h2 {
   margin: 0;
 
-  font-size: 39px;
-  font-weight: 700;
-  line-height: 39px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 39.78px;
+  font-weight: 500;
+  line-height: 39.78px;
+  letter-spacing: -0.99px;
 
   color: #101828;
 }
@@ -246,8 +248,11 @@ body,
 }
 
 .revenue-total h2 {
-  font-size: 48px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 39.78px;
   font-weight: 700;
+  line-height: 39.78px;
+  letter-spacing: -0.99px;
   color: #101828;
   margin: 0;
 }

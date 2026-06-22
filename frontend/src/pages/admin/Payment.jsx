@@ -1,8 +1,12 @@
 import React from 'react'
+import RecentTurfApprovals from '../../components/admin/RecentTurfApprovals'
 
 function Payment() {
   return (
-    <div>Payment</div>
+    <div>Payment
+
+      <RecentTurfApprovals/>
+    </div>
   )
 }
 

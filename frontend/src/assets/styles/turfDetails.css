@@ -193,7 +193,7 @@
   background: var(--td-card-bg);
   border: 1px solid var(--td-border);
   border-radius: var(--td-radius-card);
-  padding: 20px 22px;
+  padding: 22px 24px;
   box-shadow: var(--td-shadow-card);
 }
 .td-card--full { margin-top: 16px; }
@@ -206,14 +206,31 @@
 }
 
 .td-card-title {
-  font-size: 14px;
-  font-weight: 600;
+  font-size: 15px;
+  font-weight: 700;
   color: var(--td-text-primary);
   display: flex;
   align-items: center;
   gap: 7px;
 }
 .td-card-title i { color: var(--td-brand); }
+
+.td-edit-link {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--td-brand);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  padding: 0;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: opacity 0.15s;
+}
+.td-edit-link:hover { opacity: 0.75; }
 
 .td-reset-link {
   background: none;
@@ -246,42 +263,57 @@
   flex-direction: column;
 }
 
-/* ── Info grid ────────────────────────────────────────────────────────────── */
+/* ── Info grid ───────────────────────────────────────────────── */
 .td-info-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 16px 24px;       /* slightly tighter rows to keep info card compact */
+  row-gap: 0;
+  column-gap: 32px;
+}
+
+/* Each field div gets a bottom border to act as a row separator */
+.td-info-grid > div {
+  padding: 14px 0;
+  border-bottom: 1px solid var(--td-border-soft);
+}
+
+/* Last two items (bottom row) get no border */
+.td-info-grid > div:nth-last-child(-n+2) {
+  border-bottom: none;
 }
 
 .td-field-label {
-  font-size: 10px;
-  font-weight: 600;
+  font-size: 10.5px;
+  font-weight: 700;
   color: var(--td-text-hint);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  margin: 0 0 3px;
+  letter-spacing: 0.06em;
+  margin: 0 0 5px;
 }
 .td-field-value {
-  font-size: 13px;
+  font-size: 14px;
   color: var(--td-text-primary);
   font-weight: 500;
   margin: 0;
-  line-height: 1.4;
+  line-height: 1.45;
 }
 
-/* ── Photos grid — 2×2, fixed height so images stay small ────────────────── */
+/* ── Photos grid — 2×2, equal height rows ────────────────────── */
 .td-photos-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  grid-template-rows: 140px 140px;  /* fixed row height — 2 rows = 290px total */
+  grid-template-rows: 1fr 1fr;
   gap: 10px;
+  flex: 1;
+  min-height: 0;
 }
 
 /* Every cell clips to its row height */
 .td-photos-grid > * {
   width: 100%;
   height: 100%;
-  border-radius: 8px;
+  min-height: 120px;
+  border-radius: 10px;
   overflow: hidden;
   display: block;
 }
@@ -289,10 +321,11 @@
 .td-photo {
   width: 100%;
   height: 100%;
-  object-fit: cover;    /* fills cell uniformly, no distortion */
+  object-fit: cover;
   border: 1px solid var(--td-border-soft);
   background: #f9fafb;
   display: block;
+  border-radius: 10px;
 }
 
 .td-photo--empty {
@@ -303,6 +336,7 @@
   color: var(--td-text-hint);
   background: #f9fafb;
   border: 1px solid var(--td-border-soft);
+  border-radius: 10px;
 }
 
 /* ── Category ─────────────────────────────────────────────────────────────── */
