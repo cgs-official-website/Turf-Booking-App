@@ -174,9 +174,9 @@
   transition: border-color 0.15s;
 }
 
-/* .ta-search-box:focus-within {
+.ta-search-box:focus-within {
   border-color: var(--clr-brand);
-} */
+}
 
 .ta-search-box i {
   color: var(--clr-text-hint);

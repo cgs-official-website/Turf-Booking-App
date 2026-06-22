@@ -9,109 +9,6 @@ import "../../assets/styles/bookings.css";
 
 const PAGE_SIZE = 8;
 
-/* ── Mock data ── */
-const MOCK_BOOKINGS = [
-  {
-    _id: "bk001",
-    displayId: "BKST-1001",
-    turfName: "Green Garden",
-    turfLocation: "Perundurai",
-    turfImage: null,
-    userName: "Rahul Sharma",
-    date: "Jun 5, 2026",
-    status: "confirmed",
-  },
-  {
-    _id: "bk002",
-    displayId: "BKST-1001",
-    turfName: "Green Garden",
-    turfLocation: "Perundurai",
-    turfImage: null,
-    userName: "Rahul Sharma",
-    date: "Jun 5, 2026",
-    status: "pending",
-  },
-  {
-    _id: "bk003",
-    displayId: "BKST-1001",
-    turfName: "Green Garden",
-    turfLocation: "Perundurai",
-    turfImage: null,
-    userName: "Rahul Sharma",
-    date: "Jun 5, 2026",
-    status: "rejected",
-  },
-  {
-    _id: "bk004",
-    displayId: "BKST-1001",
-    turfName: "Green Garden",
-    turfLocation: "Perundurai",
-    turfImage: null,
-    userName: "Rahul Sharma",
-    date: "Jun 5, 2026",
-    status: "confirmed",
-  },
-  {
-    _id: "bk005",
-    displayId: "BKST-1001",
-    turfName: "Green Garden",
-    turfLocation: "Perundurai",
-    turfImage: null,
-    userName: "Rahul Sharma",
-    date: "Jun 5, 2026",
-    status: "confirmed",
-  },
-  {
-    _id: "bk006",
-    displayId: "BKST-1001",
-    turfName: "Green Garden",
-    turfLocation: "Perundurai",
-    turfImage: null,
-    userName: "Rahul Sharma",
-    date: "Jun 5, 2026",
-    status: "confirmed",
-  },
-  {
-    _id: "bk007",
-    displayId: "BKST-1002",
-    turfName: "Sports Hub",
-    turfLocation: "Coimbatore",
-    turfImage: null,
-    userName: "Priya Patel",
-    date: "Jun 6, 2026",
-    status: "confirmed",
-  },
-  {
-    _id: "bk008",
-    displayId: "BKST-1002",
-    turfName: "Sports Hub",
-    turfLocation: "Coimbatore",
-    turfImage: null,
-    userName: "Amit Kumar",
-    date: "Jun 7, 2026",
-    status: "pending",
-  },
-  {
-    _id: "bk009",
-    displayId: "BKST-1003",
-    turfName: "Kick Arena",
-    turfLocation: "Chennai",
-    turfImage: null,
-    userName: "Sneha Reddy",
-    date: "Jun 8, 2026",
-    status: "confirmed",
-  },
-  {
-    _id: "bk010",
-    displayId: "BKST-1003",
-    turfName: "Kick Arena",
-    turfLocation: "Chennai",
-    turfImage: null,
-    userName: "Vikram Singh",
-    date: "Jun 9, 2026",
-    status: "rejected",
-  },
-];
 
 /* ── Normalise API record ── */
 function normalizeBooking(b) {
@@ -186,7 +83,6 @@ export default function Bookings() {
 
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [usingMock, setUsingMock] = useState(false);
 
   const [search, setSearch] = useState("");
   const [locationFilter, setLocationFilter] = useState("All");
@@ -212,15 +108,10 @@ export default function Bookings() {
         if (ctrl.signal.aborted) return;
         const list = Array.isArray(data) ? data : [];
         setBookings(list.map(normalizeBooking));
-        setUsingMock(false);
       } catch (err) {
         if (err?.name === "CanceledError" || err?.name === "AbortError") return;
-        console.warn(
-          "[Bookings] Backend unavailable — using mock data.",
-          err?.message,
-        );
-        setBookings(MOCK_BOOKINGS.map(normalizeBooking));
-        setUsingMock(true);
+        console.error("[Bookings] Backend unavailable:", err?.message);
+        setBookings([]);
       } finally {
         if (!ctrl.signal.aborted) setLoading(false);
       }
@@ -262,13 +153,7 @@ export default function Bookings() {
   /* ── Render ── */
   return (
     <div className="bk-page">
-      {/* Mock banner */}
-      {usingMock && (
-        <div className="bk-mock-banner">
-          <i className="bi bi-exclamation-triangle" />
-          Backend not connected — showing demo data.
-        </div>
-      )}
+
 
       {/* Title */}
       <h1 className="bk-page-title">Bookings</h1>

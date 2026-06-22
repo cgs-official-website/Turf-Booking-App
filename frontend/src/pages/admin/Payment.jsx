@@ -10,19 +10,20 @@ function extractData(res) {
   return res?.data?.data ?? res?.data ?? null;
 }
 
-function normalizeRow(sub, index) {
-  const baseId = sub.vendor?._id || sub._id || "";
+function normalizeRow(sub) {
+  const baseId  = sub.vendor?._id || sub._id || "";
   const shortId = baseId.slice(-4).toUpperCase() || "????";
   return {
-    _id:        sub._id,
-    vndId:      "VND-" + shortId,
-    vendorName: sub.vendor?.name  ?? "—",
-    email:      sub.vendor?.email ?? "",
-    phone:      sub.vendor?.phone ?? "",
-    location:   sub.vendor?.city  ?? sub.location ?? "—",
-    amount:     sub.amountPaid != null
+    _id:         sub._id,
+    vndId:       "VND-" + shortId,
+    vendorName:  sub.vendor?.name  ?? "—",
+    email:       sub.vendor?.email ?? "",
+    phone:       sub.vendor?.phone ?? "",
+    location:    sub.vendor?.city  ?? sub.location ?? "—",
+    amount:      sub.amountPaid != null
       ? `₹${Number(sub.amountPaid).toLocaleString("en-IN")}`
       : "₹0",
+    rawAmount:   sub.amountPaid ?? 0,
     planName:    sub.plan?.name ?? "—",
     paymentMode: "Razor Pay",
     date: sub.createdAt
@@ -32,27 +33,62 @@ function normalizeRow(sub, index) {
           hour: "2-digit", minute: "2-digit", hour12: false,
         })
       : "—",
-    status: sub.paymentStatus === "paid" ? "Success" : "Failed",
+    status:    sub.paymentStatus === "paid" ? "Success" : "Failed",
     subStatus: sub.status ?? "pending",
-    rawDate: sub.createdAt ? new Date(sub.createdAt).toISOString().split("T")[0] : "",
+    rawDate:   sub.createdAt
+      ? new Date(sub.createdAt).toISOString().split("T")[0]
+      : "",
+    createdAt: sub.createdAt ?? null,
   };
 }
 
-// ── Growth badge component ────────────────────────────────────────────────────
-function GrowthTag({ pct }) {
-  if (pct === undefined || pct === null) return null;
-  const up  = pct >= 0;
-  const abs = Math.abs(pct);
+// ── Week boundary helpers ─────────────────────────────────────────────────────
+function weekBounds() {
+  const now           = new Date();
+  const thisWeekStart = new Date(now.getTime() - 7  * 24 * 60 * 60 * 1000);
+  const lastWeekStart = new Date(now.getTime() - 14 * 24 * 60 * 60 * 1000);
+  return { now, thisWeekStart, lastWeekStart };
+}
+
+function isThisWeek(date, bounds) {
+  const d = new Date(date);
+  return d >= bounds.thisWeekStart && d <= bounds.now;
+}
+
+function isLastWeek(date, bounds) {
+  const d = new Date(date);
+  return d >= bounds.lastWeekStart && d < bounds.thisWeekStart;
+}
+
+// ── Growth %: (this - last) / last * 100; null if no lastWeek data ────────────
+function calcGrowth(thisVal, lastVal) {
+  if (lastVal === 0 && thisVal === 0) return 0;
+  if (lastVal === 0) return 100;            // went from 0 → something
+  return Math.round(((thisVal - lastVal) / lastVal) * 100);
+}
+
+// ── Growth badge
+// invertColor=true (Expired): positive → RED + DOWN arrow, negative → GREEN + UP arrow
+// invertColor=false (others): positive → GREEN + UP arrow, negative → RED + DOWN arrow
+function GrowthTag({ pct, invertColor }) {
+  if (pct === null || pct === undefined) return null;
+
+  const isPositive = pct >= 0;
+
+  // For expired: invert both arrow and colour
+  const showUp   = invertColor ? !isPositive : isPositive;
+  const isGood   = invertColor ? !isPositive : isPositive;
+
   return (
-    <p className={`pay-stat-card__growth ${up ? "up" : "down"}`}>
-      <i className={`bi bi-arrow-${up ? "up" : "down"}`} />
-      {abs}% <span>vs last week</span>
+    <p className={`pay-stat-card__growth ${isGood ? "up" : "down"}`}>
+      <i className={`bi bi-arrow-${showUp ? "up" : "down"}`} />
+      {Math.abs(pct)}% <span>vs last week</span>
     </p>
   );
 }
 
 // ── Stat Card ─────────────────────────────────────────────────────────────────
-function StatCard({ icon, iconVariant, label, value, growthPct }) {
+function StatCard({ icon, iconVariant, label, value, growthPct, invertGrowthColor }) {
   return (
     <div className="pay-stat-card">
       <div className={`pay-stat-card__icon pay-stat-card__icon--${iconVariant}`}>
@@ -61,7 +97,7 @@ function StatCard({ icon, iconVariant, label, value, growthPct }) {
       <div className="pay-stat-card__info">
         <p className="pay-stat-card__label">{label}</p>
         <p className="pay-stat-card__value">{value ?? "—"}</p>
-        <GrowthTag pct={growthPct} />
+        <GrowthTag pct={growthPct} invertColor={invertGrowthColor} />
       </div>
     </div>
   );
@@ -86,10 +122,20 @@ export default function Payment() {
   const navigate = useNavigate();
 
   const [rows,    setRows]    = useState([]);
-  const [stats,   setStats]   = useState(null);
-  const [vendors, setVendors] = useState({ total: 0, growth: null });
   const [loading, setLoading] = useState(true);
   const [error,   setError]   = useState("");
+
+  // ── Computed stats (all derived from raw rows + vendor list) ────────────────
+  const [computed, setComputed] = useState({
+    totalRevenue:    "₹0",
+    revenueGrowth:   null,
+    activeSubs:      0,
+    activeGrowth:    null,
+    expiredSubs:     0,
+    expiredGrowth:   null,
+    totalVendors:    0,
+    vendorGrowth:    null,
+  });
 
   const [search,       setSearch]       = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
@@ -107,62 +153,88 @@ export default function Payment() {
       setError("");
 
       try {
-        const [subRes, statsRes, vendorRes] = await Promise.allSettled([
-          axiosInstance.get("/subscriptions/admin/all",   { signal: ctrl.signal }),
-          axiosInstance.get("/subscriptions/admin/stats", { signal: ctrl.signal }),
-          axiosInstance.get("/admin/vendors",             { signal: ctrl.signal }),
+        const [subRes, vendorRes] = await Promise.allSettled([
+          axiosInstance.get("/subscriptions/admin/all", { signal: ctrl.signal }),
+          axiosInstance.get("/admin/vendors",           { signal: ctrl.signal }),
         ]);
 
         if (ctrl.signal.aborted) return;
 
-        // ── Subscriptions list ──
+        // ── Subscription rows ──────────────────────────────────────────────
+        let allSubs = [];
         if (subRes.status === "fulfilled") {
-          const d    = extractData(subRes.value);
-          const list = Array.isArray(d?.subscriptions) ? d.subscriptions
-                     : Array.isArray(d)                ? d : [];
-          setRows(list.map((sub, i) => normalizeRow(sub, i)));
+          const d = extractData(subRes.value);
+          allSubs = Array.isArray(d?.subscriptions) ? d.subscriptions
+                  : Array.isArray(d)                ? d : [];
         }
 
-        // ── Stats (with growth from updated backend) ──
-        if (statsRes.status === "fulfilled") {
-          const s = extractData(statsRes.value);
-          setStats(s);
-          console.log("[Payment] Stats:", s);
-        }
+        const normalizedRows = allSubs.map(normalizeRow);
+        setRows(normalizedRows);
 
-        // ── Vendor count + growth ──
+        // ── Vendor list ────────────────────────────────────────────────────
+        let allVendors = [];
         if (vendorRes.status === "fulfilled") {
-          const d    = extractData(vendorRes.value);
-          const list = Array.isArray(d) ? d : (d?.vendors ?? []);
-
-          // Calculate vendor growth: vendors created this week vs last week
-          const now           = new Date();
-          const thisWeekStart = new Date(now.getTime() - 7  * 24 * 60 * 60 * 1000);
-          const lastWeekStart = new Date(now.getTime() - 14 * 24 * 60 * 60 * 1000);
-
-          const thisWeekVendors = list.filter((v) => {
-            const d = new Date(v.createdAt);
-            return d >= thisWeekStart;
-          }).length;
-
-          const lastWeekVendors = list.filter((v) => {
-            const d = new Date(v.createdAt);
-            return d >= lastWeekStart && d < thisWeekStart;
-          }).length;
-
-          let vendorGrowth = null;
-          if (lastWeekVendors > 0) {
-            vendorGrowth = Math.round(
-              ((thisWeekVendors - lastWeekVendors) / lastWeekVendors) * 100
-            );
-          } else if (thisWeekVendors > 0) {
-            vendorGrowth = 100;
-          } else {
-            vendorGrowth = 0;
-          }
-
-          setVendors({ total: list.length, growth: vendorGrowth });
+          const d = extractData(vendorRes.value);
+          allVendors = Array.isArray(d) ? d : (d?.vendors ?? []);
         }
+
+        // ── Derive all stats + growth from raw data ────────────────────────
+        const bounds = weekBounds();
+
+        // 1. Total Revenue — sum of amountPaid across all paid subs
+        const totalRev = allSubs.reduce(
+          (acc, s) => acc + (s.paymentStatus === "paid" ? (s.amountPaid ?? 0) : 0), 0
+        );
+
+        // Revenue this week vs last week
+        const revThisWeek = allSubs
+          .filter((s) => s.paymentStatus === "paid" && s.createdAt && isThisWeek(s.createdAt, bounds))
+          .reduce((acc, s) => acc + (s.amountPaid ?? 0), 0);
+        const revLastWeek = allSubs
+          .filter((s) => s.paymentStatus === "paid" && s.createdAt && isLastWeek(s.createdAt, bounds))
+          .reduce((acc, s) => acc + (s.amountPaid ?? 0), 0);
+
+        // 2. Active subscriptions
+        const activeSubs  = allSubs.filter((s) => s.status === "active").length;
+        const activeThisW = allSubs.filter(
+          (s) => s.status === "active" && s.createdAt && isThisWeek(s.createdAt, bounds)
+        ).length;
+        const activeLastW = allSubs.filter(
+          (s) => s.status === "active" && s.createdAt && isLastWeek(s.createdAt, bounds)
+        ).length;
+
+        // 3. Expired subscriptions
+        const expiredSubs  = allSubs.filter((s) => s.status === "expired").length;
+        const expiredThisW = allSubs.filter(
+          (s) => s.status === "expired" && s.createdAt && isThisWeek(s.createdAt, bounds)
+        ).length;
+        const expiredLastW = allSubs.filter(
+          (s) => s.status === "expired" && s.createdAt && isLastWeek(s.createdAt, bounds)
+        ).length;
+
+        // 4. Total vendors — compare total count now vs total at start of this week
+        //    (cumulative, vendors never decrease)
+        const vendorsUpToNow      = allVendors.length;
+        const vendorsUpToLastWeek = allVendors.filter(
+          (v) => v.createdAt && new Date(v.createdAt) < bounds.thisWeekStart
+        ).length;
+        // New vendors added this week
+        const newVendorsThisWeek = vendorsUpToNow - vendorsUpToLastWeek;
+
+        setComputed({
+          totalRevenue:  `₹${Number(totalRev).toLocaleString("en-IN")}`,
+          revenueGrowth: calcGrowth(revThisWeek,  revLastWeek),
+          activeSubs,
+          activeGrowth:  calcGrowth(activeThisW,  activeLastW),
+          expiredSubs,
+          // Expired: raw % so GrowthTag can invert colour correctly
+          expiredGrowth: calcGrowth(expiredThisW, expiredLastW),
+          totalVendors:  vendorsUpToNow,
+          // Vendor growth: % of new vendors this week vs base (cumulative up to last week)
+          vendorGrowth:  vendorsUpToLastWeek > 0
+            ? Math.round((newVendorsThisWeek / vendorsUpToLastWeek) * 100)
+            : newVendorsThisWeek > 0 ? 100 : 0,
+        });
 
       } catch (err) {
         if (err?.name === "CanceledError" || err?.name === "AbortError") return;
@@ -195,19 +267,7 @@ export default function Payment() {
     setSearch(""); setStatusFilter("All"); setDateFilter(""); setPage(1);
   }
 
-  // ── Stats display ──────────────────────────────────────────────────────────
-  const totalRevenue = stats?.totalRevenue != null
-    ? `₹${Number(stats.totalRevenue).toLocaleString("en-IN")}`
-    : "₹0";
-  const activeSubs  = stats?.active  ?? 0;
-  const expiredSubs = stats?.expired ?? 0;
-
-  // Growth from updated backend — falls back to null if old backend
-  const revenueGrowth = stats?.growth?.revenue ?? null;
-  const activeGrowth  = stats?.growth?.active  ?? null;
-  const expiredGrowth = stats?.growth?.expired != null
-    ? -Math.abs(stats.growth.expired)   // expired going up is bad → show negative
-    : null;
+  const c = computed;
 
   return (
     <div className="pay-page">
@@ -218,26 +278,27 @@ export default function Payment() {
         <StatCard
           icon="bi-currency-rupee" iconVariant="revenue"
           label="Total Revenue"
-          value={loading ? "…" : totalRevenue}
-          growthPct={loading ? null : revenueGrowth}
+          value={loading ? "…" : c.totalRevenue}
+          growthPct={loading ? null : c.revenueGrowth}
         />
         <StatCard
           icon="bi-check-circle" iconVariant="active"
           label="Active Subscriptions"
-          value={loading ? "…" : activeSubs}
-          growthPct={loading ? null : activeGrowth}
+          value={loading ? "…" : c.activeSubs}
+          growthPct={loading ? null : c.activeGrowth}
         />
         <StatCard
           icon="bi-clock" iconVariant="expired"
           label="Expired Subscriptions"
-          value={loading ? "…" : expiredSubs}
-          growthPct={loading ? null : expiredGrowth}
+          value={loading ? "…" : c.expiredSubs}
+          growthPct={loading ? null : c.expiredGrowth}
+          invertGrowthColor={true}
         />
         <StatCard
           icon="bi-person" iconVariant="vendors"
           label="Total Vendors"
-          value={loading ? "…" : vendors.total}
-          growthPct={loading ? null : vendors.growth}
+          value={loading ? "…" : c.totalVendors}
+          growthPct={loading ? null : c.vendorGrowth}
         />
       </div>
 
@@ -254,10 +315,10 @@ export default function Payment() {
           />
         </div>
 
-        <input 
+        <input
           type="date"
           className="pay-select"
-          style={{ width: '160px', paddingRight: '14px', backgroundImage: 'none' }}
+          style={{ width: "160px", paddingRight: "14px", backgroundImage: "none" }}
           value={dateFilter}
           onChange={(e) => { setDateFilter(e.target.value); setPage(1); }}
         />
@@ -305,7 +366,7 @@ export default function Payment() {
                   <i className="bi bi-search" />
                   <span>
                     {rows.length === 0
-                      ? "No subscriptions found. Vendors need to subscribe to a plan first."
+                      ? "No subscriptions found."
                       : "No records match your search."}
                   </span>
                 </td>

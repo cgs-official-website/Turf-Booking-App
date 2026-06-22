@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../services/axiosInstance";
-import { MOCK_TURFS } from "../../data/mockTurfs";
 import "../../assets/styles/recentTurfApprovals.css";
 
 function normalizeTurf(t) {
@@ -45,11 +44,8 @@ export default function RecentTurfApprovals({ limit = 5 }) {
         setTurfs(recent);
       } catch (err) {
         if (err?.name === "CanceledError" || err?.name === "AbortError") return;
-        const recentMock = [...MOCK_TURFS]
-          .sort((a, b) => new Date(b.createdAt ?? 0) - new Date(a.createdAt ?? 0))
-          .slice(0, limit)
-          .map(normalizeTurf);
-        setTurfs(recentMock);
+        console.error("[RecentTurfApprovals] Backend unavailable:", err?.message);
+        setTurfs([]);
       } finally {
         if (!ctrl.signal.aborted) setLoading(false);
       }

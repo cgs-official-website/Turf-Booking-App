@@ -72,7 +72,6 @@ export default function TurfApprovals() {
   const navigate = useNavigate();
   const [turfs,     setTurfs]     = useState([]);
   const [loading,   setLoading]   = useState(true);
-  const [usingMock, setUsingMock] = useState(false);
   const [search,       setSearch]       = useState("");
   const [cityFilter,   setCityFilter]   = useState("All");
   const [statusFilter, setStatusFilter] = useState("All");
@@ -98,12 +97,10 @@ export default function TurfApprovals() {
         if (ctrl.signal.aborted) return;
         const list = Array.isArray(data) ? data : [];
         setTurfs(list.map(normalizeTurf));
-        setUsingMock(false);
       } catch (err) {
         if (err?.name === "CanceledError" || err?.name === "AbortError") return;
-        console.warn("[TurfApprovals] Backend unavailable — using mock data.", err?.message);
-        setTurfs(MOCK_TURFS.map(normalizeTurf));
-        setUsingMock(true);
+        console.error("[TurfApprovals] Backend unavailable:", err?.message);
+        setTurfs([]);
       } finally {
         if (!ctrl.signal.aborted) setLoading(false);
       }
@@ -138,12 +135,7 @@ export default function TurfApprovals() {
   return (
     <div className="ta-page">
       <Toast toasts={toasts} remove={(id) => setToasts((p) => p.filter((t) => t.id !== id))} />
-      {usingMock && (
-        <div className="ta-mock-banner">
-          <i className="bi bi-exclamation-triangle" />
-          Backend not connected — showing demo data.
-        </div>
-      )}
+
       <h1 className="ta-page-title">Turf Approvals</h1>
       <div className="ta-stat-grid">
         <StatCard label="Pending approvals" value={counts.pending}  iconClass="bi-clock"            variant="pending"  />

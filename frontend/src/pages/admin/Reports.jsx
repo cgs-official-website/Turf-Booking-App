@@ -13,165 +13,7 @@ import "../../assets/styles/reportDetails.css";
 
 const PAGE_SIZE = 8;
 
-/* ── Mock data ────────────────────────────────────────────────────────────── */
-const MOCK_REPORTS = [
-  {
-    _id: "r01",
-    reportId: "#RP-398",
-    vendor: { name: "Sarah Miller", email: "sarah.miller@example.com" },
-    turf: {
-      name: "Enjoy turf",
-      location: "Chennai, Tamil Nadu, India",
-      mainImage: null,
-    },
-    category: "System bug",
-    createdAt: "2026-12-12",
-    status: "under-review",
-    description:
-      "The booking system is not responding properly when selecting slots after 8 PM.",
-    resolveNote: "",
-  },
-  {
-    _id: "r02",
-    reportId: "#RP-399",
-    vendor: { name: "Sarah Miller", email: "sarah.miller@example.com" },
-    turf: {
-      name: "Enjoy turf",
-      location: "Chennai, Tamil Nadu, India",
-      mainImage: null,
-    },
-    category: "Over charged",
-    createdAt: "2026-12-12",
-    status: "under-review",
-    description:
-      "A user was charged twice for the same booking slot on June 10, 2026.",
-    resolveNote: "",
-  },
-  {
-    _id: "r03",
-    reportId: "#RP-400",
-    vendor: { name: "Sarah Miller", email: "sarah.miller@example.com" },
-    turf: {
-      name: "Enjoy turf",
-      location: "Chennai, Tamil Nadu, India",
-      mainImage: null,
-    },
-    category: "Request slot Issue",
-    createdAt: "2026-12-12",
-    status: "solved",
-    description:
-      "Slot request was not being reflected in the vendor dashboard.",
-    resolveNote: "Issue resolved by resetting slot cache.",
-  },
-  {
-    _id: "r04",
-    reportId: "#RP-401",
-    vendor: { name: "Sarah Miller", email: "sarah.miller@example.com" },
-    turf: {
-      name: "Enjoy turf",
-      location: "Chennai, Tamil Nadu, India",
-      mainImage: null,
-    },
-    category: "System bug",
-    createdAt: "2026-12-12",
-    status: "under-review",
-    description:
-      "Login page shows blank screen after incorrect password attempt.",
-    resolveNote: "",
-  },
-  {
-    _id: "r05",
-    reportId: "#RP-402",
-    vendor: { name: "Sarah Miller", email: "sarah.miller@example.com" },
-    turf: {
-      name: "Enjoy turf",
-      location: "Chennai, Tamil Nadu, India",
-      mainImage: null,
-    },
-    category: "Request slot Issue",
-    createdAt: "2026-12-12",
-    status: "pending",
-    description:
-      "The netting on Field 3 is torn in several places along the north perimeter. It looks like it happened during the high-wind storm last night. It poses a safety risk for spectators as balls could pass through the gaps. Requesting immediate repair before the weekend tournament.",
-    resolveNote: "",
-  },
-  {
-    _id: "r06",
-    reportId: "#RP-403",
-    vendor: { name: "Sarah Miller", email: "sarah.miller@example.com" },
-    turf: {
-      name: "Enjoy turf",
-      location: "Chennai, Tamil Nadu, India",
-      mainImage: null,
-    },
-    category: "System bug",
-    createdAt: "2026-12-12",
-    status: "under-review",
-    description: "Admin dashboard graphs are not loading correctly.",
-    resolveNote: "",
-  },
-  {
-    _id: "r07",
-    reportId: "#RP-404",
-    vendor: { name: "Sarah Miller", email: "sarah.miller@example.com" },
-    turf: {
-      name: "Enjoy turf",
-      location: "Chennai, Tamil Nadu, India",
-      mainImage: null,
-    },
-    category: "System bug",
-    createdAt: "2026-12-12",
-    status: "under-review",
-    description: "Search filter is returning incorrect turf results.",
-    resolveNote: "",
-  },
-  {
-    _id: "r08",
-    reportId: "#RP-405",
-    vendor: { name: "Sarah Miller", email: "sarah.miller@example.com" },
-    turf: {
-      name: "Enjoy turf",
-      location: "Chennai, Tamil Nadu, India",
-      mainImage: null,
-    },
-    category: "System bug",
-    createdAt: "2026-12-12",
-    status: "under-review",
-    description: "Notification emails are delayed by more than 2 hours.",
-    resolveNote: "",
-  },
-  {
-    _id: "r09",
-    reportId: "#RP-406",
-    vendor: { name: "John Dorsey", email: "john.dorsey@example.com" },
-    turf: {
-      name: "Qube Sportz Arena",
-      location: "Perundurai TamilNadu India",
-      mainImage: null,
-    },
-    category: "Facility Damage",
-    createdAt: "2026-06-17",
-    status: "pending",
-    description:
-      "The netting on Field 3 is torn in several places along the north perimeter. Requesting immediate repair before the weekend tournament.",
-    resolveNote: "",
-  },
-  {
-    _id: "r10",
-    reportId: "#RP-407",
-    vendor: { name: "Rahul Sharma", email: "rahul.sharma@example.com" },
-    turf: {
-      name: "Green Garden",
-      location: "Perundurai, Tamil Nadu, India",
-      mainImage: null,
-    },
-    category: "System bug",
-    createdAt: "2026-06-05",
-    status: "solved",
-    description: "Booking confirmation was not sent via email.",
-    resolveNote: "Fixed email service integration.",
-  },
-];
+
 
 /* ── Normalise ────────────────────────────────────────────────────────────── */
 function normalizeReport(r) {
@@ -301,9 +143,9 @@ function ReportDetailModal({ report, onClose, onResolved }) {
       <div className="rp-modal">
         {/* ── Header ── */}
         <div className="rp-modal-header">
-          <button className="rp-modal-back" onClick={onClose} aria-label="Go back">
+          {/* <button className="rp-modal-back" onClick={onClose} aria-label="Go back">
             <i className="bi bi-arrow-left" />
-          </button>
+          </button> */}
           <h1 className="rp-modal-title">Report Details</h1>
           <button className="rp-modal-close" onClick={onClose} aria-label="Close">
             <i className="bi bi-x-lg" />
@@ -361,14 +203,20 @@ function ReportDetailModal({ report, onClose, onResolved }) {
 
         {/* ── Footer ── */}
         {!isDone && (
-          <div className="rp-modal-footer" style={{ justifyContent: 'flex-end' }}>
+          <div className="rp-modal-footer">
+            <button
+              className="rp-modal-btn rp-modal-btn--cancel"
+              onClick={onClose}
+              disabled={sending}
+            >
+              Cancel
+            </button>
             <button
               className="rp-modal-btn rp-modal-btn--send"
               onClick={handleSend}
               disabled={sending || !note.trim()}
-              style={{ width: '100%' }}
             >
-              {sending ? <span className="rp-modal-spinner" /> : "Solve it"}
+              {sending ? <span className="rp-modal-spinner" /> : "Send"}
             </button>
           </div>
         )}
@@ -385,7 +233,7 @@ export default function Reports() {
 
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [usingMock, setUsingMock] = useState(false);
+
 
   const [search, setSearch] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("All");
@@ -413,11 +261,9 @@ export default function Reports() {
         if (ctrl.signal.aborted) return;
         const list = Array.isArray(data) ? data : [];
         setReports(list.map(normalizeReport));
-        setUsingMock(false);
       } catch (err) {
         if (err?.name === "CanceledError" || err?.name === "AbortError") return;
-        setReports(MOCK_REPORTS.map(normalizeReport));
-        setUsingMock(true);
+        setReports([]);
       } finally {
         if (!ctrl.signal.aborted) setLoading(false);
       }
@@ -527,12 +373,7 @@ export default function Reports() {
         />
       )}
 
-      {usingMock && (
-        <div className="rp-mock-banner">
-          <i className="bi bi-exclamation-triangle" />
-          Backend not connected — showing demo data.
-        </div>
-      )}
+
 
       <h1 className="rp-page-title">Reports</h1>
 
