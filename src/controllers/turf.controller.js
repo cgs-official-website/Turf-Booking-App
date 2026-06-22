@@ -229,6 +229,28 @@ const deleteReview = async (req, res, next) => {
   }
 };
 
+ 
+// GET /turfs/admin/all — all turfs regardless of status
+const getAllTurfsAdmin = async (req, res, next) => {
+  try {
+    const turfs = await turfService.getAllTurfsAdmin();
+    res.status(200).json(turfs);
+  } catch (err) {
+    next(err);
+  }
+};
+ 
+// GET /turfs/admin/:id — single turf, any status (for admin detail page)
+const getTurfByIdAdmin = async (req, res, next) => {
+  try {
+    const turf = await turfService.getTurfByIdAdmin(req.params.id);
+    res.status(200).json(turf);
+  } catch (err) {
+    next(err);
+  }
+};
+ 
+
 module.exports = {
   getAllTurfs,
   searchTurfs,
@@ -244,4 +266,7 @@ module.exports = {
   getTurfReviews,
   getMyReviews,
   deleteReview,
+  getAllTurfsAdmin,
+  getTurfByIdAdmin,
+
 };

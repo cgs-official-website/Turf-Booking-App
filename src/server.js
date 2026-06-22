@@ -17,12 +17,14 @@ const bookingRoutes = require("./routes/booking.routes");
 const adminRoutes = require("./routes/admin.routes");
 const notificationRoutes = require("./routes/notification.routes");
 const subscriptionRoutes = require("./routes/subscription.routes"); // ← ADD THIS
+const reportRoutes = require("./routes/report.routes");
+
 
 const app = express();
 
 // Middleware
-app.use(helmet());
-app.use(cors());
+app.use(helmet());`
+app.use(cors());`
 app.use(express.json());
 app.use(morgan("dev"));
 
@@ -35,6 +37,7 @@ app.use("/bookings", bookingRoutes);
 app.use("/admin", adminRoutes);
 app.use("/subscriptions", subscriptionRoutes); // ← ADD THIS
 app.use("/notifications", notificationRoutes);
+app.use("/reports", reportRoutes);
 
 // Health check
 app.get("/health", (req, res) => {

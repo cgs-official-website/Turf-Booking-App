@@ -1,9 +1,10 @@
-// 
 const express = require("express");
 const router = express.Router();
 
 const {
   getAllTurfs,
+  getAllTurfsAdmin,
+  getTurfByIdAdmin,
   searchTurfs,
   getPendingTurfs,
   approveTurf,
@@ -15,13 +16,8 @@ const {
   deleteTurf,
 } = require("../controllers/turf.controller");
 
-const {
-  protect,
-  authorizeRoles,
-} = require("../middlewares/auth.middleware");
-
+const { protect, authorizeRoles } = require("../middlewares/auth.middleware");
 const validate = require("../middlewares/validation.middleware");
-
 const {
   addTurfSchema,
   updateTurfSchema,
@@ -30,67 +26,49 @@ const {
 // =============================================
 // Public Routes
 // =============================================
-
 router.get("/", getAllTurfs);
 router.get("/search", searchTurfs);
 
 // =============================================
-// Admin Routes
+// Admin — named routes (MUST be before /:id)
 // =============================================
 
-router.get(
-  "/pending",
-  protect,
-  authorizeRoles("admin"),
-  getPendingTurfs
-);
+// All turfs list (pending + approved + rejected)
+router.get("/admin/all", protect, authorizeRoles("admin"), getAllTurfsAdmin);
 
-router.patch(
-  "/:id/approve",
-  protect,
-  authorizeRoles("admin"),
-  approveTurf
-);
+// Single turf detail — any status (used by admin TurfDetails page)
+router.get("/admin/:id", protect, authorizeRoles("admin"), getTurfByIdAdmin);
 
-router.patch(
-  "/:id/reject",
-  protect,
-  authorizeRoles("admin"),
-  rejectTurf
-);
+// Pending list
+router.get("/pending", protect, authorizeRoles("admin"), getPendingTurfs);
+
+// Approve / Reject
+router.patch("/:id/approve", protect, authorizeRoles("admin"), approveTurf);
+router.patch("/:id/reject", protect, authorizeRoles("admin"), rejectTurf);
 
 // =============================================
-// Turf Details & Slots
+// Public — Turf detail & slots (approved only)
 // =============================================
-
 router.get("/:id", getTurfById);
 router.get("/:id/slots", getAvailableSlots);
 
 // =============================================
-// Vendor / Admin Routes
+// Vendor / Admin — create, update, delete
 // =============================================
-
 router.post(
   "/",
   protect,
   authorizeRoles("vendor", "admin"),
   validate(addTurfSchema),
-  addTurf
+  addTurf,
 );
-
 router.put(
   "/:id",
   protect,
   authorizeRoles("vendor", "admin"),
   validate(updateTurfSchema),
-  updateTurf
+  updateTurf,
 );
-
-router.delete(
-  "/:id",
-  protect,
-  authorizeRoles("vendor", "admin"),
-  deleteTurf
-);
+router.delete("/:id", protect, authorizeRoles("vendor", "admin"), deleteTurf);
 
 module.exports = router;

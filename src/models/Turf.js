@@ -13,32 +13,32 @@ const turfSchema = new mongoose.Schema(
       required: [true, "Location is required"],
     },
 
-    address: {
-      street: {
-        type: String,
-        required: [true, "Street is required"],
-      },
+    // address: {
+    //   street: {
+    //     type: String,
+    //     required: [true, "Street is required"],
+    //   },
 
-      area: {
-        type: String,
-        required: [true, "Area is required"],
-      },
+    //   area: {
+    //     type: String,
+    //     required: [true, "Area is required"],
+    //   },
 
-      city: {
-        type: String,
-        required: [true, "City is required"],
-      },
+    //   city: {
+    //     type: String,
+    //     required: [true, "City is required"],
+    //   },
 
-      state: {
-        type: String,
-        required: [true, "State is required"],
-      },
+    //   state: {
+    //     type: String,
+    //     required: [true, "State is required"],
+    //   },
 
-      pincode: {
-        type: String,
-        required: [true, "Pincode is required"],
-      },
-    },
+    //   pincode: {
+    //     type: String,
+    //     required: [true, "Pincode is required"],
+    //   },
+    // },
 
     sportType: {
       type: String,
