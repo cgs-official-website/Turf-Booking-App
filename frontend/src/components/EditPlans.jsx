@@ -299,19 +299,50 @@ export default function EditPlans({ onBack, onSave }) {
 
   // ── Render ────────────────────────────────────────────────────────────────
   return (
-    <div className="ep-container">
-      {/* Header */}
-      <div className="ep-header">
-        <div className="ep-header-left">
-          <button className="ep-back-btn" onClick={onBack}>
-            <FiChevronLeft size={20} /> Edit plans
-          </button>
-          <p className="ep-header-sub">
-            Update pricing, features, and visibility. Changes saved to backend.
-          </p>
-          {hasChanges && (
-            <span className="ep-unsaved-badge">● Unsaved changes</span>
-          )}
+    <>
+      <div className="ep-container">
+        {/* Header */}
+        <div className="ep-header">
+          <div className="ep-header-left">
+            <button className="ep-back-btn" onClick={onBack}>
+              <FiChevronLeft size={20} />
+              Edit plans
+            </button>
+            <p className="ep-header-sub">
+              Update pricing, features, and visibility. Changes saved to
+              backend.
+            </p>
+            {hasChanges && (
+              <span className="ep-unsaved-badge">● Unsaved changes</span>
+            )}
+          </div>
+          <div className="ep-header-actions">
+            <button
+              className="ep-reset-btn"
+              onClick={reset}
+              disabled={isSaving}
+            >
+              <FiRefreshCw size={16} />
+              Reset
+            </button>
+            <button
+              className="ep-save-btn"
+              onClick={handleSaveChanges}
+              disabled={isSaving || !hasChanges}
+            >
+              {isSaving ? (
+                <>
+                  <FiLoader className="ep-spin" size={16} />
+                  Saving...
+                </>
+              ) : (
+                <>
+                  <FiSave size={16} />
+                  Save Changes
+                </>
+              )}
+            </button>
+          </div>
         </div>
         <div className="ep-header-actions">
           <button className="ep-reset-btn" onClick={reset} disabled={isSaving}>
@@ -605,6 +636,6 @@ export default function EditPlans({ onBack, onSave }) {
           </div>
         </div>
       )}
-    </div> /* end ep-container */
+    </>
   );
 }
