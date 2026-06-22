@@ -1,243 +1,576 @@
-/* Your CSS from the design */
+/* ===========================
+   VENDOR MANAGEMENT PAGE
+   =========================== */
 
 .vendor-management-container {
-  padding: 32px;
+  padding: 28px 32px;
   background-color: #f8f8f8;
   min-height: 100%;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow-x: hidden;
 }
 
 .page-title {
   font-size: 28px;
   font-weight: 700;
-  color: #333333;
-  margin: 0 0 32px 0;
+  color: #1a1a1a;
+  margin: 0 0 24px 0;
   line-height: 1.2;
+  display: block; /* Visible on desktop */
 }
 
-/* Filters Section */
+/* ===========================
+   FILTERS SECTION
+   =========================== */
+
 .filters-section {
   display: flex;
-  gap: 16px;
-  margin-bottom: 32px;
+  gap: 12px;
+  margin-bottom: 28px;
   align-items: center;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+  width: 100%;
+  box-sizing: border-box;
 }
 
+/* Search */
 .search-wrapper {
   position: relative;
   flex: 1;
-  min-width: 300px;
-  max-width: 400px;
+  max-width: 480px;
+  min-width: 200px;
 }
 
 .search-icon {
   position: absolute;
-  left: 12px;
+  left: 14px;
   top: 50%;
   transform: translateY(-50%);
   width: 18px;
   height: 18px;
-  color: #999999;
-  stroke-width: 2;
+  color: #9ca3af;
+  z-index: 1;
 }
 
 .search-input {
   width: 100%;
-  padding: 10px 16px 10px 40px;
-  border: 1px solid #e5e5e5;
-  border-radius: 8px;
+  padding: 11px 16px 11px 42px;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 12px;
   font-size: 14px;
-  color: #333333;
-  background-color: #ffffff;
+  color: #374151;
+  background: #ffffff;
   font-family: inherit;
   transition: all 0.2s ease;
+  box-sizing: border-box;
+  height: 48px;
 }
 
 .search-input:focus {
   outline: none;
-  border-color: #1db854;
-  box-shadow: 0 0 0 2px rgba(29, 184, 84, 0.1);
+  border-color: #22c55e;
+  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1);
 }
 
 .search-input::placeholder {
-  color: #999999;
+  color: #9ca3af;
 }
 
+/* Location dropdown */
 .location-filter {
-  padding: 10px 16px;
-  border: 1px solid #e5e5e5;
-  border-radius: 8px;
+  padding: 11px 36px 11px 16px;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 12px;
   font-size: 14px;
-  color: #666666;
-  background-color: #ffffff;
+  font-weight: 500;
+  color: #374151;
+  background: #ffffff;
   cursor: pointer;
   font-family: inherit;
   transition: all 0.2s ease;
-  min-width: 120px;
+  min-width: 160px;
+  height: 48px;
+  flex-shrink: 0;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
 }
 
 .location-filter:focus {
   outline: none;
-  border-color: #1db854;
+  border-color: #22c55e;
 }
 
+/* Reset Filter button */
 .reset-filter-btn {
-  padding: 10px 16px;
-  background-color: transparent;
-  border: none;
-  color: #1db854;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 500;
   display: flex;
   align-items: center;
   gap: 8px;
-  transition: all 0.2s ease;
+  padding: 11px 20px;
+  background: #ffffff;
+  border: 1.5px solid #a78bfa;
+  border-radius: 12px;
+  color: #7c3aed;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
   font-family: inherit;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  flex-shrink: 0;
+  height: 48px;
 }
 
 .reset-filter-btn:hover {
-  color: #16a34a;
+  background: #f5f3ff;
+  border-color: #7c3aed;
 }
 
 .reset-filter-btn svg {
-  stroke-width: 2;
+  flex-shrink: 0;
 }
 
-/* Vendor Grid */
+/* ===========================
+   VENDOR GRID
+   =========================== */
+
 .vendor-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 24px;
-  margin-bottom: 32px;
+  gap: 20px;
+  margin-bottom: 28px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
-@media (max-width: 1024px) {
-  .vendor-grid {
-    grid-template-columns: 1fr;
-  }
-}
+/* ===========================
+   PAGINATION
+   =========================== */
 
-/* Pagination */
 .pagination-container {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 12px;
-  padding: 20px;
-  background-color: #ffffff;
-  border-radius: 8px;
-  border: 1px solid #e5e5e5;
+  gap: 8px;
+  padding: 16px 24px;
+  background: #ffffff;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
   flex-wrap: wrap;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .pagination-arrow {
-  padding: 8px 12px;
-  border: 1px solid #e5e5e5;
-  background-color: #ffffff;
-  color: #666666;
-  border-radius: 6px;
+  width: 36px;
+  height: 36px;
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
+  color: #6b7280;
+  border-radius: 8px;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   transition: all 0.2s ease;
   font-family: inherit;
+  flex-shrink: 0;
 }
 
-.pagination-arrow:hover {
-  border-color: #1db854;
-  color: #1db854;
+.pagination-arrow:hover:not(:disabled) {
+  border-color: #22c55e;
+  color: #22c55e;
 }
 
 .pagination-arrow:disabled {
-  opacity: 0.5;
+  opacity: 0.4;
   cursor: not-allowed;
 }
 
 .page-numbers {
   display: flex;
-  gap: 8px;
+  gap: 6px;
   align-items: center;
+  flex-wrap: wrap;
 }
 
 .page-number {
-  padding: 8px 12px;
-  border: 1px solid #e5e5e5;
-  background-color: #ffffff;
-  color: #666666;
-  border-radius: 6px;
+  width: 36px;
+  height: 36px;
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
+  color: #6b7280;
+  border-radius: 8px;
   cursor: pointer;
   font-size: 14px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   transition: all 0.2s ease;
   font-family: inherit;
-  font-weight: 500;
 }
 
 .page-number:hover {
-  border-color: #1db854;
-  color: #1db854;
+  border-color: #22c55e;
+  color: #22c55e;
 }
 
 .page-number.active {
-  background-color: #1db854;
+  background: #22c55e;
   color: #ffffff;
-  border-color: #1db854;
+  border-color: #22c55e;
+  font-weight: 600;
+}
+
+.page-ellipsis {
+  color: #9ca3af;
+  font-size: 14px;
+  padding: 0 4px;
 }
 
 .pagination-info {
-  font-size: 14px;
-  color: #666666;
+  font-size: 13px;
+  color: #6b7280;
   margin-left: auto;
   display: flex;
-  gap: 4px;
   align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
 }
 
 .rows-per-page {
   font-weight: 600;
-  color: #333333;
+  color: #1a1a1a;
 }
 
-/* Responsive Design */
-@media (max-width: 768px) {
+/* ===========================
+   1024px SCREEN FIX
+   =========================== */
+
+@media (max-width: 1024px) {
   .vendor-management-container {
-    padding: 16px;
+    padding: 20px 24px;
   }
 
   .page-title {
     font-size: 24px;
-    margin-bottom: 24px;
+    margin-bottom: 20px;
+    display: block; /* Keep visible on desktop/tablet up to 1024px */
   }
 
   .filters-section {
-    flex-direction: column;
-    gap: 12px;
+    flex-wrap: nowrap;
+    gap: 10px;
   }
 
   .search-wrapper {
+    flex: 1;
+    max-width: 100%;
+    min-width: 150px;
+  }
+
+  .location-filter {
+    min-width: 130px;
+    flex-shrink: 0;
+  }
+
+  .reset-filter-btn {
+    flex-shrink: 0;
+    padding: 11px 16px;
+    font-size: 13px;
+  }
+
+  .vendor-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+
+  .pagination-container {
+    padding: 14px 20px;
+    gap: 8px;
+  }
+
+  .pagination-arrow {
+    width: 34px;
+    height: 34px;
+    font-size: 16px;
+    min-width: 34px;
+    min-height: 34px;
+  }
+
+  .page-number {
+    width: 34px;
+    height: 34px;
+    font-size: 13px;
+    min-width: 34px;
+    min-height: 34px;
+  }
+
+  .pagination-info {
+    font-size: 12px;
+    margin-left: auto;
+  }
+}
+
+/* ===========================
+   TABLET & MOBILE - HIDE TITLE
+   =========================== */
+
+@media (max-width: 900px) {
+  .page-title {
+    display: none !important; /* HIDE title on tablet and mobile */
+  }
+
+  .filters-section {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .search-wrapper {
+    flex: 1 1 100%;
     max-width: 100%;
   }
 
   .location-filter {
-    width: 100%;
+    flex: 1;
+    min-width: 140px;
   }
 
   .reset-filter-btn {
-    width: 100%;
+    flex: 1;
     justify-content: center;
+  }
+
+  .pagination-info {
+    width: 100%;
+    margin-left: 0;
+    justify-content: center;
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid #f0f0f0;
+  }
+}
+
+/* ===========================
+   MOBILE (≤768px) - SHOW SEARCH ONLY
+   =========================== */
+
+@media (max-width: 768px) {
+  .vendor-management-container {
+    padding: 16px;
+    overflow-x: hidden;
+  }
+
+  /* Title is hidden from above */
+  .page-title {
+    display: none !important;
+  }
+
+  .filters-section {
+    flex-direction: column;
+    gap: 0;
+    width: 100%;
+  }
+
+  .search-wrapper {
+    max-width: 100%;
+    width: 100%;
+    flex: 1 1 100%;
+  }
+
+  .search-input {
+    font-size: 16px;
+    padding: 12px 16px 12px 42px;
+    height: 48px;
+    border-radius: 10px;
+  }
+
+  .location-filter {
+    display: none !important;
+  }
+
+  .reset-filter-btn {
+    display: none !important;
   }
 
   .vendor-grid {
     grid-template-columns: 1fr;
     gap: 16px;
+    margin-bottom: 20px;
+  }
+
+  .vendor-grid > * {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box;
+    margin: 0 !important;
   }
 
   .pagination-container {
-    flex-direction: column;
-    gap: 16px;
+    padding: 14px 16px;
+    gap: 8px;
+    justify-content: center;
+    border-radius: 10px;
+  }
+
+  .pagination-arrow {
+    width: 36px;
+    height: 36px;
+    font-size: 16px;
+    min-width: 36px;
+    min-height: 36px;
+  }
+
+  .page-numbers {
+    gap: 4px;
+  }
+
+  .page-number {
+    width: 34px;
+    height: 34px;
+    font-size: 13px;
+    min-width: 34px;
+    min-height: 34px;
+    border-radius: 6px;
+  }
+
+  .page-ellipsis {
+    font-size: 13px;
+    padding: 0 2px;
   }
 
   .pagination-info {
+    width: 100%;
     margin-left: 0;
-    text-align: center;
+    justify-content: center;
+    font-size: 12px;
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid #f0f0f0;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+
+  .rows-per-page {
+    font-size: 12px;
+  }
+}
+
+/* ===========================
+   MOBILE SMALL (≤480px)
+   =========================== */
+
+@media (max-width: 480px) {
+  .vendor-management-container {
+    padding: 12px;
+  }
+
+  .page-title {
+    display: none !important;
+  }
+
+  .search-input {
+    font-size: 15px;
+    padding: 10px 14px 10px 38px;
+    height: 44px;
+  }
+
+  .search-icon {
+    left: 12px;
+    width: 16px;
+    height: 16px;
+  }
+
+  .vendor-grid {
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .pagination-container {
+    padding: 12px 12px;
+    gap: 6px;
+    border-radius: 8px;
+  }
+
+  .pagination-arrow {
+    width: 32px;
+    height: 32px;
+    font-size: 14px;
+    min-width: 32px;
+    min-height: 32px;
+  }
+
+  .page-number {
+    width: 30px;
+    height: 30px;
+    font-size: 12px;
+    min-width: 30px;
+    min-height: 30px;
+  }
+
+  .pagination-info {
+    font-size: 11px;
+    margin-top: 6px;
+    padding-top: 6px;
+  }
+
+  .rows-per-page {
+    font-size: 11px;
+  }
+}
+
+/* ===========================
+   EXTRA SMALL (≤360px)
+   =========================== */
+
+@media (max-width: 360px) {
+  .vendor-management-container {
+    padding: 10px;
+  }
+
+  .page-title {
+    display: none !important;
+  }
+
+  .search-input {
+    font-size: 14px;
+    padding: 8px 12px 8px 36px;
+    height: 40px;
+  }
+
+  .search-icon {
+    left: 10px;
+    width: 14px;
+    height: 14px;
+  }
+
+  .pagination-container {
+    padding: 10px 8px;
+  }
+
+  .pagination-arrow {
+    width: 28px;
+    height: 28px;
+    font-size: 12px;
+    min-width: 28px;
+    min-height: 28px;
+  }
+
+  .page-number {
+    width: 26px;
+    height: 26px;
+    font-size: 11px;
+    min-width: 26px;
+    min-height: 26px;
+  }
+
+  .pagination-info {
+    font-size: 10px;
   }
 }
