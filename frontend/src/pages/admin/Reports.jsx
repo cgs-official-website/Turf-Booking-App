@@ -360,22 +360,18 @@ function ReportDetailModal({ report, onClose, onResolved }) {
         </div>
 
         {/* ── Footer ── */}
-        <div className="rp-modal-footer">
-          <button
-            className="rp-modal-btn rp-modal-btn--cancel"
-            onClick={onClose}
-            disabled={sending}
-          >
-            Cancel
-          </button>
-          <button
-            className="rp-modal-btn rp-modal-btn--send"
-            onClick={handleSend}
-            disabled={sending || isDone || !note.trim()}
-          >
-            {sending ? <span className="rp-modal-spinner" /> : "Send"}
-          </button>
-        </div>
+        {!isDone && (
+          <div className="rp-modal-footer" style={{ justifyContent: 'flex-end' }}>
+            <button
+              className="rp-modal-btn rp-modal-btn--send"
+              onClick={handleSend}
+              disabled={sending || !note.trim()}
+              style={{ width: '100%' }}
+            >
+              {sending ? <span className="rp-modal-spinner" /> : "Solve it"}
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
