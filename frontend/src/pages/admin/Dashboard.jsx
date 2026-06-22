@@ -9,6 +9,7 @@ import {
 } from "react-icons/fi";
 import { FaIndianRupeeSign } from "react-icons/fa6";
 import { HiOutlineLocationMarker } from "react-icons/hi";
+import RecentTurfApprovals from "../../components/admin/RecentTurfApprovals";
 
 const CustomTooltip = ({ active, payload, label }) => {
   if (active && payload && payload.length) {
@@ -215,6 +216,10 @@ export default function Dashboard() {
               </AreaChart>
             </ResponsiveContainer>
           </div>
+        </div>
+
+        <div className="dashboard-widgets" style={{ marginTop: "24px", display: "grid", gap: "24px", gridTemplateColumns: "1fr" }}>
+          <RecentTurfApprovals limit={5} />
         </div>
       </div>
     </div>

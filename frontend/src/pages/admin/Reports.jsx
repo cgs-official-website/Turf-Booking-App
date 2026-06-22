@@ -9,6 +9,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../services/axiosInstance";
 import "../../assets/styles/reports.css";
+import "../../assets/styles/reportDetails.css";
 
 const PAGE_SIZE = 8;
 
@@ -300,66 +301,63 @@ function ReportDetailModal({ report, onClose, onResolved }) {
       <div className="rp-modal">
         {/* ── Header ── */}
         <div className="rp-modal-header">
-          <div className="rp-modal-header-left">
-            <button className="rp-modal-back-btn" onClick={onClose}>
-              <i className="bi bi-arrow-left" />
-            </button>
-            <span className="rp-modal-title">Report Details</span>
-          </div>
-          <button
-            className="rp-modal-close-btn"
-            onClick={onClose}
-            aria-label="Close"
-          >
+          <button className="rp-modal-back" onClick={onClose} aria-label="Go back">
+            <i className="bi bi-arrow-left" />
+          </button>
+          <h1 className="rp-modal-title">Report Details</h1>
+          <button className="rp-modal-close" onClick={onClose} aria-label="Close">
             <i className="bi bi-x-lg" />
           </button>
         </div>
 
-        <p className="rp-modal-meta">
-          Report ID: <strong>{report.reportId}</strong> &bull; {report.date}
-        </p>
+        {/* Scrollable body */}
+        <div className="rp-modal-body">
+          <p className="rp-modal-meta">
+            Report ID: <strong>{report.reportId}</strong> &bull; {report.date}
+          </p>
 
-        {/* ── User (Vendor) Details ── */}
-        <p className="rp-modal-section-label">USER DETAILS</p>
-        <div className="rp-modal-user-card">
-          <div className="rp-modal-user-avatar">{initials}</div>
-          <div className="rp-modal-user-info">
-            <p className="rp-modal-user-name">{report.vendorName}</p>
-            <p className="rp-modal-user-email">{report.vendorEmail}</p>
+          {/* ── User (Vendor) Details ── */}
+          <p className="rp-modal-section-label">USER DETAILS</p>
+          <div className="rp-modal-user-card">
+            <div className="rp-modal-user-avatar">{initials}</div>
+            <div className="rp-modal-user-info">
+              <p className="rp-modal-user-name">{report.vendorName}</p>
+              <p className="rp-modal-user-email">{report.vendorEmail}</p>
+            </div>
           </div>
-        </div>
 
-        {/* ── Turf Information ── */}
-        <p className="rp-modal-section-label">TURF INFORMATION</p>
-        <div className="rp-modal-turf-card">
-          <TurfImg src={report.turfImage} alt={report.turfName} />
-          <div className="rp-modal-turf-text">
-            <p className="rp-modal-turf-name">{report.turfName}</p>
-            <p className="rp-modal-turf-loc">
-              <i className="bi bi-geo-alt-fill" /> {report.turfLocation}
-            </p>
+          {/* ── Turf Information ── */}
+          <p className="rp-modal-section-label">TURF INFORMATION</p>
+          <div className="rp-modal-turf-card">
+            <TurfImg src={report.turfImage} alt={report.turfName} />
+            <div className="rp-modal-turf-info">
+              <p className="rp-modal-turf-name">{report.turfName}</p>
+              <p className="rp-modal-turf-loc">
+                <i className="bi bi-geo-alt-fill" /> {report.turfLocation}
+              </p>
+            </div>
           </div>
-        </div>
 
-        {/* ── Report Description ── */}
-        <p className="rp-modal-section-label">REPORT DESCRIPTION</p>
-        <div className="rp-modal-desc-card">
-          <span className="rp-modal-category-tag">
-            {report.category?.toUpperCase()}
-          </span>
-          <p className="rp-modal-desc-text">{report.description}</p>
-        </div>
+          {/* ── Report Description ── */}
+          <p className="rp-modal-section-label">REPORT DESCRIPTION</p>
+          <div className="rp-modal-desc-card">
+            <span className="rp-modal-category-tag">
+              {report.category?.toUpperCase()}
+            </span>
+            <p className="rp-modal-desc-text">{report.description}</p>
+          </div>
 
-        {/* ── Resolve Queries ── */}
-        <p className="rp-modal-section-label">RESOLVE QUERIES</p>
-        <textarea
-          className="rp-modal-textarea"
-          rows={4}
-          placeholder="Add a note for the internal team..."
-          value={note}
-          onChange={(e) => setNote(e.target.value)}
-          disabled={isDone}
-        />
+          {/* ── Resolve Queries ── */}
+          <p className="rp-modal-section-label">RESOLVE QUERIES</p>
+          <textarea
+            className="rp-modal-textarea"
+            rows={4}
+            placeholder="Add a note for the internal team..."
+            value={note}
+            onChange={(e) => setNote(e.target.value)}
+            disabled={isDone}
+          />
+        </div>
 
         {/* ── Footer ── */}
         <div className="rp-modal-footer">
@@ -375,13 +373,15 @@ function ReportDetailModal({ report, onClose, onResolved }) {
             onClick={handleSend}
             disabled={sending || isDone || !note.trim()}
           >
-            {sending ? <span className="rp-spinner-sm" /> : "Send"}
+            {sending ? <span className="rp-modal-spinner" /> : "Send"}
           </button>
         </div>
       </div>
     </div>
   );
 }
+
+
 
 /* ── Main component ───────────────────────────────────────────────────────── */
 export default function Reports() {
@@ -398,6 +398,7 @@ export default function Reports() {
   const [page, setPage] = useState(1);
 
   const [selectedReport, setSelectedReport] = useState(null);
+
 
   /* ── Fetch ── */
   useEffect(() => {
@@ -463,7 +464,6 @@ export default function Reports() {
         );
         setSelectedReport(updated);
       } catch {
-        // still open modal even if patch fails
         setSelectedReport(rpt);
       }
     } else {
