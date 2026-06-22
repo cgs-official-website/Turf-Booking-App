@@ -548,7 +548,7 @@ export default function Reports() {
           {
             label: "Pending",
             value: counts.pending,
-            icon: "bi-emoji-neutral",
+            icon: "bi-three-dots",
             variant: "pending",
           },
           {
