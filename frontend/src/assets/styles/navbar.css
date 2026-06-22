@@ -1,9 +1,8 @@
- /* ===========================
+/* ===========================
    NAVBAR COMPONENT
    =========================== */
 
 :root {
-  --navbar-height: 72px;
   --primary-green: #22c55e;
   --primary-green-light: #D0FFD3;
   --primary-hover: #E8E3FF;
@@ -20,7 +19,7 @@
 }
 
 .navbar {
-  height: var(--navbar-height);
+  height: 76.5px;
   background: #ffffff;
   border-bottom: 1px solid var(--gray-200);
   display: flex;
@@ -31,9 +30,48 @@
   top: 0;
   z-index: 100;
   flex-shrink: 0;
+  gap: 16px;
 }
 
-/* ===== Search Bar ===== */
+/* ===========================
+   HAMBURGER (mobile/tablet only)
+   =========================== */
+.navbar-hamburger {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 8px;
+  color: var(--gray-700);
+  font-size: 22px;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background 0.2s;
+}
+
+.navbar-hamburger:hover {
+  background: var(--gray-100);
+}
+
+/* ===========================
+   MOBILE PAGE TITLE (mobile only)
+   =========================== */
+.navbar-mobile-title {
+  display: none;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--gray-900);
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ===========================
+   SEARCH BAR
+   =========================== */
 .navbar-search {
   display: flex;
   align-items: center;
@@ -44,6 +82,7 @@
   padding: 8px 16px;
   width: 380px;
   transition: all 0.2s ease;
+  flex-shrink: 0;
 }
 
 .navbar-search:focus-within {
@@ -55,6 +94,9 @@
 .navbar-search-icon {
   color: var(--gray-400);
   flex-shrink: 0;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
 }
 
 .navbar-search-input {
@@ -71,22 +113,14 @@
   font-weight: 400;
 }
 
-.navbar-search-kbd {
-  font-size: 11px;
-  color: var(--gray-400);
-  background: var(--gray-100);
-  padding: 2px 8px;
-  border-radius: 4px;
-  border: 1px solid var(--gray-200);
-  font-weight: 500;
-  letter-spacing: 0.3px;
-}
-
-/* ===== Right Section ===== */
+/* ===========================
+   RIGHT SECTION
+   =========================== */
 .navbar-right {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
+  margin-left: auto;
 }
 
 /* Notification Button */
@@ -103,6 +137,7 @@
   color: var(--gray-600);
   cursor: pointer;
   transition: all 0.2s ease;
+  font-size: 20px;
 }
 
 .navbar-notif:hover {
@@ -139,8 +174,8 @@
 .navbar-user {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 4px 12px 4px 4px;
+  gap: 10px;
+  padding: 4px 10px 4px 4px;
   border-radius: 10px;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -153,19 +188,19 @@
 }
 
 .navbar-user-avatar {
-  width: 48px;
-  height: 48px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   background: #d0ffd3;
   color: #22c55e;
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 700;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  letter-spacing: 0;
 }
+
 .navbar-user-info {
   display: flex;
   flex-direction: column;
@@ -184,48 +219,45 @@
   font-weight: 400;
 }
 
-/* ===== Responsive ===== */
-@media (max-width: 768px) {
+/* ===========================
+   RESPONSIVE — TABLET (≤1024px)
+   =========================== */
+@media (max-width: 1024px) {
   .navbar {
-    padding: 0 16px;
+    padding: 0 20px;
+  }
+
+  .navbar-hamburger {
+    display: flex;
   }
 
   .navbar-search {
-    width: 200px;
+    width: 260px;
+  }
+}
+
+/* ===========================
+   RESPONSIVE — MOBILE (≤640px)
+   =========================== */
+@media (max-width: 640px) {
+  .navbar {
+    padding: 0 16px;
+    height: 60px;
   }
 
-  .navbar-search-kbd {
+  .navbar-search {
     display: none;
+  }
+
+  .navbar-mobile-title {
+    display: block;
   }
 
   .navbar-user-info {
     display: none;
   }
-}
 
-@media (max-width: 480px) {
-  .navbar-search {
-    width: 140px;
-    padding: 6px 12px;
-  }
-
-  .navbar-search-input {
-    font-size: 12px;
-  }
-
-  .navbar-notif {
-    width: 34px;
-    height: 34px;
-  }
-
-  .navbar-notif svg {
-    width: 16px;
-    height: 16px;
-  }
-
-  .navbar-user-avatar {
-    width: 34px;
-    height: 34px;
-    font-size: 14px;
+  .navbar-user {
+    padding: 4px;
   }
 }
