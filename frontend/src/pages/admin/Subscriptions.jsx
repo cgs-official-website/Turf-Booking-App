@@ -365,11 +365,7 @@ export default function Subscriptions() {
                   onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                   aria-label="Next page"
                 >
-<<<<<<< HEAD
-                  &#8250;
-=======
                   <i className="bi bi-chevron-right" />
->>>>>>> e57ae72e1caf440a736c0f03030169005a6f8b79
                 </button>
               </div>
             </div>
