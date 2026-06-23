@@ -82,7 +82,7 @@
 .ep-save-btn:hover {
   background: #16a34a;
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+  
 }
 
 /* ── Main 3-Column Layout ── */
@@ -292,7 +292,7 @@
   background: white;
   box-sizing: border-box;
 }
-.ep-input:focus { outline: none; border-color: #22c55e; }
+.ep-input:focus {  border-color: #22c55e; }
 
 .ep-textarea-wrapper { position: relative; }
 
@@ -308,7 +308,7 @@
   transition: border-color 0.15s;
   box-sizing: border-box;
 }
-.ep-textarea:focus { outline: none; border-color: #22c55e; }
+.ep-textarea:focus {  border-color: #22c55e; }
 
 .ep-char-count {
   position: absolute;
@@ -452,7 +452,7 @@
 .ep-delete-plan:hover {
   background: #dc2626;
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25);
+  
 }
 
 /* ── Right Column – Live Preview ── */

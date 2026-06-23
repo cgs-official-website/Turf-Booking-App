@@ -1,77 +1,51 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import Navbar from './Navbar';
 import '../../assets/styles/layout.css';
-
-// Map paths to page titles for mobile navbar
-const PAGE_TITLES = {
-  '/admin/dashboard':       'Dashboard',
-  '/admin/vendors':         'Vendor Management',
-  '/admin/subscriptions':   'Subscription',
-  '/admin/turfs':           'Turf Approvals',
-  '/admin/bookings':        'Bookings',
-  '/admin/payment-history': 'Payment History',
-  '/admin/reports':         'Reports',
-  '/admin/settings':        'Settings',
-};
 
 export default function AdminLayout({ children }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const location = useLocation();
 
-  // Close sidebar on route change (mobile nav)
   useEffect(() => {
     setSidebarOpen(false);
-  }, [location.pathname]);
+  }, [location]);
 
-  // Close sidebar on desktop resize
   useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth > 1024) setSidebarOpen(false);
-    };
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
+    if (!sidebarOpen) return;
 
-  const pageTitle = PAGE_TITLES[location.pathname] || 'Admin Panel';
+    const handleScroll = (event) => {
+      // Do not close if the user scrolls inside the sidebar itself
+      if (event.target.closest('.sidebar')) {
+        return;
+      }
+      setSidebarOpen(false);
+    };
+
+    window.addEventListener('scroll', handleScroll, true);
+    return () => {
+      window.removeEventListener('scroll', handleScroll, true);
+    };
+  }, [sidebarOpen]);
 
   return (
     <div className="layout">
-      <Sidebar
-        isOpen={sidebarOpen}
-        onClose={() => setSidebarOpen(false)}
-      />
-      <div className="layout-main">
-        <Navbar
-          title={pageTitle}
-          notificationCount={3}
-          onMenuToggle={() => setSidebarOpen(prev => !prev)}
+      {sidebarOpen && (
+        <div
+          className="sidebar-overlay open"
+          onClick={() => setSidebarOpen(false)}
         />
+      )}
+      <Sidebar sidebarOpen={sidebarOpen} />
+      <div className="layout-main">
+        <Navbar onMenuToggle={() => setSidebarOpen(!sidebarOpen)} />
         <main className="layout-content">
-          {children}
+          <div className="page-content">
+            {children || <Outlet />}
+          </div>
         </main>
       </div>
     </div>
   );
 }
-
-
-// import React from 'react';
-// import Sidebar from './Sidebar';
-// import Navbar from './Navbar';
-// import '../../assets/styles/layout.css';
-
-// export default function AdminLayout({ children }) {
-//   return (
-//     <div className="layout">
-//       <Sidebar />
-//       <div className="layout-main">
-//         <Navbar />
-//         <main className="layout-content">
-//           {children}
-//         </main>
-//       </div>
-//     </div>
-//   );
-// }

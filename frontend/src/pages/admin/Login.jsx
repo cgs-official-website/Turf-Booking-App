@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import logo from "../../assets/images/logo.png";
 import "../../assets/styles/login.css";
 import { adminLogin } from "../../services/adminApi";
@@ -97,9 +97,13 @@ function Login() {
               />
             </div>
 
-            <div className="forgot-password">
+            <Link 
+              to="/admin/forgot-password"
+              className="forgot-password" 
+              style={{ textDecoration: 'none', display: 'block', textAlign: 'right' }}
+            >
               Forgot password?
-            </div>
+            </Link>
 
             <button
               type="submit"

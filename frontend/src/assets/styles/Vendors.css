@@ -3,13 +3,13 @@
    =========================== */
 
 .vendor-management-container {
-  padding: 28px 32px;
+  padding: 0;
   background-color: #f8f8f8;
   min-height: 100%;
   width: 100%;
   max-width: 100%;
   box-sizing: border-box;
-  overflow-x: hidden;
+  /* overflow-x: hidden; */
 }
 
 .page-title {
@@ -69,9 +69,9 @@
 }
 
 .search-input:focus {
-  outline: none;
+  
   border-color: #22c55e;
-  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1);
+  
 }
 
 .search-input::placeholder {
@@ -101,7 +101,7 @@
 }
 
 .location-filter:focus {
-  outline: none;
+  
   border-color: #22c55e;
 }
 
@@ -363,7 +363,7 @@
 @media (max-width: 768px) {
   .vendor-management-container {
     padding: 16px;
-    overflow-x: hidden;
+    /* overflow-x: hidden; */
   }
 
   /* Title is hidden from above */

@@ -5,6 +5,24 @@ export const adminLogin = async (data) => {
   return response.data;
 };
 
+export const adminForgotPassword = async (data) => {
+  const response = await axiosInstance.post('/admin/forgot-password', data);
+  return response.data;
+};
+
+export const adminResetPassword = async (data) => {
+  const response = await axiosInstance.post('/admin/reset-password', data);
+  return response.data;
+};
+
+export const getLoginActivity = async () => {
+  const response = await axiosInstance.get('/admin/login-activity');
+  return response.data;
+};
+
 export const adminApi = {
-  adminLogin
+  adminLogin,
+  adminForgotPassword,
+  adminResetPassword,
+  getLoginActivity
 };

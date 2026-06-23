@@ -5,7 +5,6 @@ import { PiWalletDuotone } from "react-icons/pi";
 import { HiOutlineLocationMarker } from "react-icons/hi";
 import { HiOutlineBadgeCheck } from "react-icons/hi";
 import { HiOutlineSearch } from "react-icons/hi";
-import AdminLayout from "../../components/admin/AdminLayout";
 import TurfCard from "../../components/TurfCard";
 import PricingCard from "../../components/PricingCard";
 import EditPlans from '../../components/EditPlans';
@@ -220,8 +219,7 @@ export default function Subscriptions() {
 
   // ── Render ──
   return (
-    <AdminLayout activeNav="subscription">
-      <div className="sub-page">
+    <div className="sub-page">
 
         {/* ── Page Title (subscription tab only) ── */}
         {activeTab === "subscription" && (
@@ -317,6 +315,7 @@ export default function Subscriptions() {
               </button>
             </div>
 
+            <div className="sub-list-container">
             {/* Turf Grid */}
             <div className="sub-page__grid">
               {loading ? (
@@ -331,6 +330,7 @@ export default function Subscriptions() {
                 <p className="sub-page__empty">No turfs match your filters.</p>
               )}
             </div>
+            </div>
 
             {/* Pagination */}
             <div className="sub-page__pagination">
@@ -344,7 +344,11 @@ export default function Subscriptions() {
                   onClick={() => setPage((p) => Math.max(1, p - 1))}
                   aria-label="Previous page"
                 >
+<<<<<<< HEAD
                   &#8249;
+=======
+                  <i className="bi bi-chevron-left" />
+>>>>>>> e57ae72e1caf440a736c0f03030169005a6f8b79
                 </button>
                 {Array.from({ length: totalPages }, (_, i) => i + 1).map((n) => (
                   <button
@@ -361,7 +365,11 @@ export default function Subscriptions() {
                   onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                   aria-label="Next page"
                 >
+<<<<<<< HEAD
                   &#8250;
+=======
+                  <i className="bi bi-chevron-right" />
+>>>>>>> e57ae72e1caf440a736c0f03030169005a6f8b79
                 </button>
               </div>
             </div>
@@ -433,8 +441,7 @@ export default function Subscriptions() {
           </div>
         )}
 
-      </div>
-    </AdminLayout>
+    </div>
   );
 }
 
