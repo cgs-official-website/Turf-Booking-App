@@ -11,18 +11,35 @@ const PAGE_SIZE = 8;
 
 
 /* ── Normalise API record ── */
-function normalizeBooking(b) {
+function normalizeBooking(b, turfVendorMap = {}) {
   const status = (b.status ?? b.bookingStatus ?? "pending").toLowerCase();
+  
+  const turfName = b.turfName ?? b.turf?.name ?? "—";
+  const turfId = b.turf?._id ?? b.turfId ?? null;
+  
+  let vendorName = turfVendorMap[turfId] || turfVendorMap[turfName];
+  if (!vendorName || vendorName === "—") {
+    vendorName =
+      b.vendorName ??
+      b.vendor?.name ??
+      b.turf?.vendor?.name ??
+      b.turf?.vendorName ??
+      b.turf?.owner?.name ??
+      b.turf?.ownerName ??
+      b.turf?.vendor ??
+      "—";
+  }
+
   return {
     ...b,
     displayId:
       b.displayId ?? "BKST-" + (b._id?.slice(-4).toUpperCase() ?? "????"),
-    turfName: b.turfName ?? b.turf?.name ?? "—",
+    turfName,
     turfLocation:
       b.turfLocation ??
       b.turf?.city ??
       (b.turf?.location ? b.turf.location.split(",").pop().trim() : "—"),
-    turfImage: b.turfImage ?? b.turf?.images?.[0] ?? null,
+    vendorName,
     userName: b.userName ?? b.user?.name ?? b.customerName ?? "—",
     date: b.date
       ? b.date
@@ -58,26 +75,7 @@ function StatusBadge({ status }) {
   return <span className={`bk-badge bk-badge--${status}`}>{label}</span>;
 }
 
-function TurfImage({ src, alt }) {
-  const [err, setErr] = useState(false);
-  if (!src || err) {
-    return (
-      <div className="bk-td-img-placeholder" aria-hidden="true">
-        <i className="bi bi-image" />
-      </div>
-    );
-  }
-  return (
-    <img
-      src={src}
-      alt={alt}
-      className="bk-td-img"
-      onError={() => setErr(true)}
-    />
-  );
-}
 
-/* ── Main component ── */
 export default function Bookings() {
   const navigate = useNavigate();
 
@@ -102,12 +100,23 @@ export default function Bookings() {
       }
 
       try {
-        const { data } = await axiosInstance.get("/bookings/admin/all", {
-          signal: ctrl.signal,
-        });
+        const [bookingsRes, turfsRes] = await Promise.all([
+          axiosInstance.get("/bookings/admin/all", { signal: ctrl.signal }),
+          axiosInstance.get("/turfs/admin/all", { signal: ctrl.signal }).catch(() => ({ data: [] }))
+        ]);
         if (ctrl.signal.aborted) return;
-        const list = Array.isArray(data) ? data : [];
-        setBookings(list.map(normalizeBooking));
+
+        // Create a map of turf ID/Name to Vendor Name
+        const turfsList = Array.isArray(turfsRes.data) ? turfsRes.data : [];
+        const turfVendorMap = {};
+        turfsList.forEach((t) => {
+          const vName = t.owner?.name ?? t.ownerName ?? t.vendor ?? "—";
+          if (t.name) turfVendorMap[t.name] = vName;
+          if (t._id) turfVendorMap[t._id] = vName;
+        });
+
+        const list = Array.isArray(bookingsRes.data) ? bookingsRes.data : [];
+        setBookings(list.map((b) => normalizeBooking(b, turfVendorMap)));
       } catch (err) {
         if (err?.name === "CanceledError" || err?.name === "AbortError") return;
         console.error("[Bookings] Backend unavailable:", err?.message);
@@ -134,7 +143,7 @@ export default function Bookings() {
     const ms =
       !q ||
       b.turfName?.toLowerCase().includes(q) ||
-      b.userName?.toLowerCase().includes(q);
+      b.vendorName?.toLowerCase().includes(q);
     const ml = locationFilter === "All" || b.turfLocation === locationFilter;
     const mst = statusFilter === "All" || b.status === statusFilter;
     return ms && ml && mst;
@@ -158,15 +167,17 @@ export default function Bookings() {
       {/* Title */}
       <h1 className="bk-page-title">Bookings</h1>
 
-      {/* Toolbar */}
-      <div className="bk-toolbar">
+      {/* List Container wrapping Toolbar and Table */}
+      <div className="bk-list-container">
+        {/* Toolbar */}
+        <div className="bk-toolbar">
         <div className="bk-search-box">
           <i className="bi bi-search" aria-hidden="true" />
           <input
             id="bk-search"
             type="text"
             className="bk-search-input"
-            placeholder="Search turf by name"
+            placeholder="Search turf name or vendor name"
             value={search}
             onChange={(e) => {
               setSearch(e.target.value);
@@ -220,13 +231,12 @@ export default function Bookings() {
         </button>
       </div>
 
-      {/* Table */}
-      <div className="bk-table-wrap">
+        <div className="bk-table-wrap">
         <table className="bk-table" aria-label="All bookings">
           <thead>
             <tr>
               <th>Booking ID</th>
-              <th>Turf Image</th>
+              <th>Vendor Name</th>
               <th>Turf Name</th>
               <th>Turf Location</th>
               <th>User Name</th>
@@ -253,9 +263,7 @@ export default function Bookings() {
                 {paginated.map((bk) => (
                   <tr key={bk._id}>
                     <td className="bk-td-id">{bk.displayId}</td>
-                    <td>
-                      <TurfImage src={bk.turfImage} alt={bk.turfName} />
-                    </td>
+                    <td className="bk-td-vendor">{bk.vendorName}</td>
                     <td className="bk-td-name">{bk.turfName}</td>
                     <td className="bk-td-location">{bk.turfLocation}</td>
                     <td className="bk-td-user">{bk.userName}</td>
@@ -277,6 +285,7 @@ export default function Bookings() {
           </tbody>
         </table>
       </div>
+      </div>
 
       {/* Footer / Pagination */}
       <div className="bk-table-footer">
@@ -290,7 +299,7 @@ export default function Bookings() {
             onClick={() => setPage((p) => Math.max(1, p - 1))}
             disabled={page === 1}
           >
-            Previous
+            <i className="bi bi-chevron-left" />
           </button>
           {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
             <button
@@ -306,7 +315,7 @@ export default function Bookings() {
             onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
             disabled={page === totalPages}
           >
-            Next
+            <i className="bi bi-chevron-right" />
           </button>
         </div>
       </div>

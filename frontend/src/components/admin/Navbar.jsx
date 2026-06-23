@@ -1,8 +1,15 @@
 import React from 'react';
-import { MdSearch, MdNotifications, MdMenu } from 'react-icons/md';
+import { useNavigate } from 'react-router-dom';
+import { MdNotifications, MdMenu } from 'react-icons/md';
 import '../../assets/styles/navbar.css';
 
 export default function Navbar({ title, notificationCount = 0, onMenuToggle }) {
+  const navigate = useNavigate();
+
+  const adminData = JSON.parse(localStorage.getItem("admin") || "{}");
+  const adminName = adminData.name || "Admin";
+  const adminAvatar = adminName.charAt(0).toUpperCase();
+
   return (
     <header className="navbar">
       {/* Hamburger — mobile/tablet only */}
@@ -12,18 +19,6 @@ export default function Navbar({ title, notificationCount = 0, onMenuToggle }) {
 
       {/* Mobile page title (replaces search on small screens) */}
       <span className="navbar-mobile-title">{title || 'Admin Panel'}</span>
-
-      {/* Search — hidden on mobile */}
-      <div className="navbar-search">
-        <span className="navbar-search-icon">
-          <MdSearch size={18} />
-        </span>
-        <input
-          type="text"
-          className="navbar-search-input"
-          placeholder="Search for Vendors, turfs and more..."
-        />
-      </div>
 
       {/* Right side */}
       <div className="navbar-right">
@@ -37,11 +32,15 @@ export default function Navbar({ title, notificationCount = 0, onMenuToggle }) {
         </button>
 
         <div className="navbar-user">
-          <div className="navbar-user-avatar">K</div>
-          <div className="navbar-user-info">
-            <span className="navbar-user-name">Karthikeyan</span>
-            <span className="navbar-user-role">Admin</span>
+          <div 
+            className="navbar-user-avatar" 
+            onClick={() => navigate('/admin/settings')}
+            style={{ cursor: 'pointer' }}
+            title="Settings"
+          >
+            {adminAvatar}
           </div>
+          {/* Admin name/role hidden as requested */}
         </div>
       </div>
     </header>

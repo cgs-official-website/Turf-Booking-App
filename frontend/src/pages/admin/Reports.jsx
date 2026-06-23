@@ -422,6 +422,8 @@ export default function Reports() {
         ))}
       </div>
 
+      {/* List Container wrapping Toolbar and Table */}
+      <div className="rp-list-container">
       {/* Toolbar */}
       <div className="rp-toolbar">
         <div className="rp-search-box">
@@ -492,8 +494,7 @@ export default function Reports() {
         </button>
       </div>
 
-      {/* Table */}
-      <div className="rp-table-wrap">
+        <div className="rp-table-wrap">
         <table className="rp-table">
           <thead>
             <tr>
@@ -581,6 +582,7 @@ export default function Reports() {
           </tbody>
         </table>
       </div>
+      </div>
 
       {/* Footer */}
       <div className="rp-table-footer">
@@ -594,7 +596,7 @@ export default function Reports() {
             onClick={() => setPage((p) => Math.max(1, p - 1))}
             disabled={page === 1}
           >
-            Previous
+            <i className="bi bi-chevron-left" />
           </button>
           {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
             <button
@@ -610,7 +612,7 @@ export default function Reports() {
             onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
             disabled={page === totalPages}
           >
-            Next
+            <i className="bi bi-chevron-right" />
           </button>
         </div>
       </div>

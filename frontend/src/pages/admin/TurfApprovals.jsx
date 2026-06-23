@@ -142,6 +142,7 @@ export default function TurfApprovals() {
         <StatCard label="Approved turfs"    value={counts.approved} iconClass="bi-check-circle-fill" variant="approved" />
         <StatCard label="Rejected turfs"    value={counts.rejected} iconClass="bi-x-circle"         variant="rejected" />
       </div>
+      <div className="ta-list-container">
       <div className="ta-toolbar">
         <div className="ta-search-box">
           <i className="bi bi-search" aria-hidden="true" />
@@ -174,7 +175,7 @@ export default function TurfApprovals() {
           <i className="bi bi-arrow-clockwise" aria-hidden="true" /> Reset Filter
         </button>
       </div>
-      <div className="ta-table-wrap">
+        <div className="ta-table-wrap">
         <table className="ta-table" aria-label="All turfs">
           <thead>
             <tr>
@@ -233,6 +234,7 @@ export default function TurfApprovals() {
           </tbody>
         </table>
       </div>
+      </div>
       <div className="ta-table-footer">
         <span className="ta-showing-label">
           Showing {filtered.length} of {turfs.length} turf{turfs.length !== 1 ? "s" : ""}
@@ -240,7 +242,7 @@ export default function TurfApprovals() {
         <div className="ta-pagination">
           <button className="ta-page-btn"
             onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page === 1}>
-            Previous
+            <i className="bi bi-chevron-left" />
           </button>
           {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
             <button key={p}
@@ -251,7 +253,7 @@ export default function TurfApprovals() {
           ))}
           <button className="ta-page-btn"
             onClick={() => setPage((p) => Math.min(totalPages, p + 1))} disabled={page === totalPages}>
-            Next
+            <i className="bi bi-chevron-right" />
           </button>
         </div>
       </div>

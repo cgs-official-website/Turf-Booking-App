@@ -302,8 +302,10 @@ export default function Payment() {
         />
       </div>
 
-      {/* Toolbar */}
-      <div className="pay-toolbar">
+      {/* List Container (Toolbar + Table + Pagination) */}
+      <div className="pay-list-container">
+        {/* Toolbar */}
+        <div className="pay-toolbar">
         <div className="pay-search-box">
           <i className="bi bi-search" />
           <input
@@ -392,6 +394,7 @@ export default function Payment() {
             )}
           </tbody>
         </table>
+      </div>
       </div>
 
       {/* Footer */}

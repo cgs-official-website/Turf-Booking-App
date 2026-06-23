@@ -18,7 +18,7 @@
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  /* overflow: hidden; */
 }
 
 /* ── Header ─────────────────────────────── */
@@ -210,7 +210,7 @@
   font-family: inherit;
   color: #111111;
   resize: none;
-  outline: none;
+  
   box-sizing: border-box;
   transition: border-color 0.15s;
   min-height: 120px;
@@ -313,7 +313,7 @@
   flex-direction: column;
   box-shadow: 0 12px 48px rgba(0,0,0,0.2);
   animation: rp-modal-in 0.22s ease;
-  overflow: hidden;
+  /* overflow: hidden; */
 }
 
 @keyframes rp-modal-in {
@@ -481,7 +481,7 @@
   border-radius: 14px;
   padding: 15px 16px;
   font-size: 14px; font-family: inherit;
-  color: #111111; resize: none; outline: none;
+  color: #111111; resize: none; 
   box-sizing: border-box; transition: border-color 0.15s;
   min-height: 120px; background: #ffffff;
   scrollbar-width: none; -ms-overflow-style: none;

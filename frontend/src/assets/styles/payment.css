@@ -9,7 +9,7 @@
 
 .pay-page-title {
   font-size: 2rem;
-  font-weight: 700;
+  font-weight: 600;
   color: #111111;
   letter-spacing: -0.3px;
   margin: 0 0 24px;
@@ -78,6 +78,19 @@
 .pay-stat-card__growth.up   { color: #10b981; }
 .pay-stat-card__growth.down { color: #ef4444; }
 
+/* ── List Container ── */
+.pay-list-container {
+  background: #ffffff;
+  border: 1px solid #f0f0f0;
+  border-radius: 14px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  padding-top: 20px;
+  padding-bottom: 20px;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
 /* ── Toolbar ── */
 .pay-toolbar {
   display: flex;
@@ -85,6 +98,7 @@
   gap: 12px;
   margin-bottom: 16px;
   flex-wrap: wrap;
+  padding: 0 20px;
 }
 
 .pay-search-box {
@@ -112,7 +126,7 @@
   background: transparent;
   font-size: 13px;
   color: #111111;
-  outline: none;
+  
   flex: 1;
   font-family: inherit;
 }
@@ -128,7 +142,7 @@
   color: #111111;
   cursor: pointer;
   font-family: inherit;
-  outline: none;
+  
   transition: border-color 0.2s;
   appearance: none;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
@@ -151,18 +165,15 @@
   gap: 6px;
   font-family: inherit;
   font-weight: 600;
-  outline: none;
+  
   transition: background 0.15s;
 }
 .pay-reset-btn:hover { background: #f5f3ff; }
 
 /* ── Table ── */
 .pay-table-wrap {
-  background: #ffffff;
-  border: 1px solid #f0f0f0;
-  border-radius: 14px;
-  overflow: hidden;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  width: 100%;
+  overflow-x: auto;
 }
 
 .pay-table {
@@ -273,7 +284,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px 4px 0;
+  padding: 16px 20px 0;
 }
 
 .pay-showing-label {
@@ -301,7 +312,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  outline: none;
+  
   transition: all 0.12s;
 }
 .pay-page-btn:hover:not(:disabled) { background: #f5f5f5; }
@@ -320,7 +331,37 @@
   .pay-stat-grid { grid-template-columns: repeat(2, 1fr); }
 }
 @media (max-width: 600px) {
-  .pay-stat-grid { grid-template-columns: 1fr; }
+  .pay-stat-grid { grid-template-columns: repeat(2, 1fr); }
   .pay-page { padding: 16px 16px 32px; }
   .pay-page-title { font-size: 1.5rem; }
+}
+@media (max-width: 768px) { 
+  .pay-stat-card__value {
+    font-size: 20px;
+  }
+  .pay-stat-card__label {
+    font-size: 11px;
+  }
+  .pay-stat-card__icon {
+    width: 42px;
+    height: 42px;
+    font-size: 20px;
+  }
+}
+
+/* -- Mobile Table Optimizations -- */
+.pay-table td, .pay-table th { white-space: nowrap; }
+@media (max-width: 768px) {
+  .pay-table td { font-size: 11.5px; padding: 10px 12px; }
+  .pay-table th { font-size: 10px; padding: 10px 12px; }
+}
+
+/* -- 1024px Card 2x2 Grid + Text Fixes -- */
+@media (max-width: 1024px) {
+  .pay-stat-grid { grid-template-columns: repeat(2, 1fr); }
+  .pay-stat-card__label, .pay-stat-card__value { 
+    white-space: nowrap; 
+    overflow: hidden; 
+    text-overflow: ellipsis; 
+  }
 }
