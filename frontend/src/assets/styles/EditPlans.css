@@ -502,7 +502,7 @@
 }
 
 .ep-preview-name {
-  font-size: 22px;
+  font-size: 15px;
   font-weight: 800;
   color: #111827;
   margin-bottom: 4px;
@@ -534,8 +534,8 @@
 .ep-preview-popular .ep-preview-currency { color: #16a34a; }
 
 .ep-preview-amount {
-  font-size: 44px;
-  font-weight: 800;
+  font-size: 30px;
+  font-weight: 600;
   color: #111827;
   line-height: 1;
 }
@@ -1006,12 +1006,12 @@
 
   /* Preview card on mobile */
   .ep-preview-name {
-    font-size: 18px;
+    font-size: 15px;
     padding-right: 80px;
   }
 
   .ep-preview-amount {
-    font-size: 34px;
+    font-size: 30px;
   }
 
   .ep-preview-currency {

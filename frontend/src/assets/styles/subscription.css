@@ -311,38 +311,60 @@
   background: #f0fdf4;
 }
 
+/* ── Plan Management scrollable wrapper ── */
+.sub-plan-management__scroll-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: visible;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: #22c55e #f0f0f0;
+  padding: 4px 0 12px 0;
+}
+
+.sub-plan-management__scroll-wrapper::-webkit-scrollbar {
+  height: 6px;
+}
+
+.sub-plan-management__scroll-wrapper::-webkit-scrollbar-track {
+  background: #f0f0f0;
+  border-radius: 10px;
+}
+
+.sub-plan-management__scroll-wrapper::-webkit-scrollbar-thumb {
+  background: #22c55e;
+  border-radius: 10px;
+}
+
+.sub-plan-management__scroll-wrapper::-webkit-scrollbar-thumb:hover {
+  background: #16a34a;
+}
+
 .sub-plan-management__row {
   display: flex;
   align-items: stretch;
-  gap: 16px;
+  gap: 0;
+  width: 100%;
 }
 
 .sub-plan-management__grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  display: flex;
   gap: 28px;
-  flex: 1;
-  min-width: 0;
   padding: 32px 16px 48px;
-  align-items: start;
+  align-items: stretch;
+  min-width: min-content;
+  width: 100%;
 }
 
-/* Each grid cell should stretch */
-.sub-plan-management__grid > * {
-  max-width: 100%;
-  margin: 0 auto;
+/* Each grid cell should stretch and maintain min-width */
+.sub-plan-management__grid > .plan-card-wrapper {
+  flex: 0 0 280px;
+  max-width: 320px;
+  min-width: 260px;
   display: flex;
   flex-direction: column;
   height: auto;
   min-height: 100%;
-}
-
-/* The PricingCard wrapper div needs to fill the cell */
-.sub-plan-management__grid > div {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
 }
 
 /* Make PricingCard fill the wrapper */
@@ -360,29 +382,6 @@
   transform-origin: center top;
   z-index: 1;
   position: relative;
-}
-
-.sub-plan-management__arrow {
-  flex-shrink: 0;
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  border: 1.5px solid #e8e8e8;
-  background: #fff;
-  color: #555;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 18px;
-  transition: background 0.15s, border-color 0.15s, color 0.15s;
-  align-self: center;
-}
-
-.sub-plan-management__arrow:hover {
-  background: #f0fdf4;
-  border-color: #86efac;
-  color: #16a34a;
 }
 
 /* ── Mobile Plan Selector ── */
@@ -467,6 +466,18 @@
 
   .sub-edit-plans-btn--tab-inline {
     display: none;
+  }
+
+  /* Tablet: scrollable plan cards */
+  .sub-plan-management__grid > .plan-card-wrapper {
+    flex: 0 0 240px;
+    min-width: 220px;
+    max-width: 280px;
+  }
+
+  .sub-plan-management__grid {
+    gap: 20px;
+    padding: 24px 12px 40px;
   }
 }
 
@@ -767,29 +778,40 @@
   .sub-plan-management__row {
     flex-direction: column;
     gap: 0;
+    overflow: visible;
   }
 
-  .sub-plan-management__arrow {
-    display: none;
+  .sub-plan-management__scroll-wrapper {
+    overflow-x: auto;
+    padding: 4px 0 12px 0;
   }
 
   .sub-plan-management__grid {
-    display: grid !important;
-    grid-template-columns: 1fr !important;
-    gap: 0 !important;
-    padding: 0 !important;
+    display: flex !important;
+    gap: 16px !important;
+    padding: 0 4px 16px 4px !important;
     align-items: stretch !important;
+    min-width: min-content;
+  }
+
+  /* On mobile: show only selected plan in scrollable container */
+  .sub-plan-management__grid > .plan-card-wrapper {
+    flex: 0 0 280px !important;
+    min-width: 260px !important;
+    max-width: 300px !important;
+    display: flex;
+    flex-direction: column;
   }
 
   /* Hide all plan cards by default on mobile */
-  .sub-plan-management__grid > * {
+  .sub-plan-management__grid > .plan-card-wrapper {
     display: none !important;
     min-height: auto;
   }
 
   /* Show only the selected plan card */
-  .sub-plan-management__grid > .plan-card--visible {
-    display: block !important;
+  .sub-plan-management__grid > .plan-card-wrapper.plan-card--visible {
+    display: flex !important;
     width: 100%;
     height: auto;
   }
@@ -836,6 +858,7 @@
     font-size: 12px;
   }
 }
+
 @media (max-width: 768px) {
   .sub-page__title {
     display: none;
