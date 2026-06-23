@@ -367,6 +367,7 @@ export default function Subscriptions() {
               </button>
             </div>
 
+            <div className="sub-list-container">
             {/* Turf Grid */}
             <div className="sub-page__grid">
               {loading ? (
@@ -381,6 +382,7 @@ export default function Subscriptions() {
                 <p className="sub-page__empty">No turfs match your filters.</p>
               )}
             </div>
+            </div>
 
             {/* Pagination */}
             <div className="sub-page__pagination">
@@ -393,7 +395,7 @@ export default function Subscriptions() {
                   disabled={safePage === 1}
                   onClick={() => setPage((p) => Math.max(1, p - 1))}
                 >
-                  Previous
+                  <i className="bi bi-chevron-left" />
                 </button>
                 {Array.from({ length: totalPages }, (_, i) => i + 1).map((n) => (
                   <button
@@ -409,7 +411,7 @@ export default function Subscriptions() {
                   disabled={safePage === totalPages}
                   onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                 >
-                  Next
+                  <i className="bi bi-chevron-right" />
                 </button>
               </div>
             </div>

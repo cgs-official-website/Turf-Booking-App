@@ -151,7 +151,7 @@
 
 .sub-search__input {
   border: none;
-  outline: none;
+  
   font-size: 13px;
   color: #333;
   background: transparent;
@@ -170,7 +170,7 @@
   font-size: 13px;
   color: #555;
   background: #fff;
-  outline: none;
+  
   cursor: pointer;
   width: 150px;
   flex-shrink: 0;

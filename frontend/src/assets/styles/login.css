@@ -97,7 +97,7 @@
   border: 1px solid #d9d9d9;
   border-radius: 8px;
   padding: 0 16px;
-  outline: none;
+  
   font-size: 14px;
   transition: border-color 0.2s ease;
 }

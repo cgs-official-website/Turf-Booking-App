@@ -6,6 +6,7 @@ html,
 body,
 #root {
   width: 100%;
+  /* overflow-x: hidden; */
 }
 
 * {
@@ -16,7 +17,10 @@ body,
   width: 100%;
   display: flex;
   justify-content: center;
-  padding: 0;
+  padding: 28px 28px 40px;
+  background: #f4f6f8;
+  font-family: "Poppins", system-ui, sans-serif;
+  min-height: 100vh;
 }
 
 .dashboard-content {
@@ -26,19 +30,12 @@ body,
   margin: 0 auto;
 }
 
-/* =========================
-   HEADER SECTION
-========================= */
-
-.dashboard-header {
-  margin-bottom: 24px;
-}
-
 .dashboard-title {
-  font-size: 40px;
-  font-weight: 700;
-  color: #101828;
-  margin: 0;
+  font-size: 2rem;
+  font-weight: 600;
+  color: #111111;
+  letter-spacing: -0.3px;
+  margin: 0 0 24px;
 }
 
 /* =========================
@@ -48,31 +45,29 @@ body,
 .dashboard-content .stats-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 16px;
+  gap: 14px;
   width: 100%;
+  margin-bottom: 24px;
 }
 
 /* =========================
    CARD
 ========================= */
 
+
 .dashboard-content .stat-card {
   width: auto;
   min-width: 0;
   max-width: none;
   background: #ffffff;
-  border: 1px solid #eaecf0;
+  border: 1px solid #f0f0f0;
   border-radius: 14px;
-
-  padding: 1.1rem 1.25rem;
-
+  padding: 18px 20px;
   height: auto;
-
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
-
-  box-shadow: 0px 1px 2px rgba(16, 24, 40, 0.05);
+  align-items: center;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
 }
 
 /* =========================
@@ -85,37 +80,37 @@ body,
 }
 
 .stat-content h3 {
-  margin: 0 0 14px 0;
-
-  font-size: 14px;
+  margin: 0 0 6px 0;
+  font-size: 12px;
   font-weight: 500;
-  line-height: 20px;
-
-  color: #667085;
-
+  line-height: normal;
+  color: #888888;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
   white-space: nowrap;
 }
 
 .stat-content h2 {
   margin: 0;
-
-  font-family: 'Poppins', sans-serif;
-  font-size: 39.78px;
-  font-weight: 500;
-  line-height: 39.78px;
-  letter-spacing: -0.99px;
-
-  color: #101828;
+  font-size: 30px;
+  font-weight: 700;
+  line-height: 1;
+  color: #111111;
 }
 
 .stat-content p {
-  margin-top: 12px;
-
-  font-size: 14px;
+  margin-top: 8px;
+  font-size: 13px;
   font-weight: 500;
-  line-height: 20px;
+  line-height: 1.2;
+  color: #0a9847;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
 
-  color: #22c55e;
+.stat-content p.negative-growth {
+  color: #e11d48;
 }
 
 /* =========================
@@ -123,17 +118,13 @@ body,
 ========================= */
 
 .stat-icon {
-  width: 56px;
-  height: 56px;
-
-  border-radius: 16px;
-
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
-
-  font-size: 28px;
-
+  font-size: 22px;
   flex-shrink: 0;
 }
 
@@ -142,37 +133,38 @@ body,
 ========================= */
 
 .vendor-icon {
-  background: rgba(79, 70, 229, 0.12);
-  color: #4f46e5;
+  background: #f3f4ff;
+  color: #6366f1;
 }
 
 .revenue-icon {
-  background: rgba(34, 197, 94, 0.12);
-  color: #22c55e;
+  background: #ecfdf5;
+  color: #0a9847;
 }
 
 .subscription-icon {
-  background: rgba(79, 70, 229, 0.12);
-  color: #4f46e5;
+  background: #fff6a8;
+  color: #edb200;
 }
 
 .turf-icon {
-  background: rgba(234, 179, 8, 0.12);
-  color: #eab308;
+  background: #eef2ff;
+  color: #4f46e5;
 }
 
 .revenue-section {
   width: 100%;
-  min-width: 0;
   max-width: 100%;
   min-height: 628px;
-  background: #FFFFFF;
-  border: 1px solid #EAECF0;
-  border-radius: 20px;
+  background: #ffffff;
+  border: 1px solid #f0f0f0;
+  border-radius: 14px;
   padding: 32px;
   margin-bottom: 32px;
+  /* overflow: hidden; */
   display: flex;
   flex-direction: column;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
 }
 
 .revenue-header {
@@ -186,12 +178,12 @@ body,
   font-size: 24px;
   font-weight: 700;
   margin-bottom: 6px;
-  color: #101828;
+  color: #111111;
 }
 
 .revenue-header p {
   font-size: 14px;
-  color: #667085;
+  color: #888888;
   margin: 0;
 }
 
@@ -204,8 +196,8 @@ body,
 
 .segmented-control {
   display: flex;
-  background: #F9FAFB;
-  border: 1px solid #EAECF0;
+  background: #f4f6f8;
+  border: 1px solid #f0f0f0;
   border-radius: 8px;
   padding: 4px;
 }
@@ -217,40 +209,40 @@ body,
   border-radius: 6px;
   font-size: 14px;
   font-weight: 600;
-  color: #667085;
+  color: #555555;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
 .filter-btn.active {
-  background: #FFFFFF;
-  color: #10B981;
-  box-shadow: 0px 1px 3px rgba(16, 24, 40, 0.1), 0px 1px 2px rgba(16, 24, 40, 0.06);
+  background: #ffffff;
+  color: #0a9847;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
 }
 
 .action-btn {
   display: flex;
   align-items: center;
   gap: 8px;
-  background: #FFFFFF;
-  border: 1px solid #EAECF0;
+  background: #ffffff;
+  border: 1px solid #ebebeb;
   padding: 10px 16px;
   border-radius: 8px;
   font-size: 14px;
   font-weight: 600;
-  color: #344054;
+  color: #111111;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
 .action-btn:hover {
-  background: #F9FAFB;
+  background: #f9fdf9;
 }
 
 .revenue-summary span {
   font-size: 12px;
   font-weight: 600;
-  color: #667085;
+  color: #888888;
   letter-spacing: 0.05em;
   text-transform: uppercase;
 }
@@ -263,130 +255,48 @@ body,
 }
 
 .revenue-total h2 {
-  font-family: 'Poppins', sans-serif;
-  font-size: 39.78px;
+  font-size: 48px;
   font-weight: 700;
-  line-height: 39.78px;
-  letter-spacing: -0.99px;
-  color: #101828;
+  color: #111111;
   margin: 0;
 }
 
 .revenue-total p {
   font-size: 18px;
   font-weight: 600;
-  color: #16A34A;
+  color: #0a9847;
   margin: 0;
+}
+
+.revenue-total p.negative-growth {
+  color: #e11d48;
 }
 
 .chart-container {
   width: 100%;
-  overflow: visible;
   height: 420px;
   margin-top: 40px;
 }
 
-/* =========================
-   TURF APPROVALS
-========================= */
-
-.dashboard-turf-approvals {
-  width: 100%;
-  margin-top: 32px;
-}
-
-.dashboard-turf-approvals>* {
-  width: 100%;
-  min-height: 408px;
-  border: 1px solid #D1D1D1;
-  border-radius: 21.49px;
-  background: #FFFFFF;
-  overflow: hidden;
-}
-
-.dashboard-turf-approvals .card .rta-card {
-  border: none;
-  box-shadow: none;
-  background: transparent;
-}
-
-/* =========================
-   RECENT BOOKINGS
-========================= */
-
-.dashboard-bottom-row {
-  display: flex;
-  gap: 16px;
-  margin-top: 24px;
-}
-
-.dashboard-recent-bookings {
-  width: 512px;
-  flex-shrink: 0;
-}
-
-.dashboard-recent-bookings>* {
-  width: 100%;
-  min-height: 202px;
-
-  border: 1px solid #D1D1D1;
-  border-radius: 13.04px;
-
-  background: #FFFFFF;
-
-  overflow: hidden;
-}
-
-.dashboard-future-space {
-  flex: 1;
-  min-height: 202px;
-}
-
-/* =========================
-   TABLE ALIGNMENT
-========================= */
-
-.dashboard-turf-approvals table,
-.dashboard-recent-bookings table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.dashboard-turf-approvals thead,
-.dashboard-recent-bookings thead {
-  height: 48px;
-}
-
-.dashboard-turf-approvals tbody tr,
-.dashboard-recent-bookings tbody tr {
-  height: 56px;
-}
-
-.dashboard-recent-bookings .card .rb-card {
-  border: none;
-  box-shadow: none;
-  background: transparent;
-}
-
 .custom-tooltip {
-  background: #FFFFFF;
+  background: #ffffff;
   border-radius: 12px;
   padding: 12px 16px;
-  box-shadow: 0px 4px 6px -2px rgba(16, 24, 40, 0.03), 0px 12px 16px -4px rgba(16, 24, 40, 0.08);
-  border: none;
+  box-shadow: 0 4px 6px -2px rgba(0, 0, 0, 0.03), 0 12px 16px -4px rgba(0, 0, 0, 0.08);
+  border: 1px solid #ebebeb;
 }
 
 .tooltip-label {
   font-size: 12px;
   font-weight: 500;
-  color: #98A2B3;
+  color: #888888;
   margin: 0 0 4px 0;
 }
 
 .tooltip-value {
   font-size: 14px;
   font-weight: 700;
-  color: #101828;
+  color: #111111;
   margin: 0;
   display: flex;
   align-items: center;
@@ -396,7 +306,7 @@ body,
 .tooltip-dot {
   width: 8px;
   height: 8px;
-  background-color: #10B981;
+  background-color: #0a9847;
   border-radius: 50%;
   display: inline-block;
 }
@@ -406,62 +316,34 @@ body,
 ========================= */
 
 @media screen and (max-width: 1024px) {
-  .dashboard-wrapper {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  .dashboard-title {
-    font-size: 32px;
-  }
-
   .chart-container {
-    width: 100%;
-    height: 280px;
-    overflow: visible;
-  }
-
-  .revenue-wrapper {
-    overflow-x: auto;
-    width: 100%;
-  }
-
-  .revenue-section {
-    width: 100%;
-    min-width: 0;
-    min-height: 557px;
+    height: 300px;
   }
 
   .dashboard-content .stats-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 16px;
+    gap: 14px;
     width: 100%;
     min-width: 600px; /* Force horizontal scroll if smaller than 600px */
   }
 
   .dashboard-content .stat-card {
-    width: auto;
-    min-width: 0;
-    max-width: none;
-    height: auto;
-    padding: 1.1rem 1.25rem;
-    border-radius: 14px;
-    border: 1px solid #D1D1D1;
+    padding: 16px;
   }
 
   .stat-content h3 {
     font-size: 11px;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
   }
 
   .stat-content h2 {
-    font-size: 20px;
-    line-height: 24px;
+    font-size: 24px;
+    line-height: 1;
   }
 
   .stat-content p {
-    font-size: 10px;
+    font-size: 11px;
     margin-top: 6px;
   }
 
@@ -471,36 +353,6 @@ body,
     border-radius: 12px;
     font-size: 20px;
   }
-
-  .dashboard-turf-approvals {
-    overflow-x: auto;
-    width: 100%;
-  }
-
-  .dashboard-turf-approvals>* {
-    width: 100%;
-    min-width: 738px;
-    min-height: 408px;
-  }
-
-  .dashboard-bottom-row {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-  }
-
-  .dashboard-recent-bookings {
-    width: 100%;
-  }
-
-  .dashboard-recent-bookings>* {
-    width: 100%;
-    min-height: 290.77px;
-  }
-
-  .dashboard-future-space {
-    min-height: 290.77px;
-  }
 }
 
 /* =========================
@@ -508,63 +360,25 @@ body,
 ========================= */
 
 @media screen and (max-width: 768px) {
-  .dashboard-wrapper {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  .dashboard-title {
-    font-size: 24px;
-  }
-
   .chart-container {
-    width: 100%;
-    height: 220px;
-    overflow: visible;
-  }
-
-  .revenue-wrapper {
-    overflow-x: auto;
-    width: 100%;
-  }
-
-  .revenue-section {
-    width: 100%;
-    min-width: 0;
-    min-height: 557px;
+    height: 250px;
   }
 
   .revenue-header {
     flex-direction: column;
-    gap: 16px;
-  }
-
-  .revenue-actions {
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-  }
-
-  .revenue-total h2 {
-    font-size: 32px;
+    gap: 20px;
   }
 
   .dashboard-content .stats-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 16px;
+    gap: 14px;
     width: 100%;
     min-width: 0;
   }
 
   .dashboard-content .stat-card {
-    width: auto;
-    min-width: 0;
-    max-width: none;
-    height: auto;
-    padding: 1.1rem 1.25rem;
-    border-radius: 14px;
-    border: 1px solid #D1D1D1;
+    padding: 14px;
   }
 
   .stat-content h3 {
@@ -573,54 +387,34 @@ body,
   }
 
   .stat-content h2 {
-    font-size: 18px;
-    line-height: 18px;
+    font-size: 20px;
+    line-height: 1;
   }
 
   .stat-content p {
-    font-size: 9px;
+    font-size: 10px;
     margin-top: 6px;
   }
 
   .stat-icon {
-    width: 36px;
-    height: 36px;
-    border-radius: 12px;
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
     font-size: 18px;
   }
+}
 
-  .dashboard-turf-approvals {
-    overflow-x: auto;
-    width: 100%;
+/* =========================
+   VERY SMALL MOBILE
+========================= */
+
+@media screen and (max-width: 400px) {
+  .dashboard-content .stats-grid {
+    grid-template-columns: 1fr;
   }
 
-  .dashboard-turf-approvals table {
-    min-width: 700px;
-  }
-
-  .dashboard-turf-approvals>* {
-    width: 100%;
-    min-width: 700px;
-    min-height: 408px;
-  }
-
-  .dashboard-bottom-row {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-  }
-
-  .dashboard-recent-bookings {
-    width: 100%;
-  }
-
-  .dashboard-recent-bookings>* {
-    min-height: 150.71px;
-    border-radius: 9.73px;
-    border: 0.75px solid #D1D1D1;
-  }
-
-  .dashboard-future-space {
-    min-height: 150.71px;
+  .dashboard-content .stat-card {
+    height: auto;
+    min-height: 80px;
   }
 }

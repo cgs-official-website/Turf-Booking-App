@@ -9,12 +9,6 @@ import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../services/axiosInstance";
 import "../../assets/styles/recentBookings.css";
 
-/* ── Mock fallback ── */
-const MOCK_RECENT = [
-  { _id: "r001", displayId: "BKG-5001", userName: "Rahul Sharma", date: "Jun 5, 2026",  status: "confirmed" },
-  { _id: "r002", displayId: "BKG-5002", userName: "Priya Patel",  date: "Jun 6, 2026",  status: "pending"   },
-  { _id: "r003", displayId: "BKG-5003", userName: "Amit Kumar",   date: "Jun 7, 2026",  status: "rejected"  },
-];
 
 /* ── Normalise ── */
 function normalizeRecent(b) {
@@ -80,7 +74,8 @@ export default function RecentBookings({ limit = 3, showHeader = true }) {
         setBookings(recent);
       } catch (err) {
         if (err?.name === "CanceledError" || err?.name === "AbortError") return;
-        setBookings(MOCK_RECENT.slice(0, limit).map(normalizeRecent));
+        console.error("[RecentBookings] Backend unavailable:", err?.message);
+        setBookings([]);
       } finally {
         if (!ctrl.signal.aborted) setLoading(false);
       }

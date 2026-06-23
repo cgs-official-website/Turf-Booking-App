@@ -10,7 +10,7 @@ import {
 import { FaIndianRupeeSign } from "react-icons/fa6";
 import { HiOutlineLocationMarker } from "react-icons/hi";
 import RecentTurfApprovals from "../../components/admin/RecentTurfApprovals";
-import RecentBookings from "../../components/admin/RecentBookings";
+import RecentBookings from "../../components/admin/RecentBookings.jsx";
 
 const CustomTooltip = ({ active, payload, label }) => {
   if (active && payload && payload.length) {
@@ -116,16 +116,13 @@ export default function Dashboard() {
   return (
     <div className="dashboard-wrapper">
       <div className="dashboard-content">
-        <div className="dashboard-header">
-          <h1 className="dashboard-title">Dashboard</h1>
-        </div>
-
+        <h1 className="dashboard-title">Dashboard</h1>
         <div className="stats-grid">
           <div className="stat-card">
             <div className="stat-content">
               <h3>Total Vendors</h3>
               <h2>{stats.totalVendors}</h2>
-              <p className="stat-growth">
+              <p className={`stat-growth ${stats.vendorGrowth?.count < 0 ? "negative-growth" : ""}`}>
                 {stats.vendorGrowth?.count >= 0 ? "+" : ""}{" "}
                 {stats.vendorGrowth?.count} this month
               </p>
@@ -143,7 +140,7 @@ export default function Dashboard() {
                 {stats.totalRevenue?.toLocaleString("en-IN") ||
                   stats.totalRevenue}
               </h2>
-              <p className="stat-growth">
+              <p className={`stat-growth ${stats.revenueGrowth?.percentage < 0 ? "negative-growth" : ""}`}>
                 {stats.revenueGrowth?.percentage >= 0 ? "↑" : "↓"}{" "}
                 {Math.abs(stats.revenueGrowth?.percentage || 0)}% vs last month
               </p>
@@ -158,7 +155,7 @@ export default function Dashboard() {
             <div className="stat-content">
               <h3>Active Subscription</h3>
               <h2>{stats.activeSubscriptions}</h2>
-              <p className="stat-growth">
+              <p className={`stat-growth ${stats.subscriptionGrowth?.count < 0 ? "negative-growth" : ""}`}>
                 {stats.subscriptionGrowth?.count >= 0 ? "+" : ""}{" "}
                 {stats.subscriptionGrowth?.count} this month
               </p>
@@ -173,7 +170,7 @@ export default function Dashboard() {
             <div className="stat-content">
               <h3>Active Turfs</h3>
               <h2>{stats.totalTurfs}</h2>
-              <p className="stat-growth">
+              <p className={`stat-growth ${stats.turfGrowth?.count < 0 ? "negative-growth" : ""}`}>
                 {stats.turfGrowth?.count >= 0 ? "+" : ""}{" "}
                 {stats.turfGrowth?.count} this month
               </p>
@@ -229,6 +226,7 @@ export default function Dashboard() {
                     ? stats.chartTotalRevenue.toLocaleString("en-IN") 
                     : 0}
                 </h2>
+
                 <p>
                   {stats.chartRevenueGrowth?.percentage >= 0 ? "↑" : "↓"}{" "}
                   {Math.abs(stats.chartRevenueGrowth?.percentage || 0)}%
@@ -290,6 +288,7 @@ export default function Dashboard() {
             </ResponsiveContainer>
           </div>
         </div>
+
 
         <div className="dashboard-turf-approvals">
           <div className="card">

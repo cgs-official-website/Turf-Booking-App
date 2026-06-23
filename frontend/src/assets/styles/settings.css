@@ -170,14 +170,14 @@
   color: #111;
   background-color: #f9fafb;
   box-sizing: border-box;
-  outline: none;
+  
   font-family: inherit;
 }
 
 .form-group input:focus {
   border-color: #0A9847;
   background-color: #fff;
-  box-shadow: 0 0 0 3px rgba(10, 152, 71, 0.1);
+  
 }
 
 /* Right Card - Security */

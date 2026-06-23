@@ -57,7 +57,7 @@
   width: 100%;
   max-width: 1400px;
   margin: 0 auto;
-  padding: 32px;
+  /* padding: 32px; */
 }
 
 /* Page container */
@@ -79,7 +79,7 @@
 }
 
 /* Responsive */
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   .sidebar {
     transform: translateX(-100%);
     transition: transform 0.3s ease;
@@ -93,7 +93,7 @@
     margin-left: 0;
   }
   
-  .layout-content {
+  /* .layout-content {
     padding: 16px;
-  }
+  } */
 }

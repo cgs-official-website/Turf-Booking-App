@@ -1,7 +1,6 @@
 import React from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import '../../assets/styles/sidebar.css';
-import logo from '../../assets/images/logo.png';
 
 const navItems = [
   {
@@ -129,12 +128,19 @@ export default function Sidebar({ sidebarOpen }) {
 
   const activePage = getActivePage();
 
+  const adminData = JSON.parse(localStorage.getItem("admin") || "{}");
+  const adminName = adminData.name || "Admin";
+  const adminAvatar = adminName.charAt(0).toUpperCase();
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("admin");
+    navigate("/admin/login");
+  };
+
   return (
     <aside className={`sidebar ${sidebarOpen ? "open" : ""}`}>
       <div className="sidebar-header">
-        <div className="sidebar-logo-wrapper">
-          <img src={logo} alt="Namma Ooru Turf" className="sidebar-logo-image" />
-        </div>
         <div className="sidebar-title-wrapper">
           <div className="sidebar-title">
             Admin <span>panel</span>
@@ -157,14 +163,14 @@ export default function Sidebar({ sidebarOpen }) {
 
       <div className="sidebar-footer">
         <div className="sidebar-user">
-          <div className="sidebar-avatar">K</div>
+          <div className="sidebar-avatar">{adminAvatar}</div>
           <div className="sidebar-user-info">
-            <span className="sidebar-user-name">Karthikeyan</span>
+            <span className="sidebar-user-name">{adminName}</span>
             <span className="sidebar-user-role">Admin</span>
           </div>
         </div>
-        <button className="sidebar-logout" onClick={() => navigate("/admin/login")}>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <button className="sidebar-logout" onClick={handleLogout} title="Logout">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
             <polyline points="16 17 21 12 16 7" />
             <line x1="21" y1="12" x2="9" y2="12" />

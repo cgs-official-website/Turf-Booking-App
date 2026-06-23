@@ -1,7 +1,7 @@
 .vendor-card {
   background-color: #ffffff;
   border-radius: 12px;
-  overflow: hidden;
+  /* overflow: hidden; */
   border: 1px solid #e5e5e5;
   transition: all 0.3s ease;
   cursor: pointer;
@@ -9,7 +9,7 @@
 }
 
 .vendor-card:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  
   transform: translateY(-4px);
 }
 

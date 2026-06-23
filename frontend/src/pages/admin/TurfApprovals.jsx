@@ -72,7 +72,6 @@ export default function TurfApprovals() {
   const navigate = useNavigate();
   const [turfs,     setTurfs]     = useState([]);
   const [loading,   setLoading]   = useState(true);
-  const [usingMock, setUsingMock] = useState(false);
   const [search,       setSearch]       = useState("");
   const [cityFilter,   setCityFilter]   = useState("All");
   const [statusFilter, setStatusFilter] = useState("All");
@@ -98,12 +97,10 @@ export default function TurfApprovals() {
         if (ctrl.signal.aborted) return;
         const list = Array.isArray(data) ? data : [];
         setTurfs(list.map(normalizeTurf));
-        setUsingMock(false);
       } catch (err) {
         if (err?.name === "CanceledError" || err?.name === "AbortError") return;
-        console.warn("[TurfApprovals] Backend unavailable — using mock data.", err?.message);
-        setTurfs(MOCK_TURFS.map(normalizeTurf));
-        setUsingMock(true);
+        console.error("[TurfApprovals] Backend unavailable:", err?.message);
+        setTurfs([]);
       } finally {
         if (!ctrl.signal.aborted) setLoading(false);
       }
@@ -138,18 +135,14 @@ export default function TurfApprovals() {
   return (
     <div className="ta-page">
       <Toast toasts={toasts} remove={(id) => setToasts((p) => p.filter((t) => t.id !== id))} />
-      {usingMock && (
-        <div className="ta-mock-banner">
-          <i className="bi bi-exclamation-triangle" />
-          Backend not connected — showing demo data.
-        </div>
-      )}
+
       <h1 className="ta-page-title">Turf Approvals</h1>
       <div className="ta-stat-grid">
         <StatCard label="Pending approvals" value={counts.pending}  iconClass="bi-clock"            variant="pending"  />
         <StatCard label="Approved turfs"    value={counts.approved} iconClass="bi-check-circle-fill" variant="approved" />
         <StatCard label="Rejected turfs"    value={counts.rejected} iconClass="bi-x-circle"         variant="rejected" />
       </div>
+      <div className="ta-list-container">
       <div className="ta-toolbar">
         <div className="ta-search-box">
           <i className="bi bi-search" aria-hidden="true" />
@@ -182,7 +175,7 @@ export default function TurfApprovals() {
           <i className="bi bi-arrow-clockwise" aria-hidden="true" /> Reset Filter
         </button>
       </div>
-      <div className="ta-table-wrap">
+        <div className="ta-table-wrap">
         <table className="ta-table" aria-label="All turfs">
           <thead>
             <tr>
@@ -241,6 +234,7 @@ export default function TurfApprovals() {
           </tbody>
         </table>
       </div>
+      </div>
       <div className="ta-table-footer">
         <span className="ta-showing-label">
           Showing {filtered.length} of {turfs.length} turf{turfs.length !== 1 ? "s" : ""}
@@ -248,7 +242,7 @@ export default function TurfApprovals() {
         <div className="ta-pagination">
           <button className="ta-page-btn"
             onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page === 1}>
-            Previous
+            <i className="bi bi-chevron-left" />
           </button>
           {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
             <button key={p}
@@ -259,7 +253,7 @@ export default function TurfApprovals() {
           ))}
           <button className="ta-page-btn"
             onClick={() => setPage((p) => Math.min(totalPages, p + 1))} disabled={page === totalPages}>
-            Next
+            <i className="bi bi-chevron-right" />
           </button>
         </div>
       </div>
