@@ -141,12 +141,7 @@ export default function EditPlans({ onBack, onSave }) {
 
   useEffect(() => {
     loadPlans();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
-  const selected = plans.find((p) => p.id === selectedId) || plans[0];
-
-  const updateSelected = (field, value) => {
     setPlans((prev) =>
       prev.map((p) => {
         if (p.id === selectedId) {
@@ -156,7 +151,7 @@ export default function EditPlans({ onBack, onSave }) {
         return p;
       })
     );
-  };
+  });
 
   const toggleMostPopular = () => {
     if (!selected) return;
@@ -220,6 +215,7 @@ export default function EditPlans({ onBack, onSave }) {
         await subscriptionApi.deletePlan(planToDelete._id);
         toast.success('Plan deleted successfully');
       }
+
       const remaining = plans.filter((p) => p.id !== selectedId);
       setPlans(remaining);
       setSelectedId(remaining[0]?.id || null);
@@ -709,21 +705,21 @@ export default function EditPlans({ onBack, onSave }) {
         </div>
       </div>
 
-{/* Delete Modal */ }
-{
-  showDeleteModal && (
-    <div className="ep-modal-overlay">
-      <div className="ep-modal">
-        <h3>Delete Plan</h3>
-        <p>Are you sure you want to delete "{selected?.name}"?</p>
-        <div className="ep-modal-actions">
-          <button onClick={() => setShowDeleteModal(false)}>Cancel</button>
-          <button onClick={handleDeletePlan} className="ep-modal-delete-btn">Delete</button>
+
+      {/* Delete Modal */}
+      {showDeleteModal && (
+        <div className="ep-modal-overlay">
+          <div className="ep-modal">
+            <h3>Delete Plan</h3>
+            <p>Are you sure you want to delete "{selected?.name}"?</p>
+            <div className="ep-modal-actions">
+              <button onClick={() => setShowDeleteModal(false)}>Cancel</button>
+              <button onClick={handleDeletePlan} className="ep-modal-delete-btn">Delete</button>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
-  )
-}
+      )}
+
     </AdminLayout>
   );
 }
