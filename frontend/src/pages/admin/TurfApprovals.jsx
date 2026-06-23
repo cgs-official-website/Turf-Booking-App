@@ -237,7 +237,7 @@ export default function TurfApprovals() {
       </div>
       <div className="ta-table-footer">
         <span className="ta-showing-label">
-          Showing {filtered.length} of {turfs.length} turf{turfs.length !== 1 ? "s" : ""}
+          Showing {paginated.length} of {filtered.length} turf{filtered.length !== 1 ? "s" : ""}
         </span>
         <div className="ta-pagination">
           <button className="ta-page-btn"

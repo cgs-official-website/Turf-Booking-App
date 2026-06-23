@@ -293,8 +293,8 @@ export default function Bookings() {
       {/* Footer / Pagination */}
       <div className="bk-table-footer">
         <span className="bk-showing-label">
-          Showing {filtered.length} of {bookings.length} turf
-          {bookings.length !== 1 ? "s" : ""}
+          Showing {paginated.length} of {filtered.length} booking
+          {filtered.length !== 1 ? "s" : ""}
         </span>
         <div className="bk-pagination">
           <button

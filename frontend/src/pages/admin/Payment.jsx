@@ -400,12 +400,16 @@ export default function Payment() {
       {/* Footer */}
       <div className="pay-table-footer">
         <span className="pay-showing-label">
-          Showing {filtered.length} of {rows.length} record{rows.length !== 1 ? "s" : ""}
+          Showing {paginated.length} of {filtered.length} record{filtered.length !== 1 ? "s" : ""}
         </span>
         <div className="pay-pagination">
           <button className="pay-page-btn"
             onClick={() => setPage((p) => Math.max(1, p - 1))}
-            disabled={page === 1}>Previous</button>
+            disabled={page === 1}
+            aria-label="Previous"
+          >
+            <i className="bi bi-chevron-left" />
+          </button>
           {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
             <button key={p}
               className={`pay-page-btn${p === page ? " pay-page-btn--active" : ""}`}
@@ -413,7 +417,11 @@ export default function Payment() {
           ))}
           <button className="pay-page-btn"
             onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-            disabled={page === totalPages}>Next</button>
+            disabled={page === totalPages}
+            aria-label="Next"
+          >
+            <i className="bi bi-chevron-right" />
+          </button>
         </div>
       </div>
     </div>

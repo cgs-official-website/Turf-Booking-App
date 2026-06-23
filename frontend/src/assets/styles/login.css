@@ -181,3 +181,7 @@
     height: 44px;
   }
 }
+.password-input-wrapper { position: relative; display: flex; align-items: center; }
+.password-input-wrapper input { padding-right: 40px; width: 100%; }
+.password-toggle-icon { position: absolute; right: 12px; background: transparent; border: none; display: flex; align-items: center; justify-content: center; color: #6b7280; cursor: pointer; padding: 4px; outline: none; }
+.password-toggle-icon:hover { color: #111827; }

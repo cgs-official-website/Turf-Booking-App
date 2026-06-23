@@ -471,8 +471,7 @@
 }
 
 @media (max-width: 900px) {
-  color: var(--rp-text-secondary);
-}
+
 .rp-td-date {
   color: var(--rp-text-secondary);
   font-size: 12px;
@@ -498,6 +497,7 @@
   color: var(--rp-brand);
   flex-shrink: 0;
   text-transform: uppercase;
+}
 }
 
 /* ── Status Badges ────────────────────── */

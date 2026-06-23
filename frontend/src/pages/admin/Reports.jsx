@@ -587,8 +587,8 @@ export default function Reports() {
       {/* Footer */}
       <div className="rp-table-footer">
         <span className="rp-showing-label">
-          Showing {filtered.length} of {reports.length} report
-          {reports.length !== 1 ? "s" : ""}
+          Showing {paginated.length} of {filtered.length} report
+          {filtered.length !== 1 ? "s" : ""}
         </span>
         <div className="rp-pagination">
           <button

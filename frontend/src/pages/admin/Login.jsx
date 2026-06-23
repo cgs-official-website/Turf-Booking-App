@@ -3,10 +3,12 @@ import { useNavigate, Link } from "react-router-dom";
 import logo from "../../assets/images/logo.png";
 import "../../assets/styles/login.css";
 import { adminLogin } from "../../services/adminApi";
+import { FiEye, FiEyeOff } from "react-icons/fi";
 
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   
@@ -87,14 +89,24 @@ function Login() {
 
             <div className="form-group">
               <label>Password</label>
-              <input
-                type="password"
-                placeholder="Enter your Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                disabled={loading}
-              />
+              <div className="password-input-wrapper">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  placeholder="Enter your Password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  disabled={loading}
+                />
+                <button 
+                  type="button"
+                  className="password-toggle-icon"
+                  onClick={() => setShowPassword(!showPassword)}
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                >
+                  {showPassword ? <FiEyeOff size={18} /> : <FiEye size={18} />}
+                </button>
+              </div>
             </div>
 
             <Link 

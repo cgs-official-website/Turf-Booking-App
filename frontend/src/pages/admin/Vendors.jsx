@@ -230,7 +230,7 @@ export default function Vendors() {
         </button>
 
         <div className="pagination-info">
-          Showing {paginated.length} to {filteredVendors.length} results | Rows
+          Showing {paginated.length} of {filteredVendors.length} results | Rows
           per page <span className="rows-per-page">04</span>
         </div>
       </div>
