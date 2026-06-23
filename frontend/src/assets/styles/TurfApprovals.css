@@ -7,18 +7,18 @@
 /* ── 1. Design Tokens ─────────────────── */
 :root {
   /* Status palettes */
-  --clr-pending-bg: #FFF6A8;
-  --clr-pending-txt: #EDB200;
+  --clr-pending-bg: #fff6a8;
+  --clr-pending-txt: #edb200;
   --clr-pending-border: #f59f00;
 
-  --clr-review:#2563EB;
+  --clr-review: #2563eb;
 
-  --clr-approved-bg: #ECFDF5;
+  --clr-approved-bg: #ecfdf5;
   --clr-approved-txt: #0a9847;
   --clr-approved-border: green;
 
-  --clr-rejected-bg: #FCDFDC;
-  --clr-rejected-txt: #E11D48;
+  --clr-rejected-bg: #fcdfdc;
+  --clr-rejected-txt: #e11d48;
   --clr-rejected-border: #e03131;
 
   /* Brand */
@@ -26,7 +26,7 @@
   --clr-brand-light: #ffffff;
   --clr-brand-hover: #145f2f;
 
-  --clr-refresh:#7C3AED;
+  --clr-refresh: #7c3aed;
 
   /* Surfaces */
   --clr-page-bg: #f4f6f8;
@@ -56,7 +56,11 @@
   background: var(--clr-page-bg);
   min-height: 100vh;
   padding: 28px 28px 40px;
-  font-family: "Inter", system-ui, -apple-system, sans-serif;
+  font-family:
+    "Inter",
+    system-ui,
+    -apple-system,
+    sans-serif;
 }
 
 /* ── 3. Page Header ───────────────────── */
@@ -202,30 +206,32 @@
   background: transparent;
   font-size: 13px;
   color: var(--clr-text-primary);
-  
+  outline: none;
   flex: 1;
   font-family: inherit;
 }
 
 .ta-select {
-    height: 50px;
-    border: 1.5px solid var(--clr-border);
-    border-radius: var(--radius-btn);
-    padding: 0 44px 0 15px;
-    font-size: 13px;
-    font-weight: 500;
-    background: var(--clr-card-bg);
-    color: var(--clr-text-primary);
-    cursor: pointer;
-    font-family: inherit;
-    
-    transition: border-color 0.2s, box-shadow 0.2s;
-    appearance: none;
-    -webkit-appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='15' height='15' viewBox='0 0 24 24' fill='none' stroke='%23222' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 13px center;
-    transition: border-color 0.2s;
+  height: 50px;
+  border: 1.5px solid var(--clr-border);
+  border-radius: var(--radius-btn);
+  padding: 0 44px 0 15px;
+  font-size: 13px;
+  font-weight: 500;
+  background: var(--clr-card-bg);
+  color: var(--clr-text-primary);
+  cursor: pointer;
+  font-family: inherit;
+  outline: none;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='15' height='15' viewBox='0 0 24 24' fill='none' stroke='%23222' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 13px center;
+  transition: border-color 0.2s;
 }
 
 .ta-select:hover {
@@ -247,8 +253,10 @@
   font-family: inherit;
   font-weight: 600;
   white-space: nowrap;
-  
-  transition: background 0.15s, box-shadow 0.2s;
+  outline: none;
+  transition:
+    background 0.15s,
+    box-shadow 0.2s;
 }
 
 .ta-reset-btn:hover {
@@ -257,9 +265,8 @@
 
 .ta-reset-btn:focus-visible {
   border-color: var(--clr-brand);
-  
+  box-shadow: 0 0 0 3px rgba(10, 152, 71, 0.12);
 }
-
 
 .ta-refresh-btn {
   height: 38px;
@@ -276,8 +283,10 @@
   font-family: inherit;
   font-weight: 600;
   white-space: nowrap;
-  
-  transition: background 0.15s, box-shadow 0.2s;
+  outline: none;
+  transition:
+    background 0.15s,
+    box-shadow 0.2s;
 }
 
 .ta-refresh-btn:hover {
@@ -286,7 +295,7 @@
 
 .ta-refresh-btn:focus-visible {
   border-color: var(--clr-brand);
-  
+  box-shadow: 0 0 0 3px rgba(10, 152, 71, 0.12);
 }
 
 /* ── 6. Table ─────────────────────────── */
@@ -424,13 +433,15 @@
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  
-  transition: background 0.15s, box-shadow 0.2s;
+  outline: none;
+  transition:
+    background 0.15s,
+    box-shadow 0.2s;
   font-family: inherit;
 }
 
 .ta-action-btn:focus-visible {
-  
+  box-shadow: 0 0 0 3px rgba(10, 152, 71, 0.12);
 }
 
 .ta-action-btn--review {
@@ -513,7 +524,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  
+  outline: none;
   transition: all 0.12s;
 }
 
@@ -523,7 +534,7 @@
 
 .ta-page-btn:focus-visible {
   border-color: var(--clr-brand);
-  
+  box-shadow: 0 0 0 3px rgba(10, 152, 71, 0.12);
 }
 
 .ta-page-btn--active {
@@ -554,7 +565,7 @@
   padding: 28px 28px 24px;
   width: 460px;
   max-width: 90vw;
-  
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.18);
 }
 
 .ta-modal-header {
@@ -755,13 +766,13 @@
 .ta-ghost-row {
   pointer-events: none;
 }
- 
+
 .ta-ghost-row td {
-  height: 52px;   /* matches real row height: padding 13px top+bottom + ~26px content */
+  height: 52px; /* matches real row height: padding 13px top+bottom + ~26px content */
   padding: 0 !important;
   border-bottom: 1px solid #f8f8f8;
 }
-  
+
 @keyframes ta-slide-in {
   from {
     opacity: 0;
@@ -949,13 +960,13 @@
 .ta-ghost-row {
   pointer-events: none;
 }
- 
+
 .ta-ghost-row td {
-  height: 52px;   /* matches real row height: padding 13px top+bottom + ~26px content */
+  height: 52px; /* matches real row height: padding 13px top+bottom + ~26px content */
   padding: 0 !important;
   border-bottom: 1px solid #f8f8f8;
 }
-  
+
 @keyframes ta-slide-in {
   from {
     opacity: 0;
@@ -967,23 +978,40 @@
   }
 }
 
-
-
-@media (max-width: 768px) { .ta-stat-grid { grid-template-columns: repeat(2, 1fr); } .ta-stat-card:last-child { grid-column: span 2; } }
+@media (max-width: 768px) {
+  .ta-stat-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .ta-stat-card:last-child {
+    grid-column: span 2;
+  }
+}
 
 /* -- Mobile Table Optimizations -- */
-.ta-table td, .ta-table th { white-space: nowrap; }
+.ta-table td,
+.ta-table th {
+  white-space: nowrap;
+}
 @media (max-width: 768px) {
-  .ta-table td { font-size: 11.5px; padding: 10px 12px; }
-  .ta-table th { font-size: 10px; padding: 10px 12px; }
+  .ta-table td {
+    font-size: 11.5px;
+    padding: 10px 12px;
+  }
+  .ta-table th {
+    font-size: 10px;
+    padding: 10px 12px;
+  }
 }
 
 /* -- 1024px Card 2x2 Grid + Text Fixes -- */
 @media (max-width: 1024px) {
-  .ta-stat-grid { grid-template-columns: repeat(2, 1fr); }
-  .ta-stat-card__label, .ta-stat-card__value { 
-    white-space: nowrap; 
-    overflow: hidden; 
-    text-overflow: ellipsis; 
+  .ta-stat-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .ta-stat-card__label,
+  .ta-stat-card__value {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 }

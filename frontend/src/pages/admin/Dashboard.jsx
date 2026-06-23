@@ -38,39 +38,41 @@ const ExpiringSubscriptionCard = ({ subscriptions = [] }) => {
         {subscriptions.length === 0 ? (
           <p className="rb-empty">No expiring subscriptions</p>
         ) : (
-          <table className="rb-table">
-            <thead>
-              <tr>
-                <th>Vendor</th>
-                <th>Plan</th>
-                <th>Expiry Date</th>
-                <th>Days Left</th>
-              </tr>
-            </thead>
-            <tbody>
-              {subscriptions.map((sub, i) => {
-                let dateStr = sub.expiryDate;
-                if (dateStr) {
-                  const d = new Date(dateStr);
-                  if (!isNaN(d.valueOf())) {
-                    dateStr = d.toLocaleDateString("en-IN", {
-                      day: "numeric", month: "short", year: "numeric",
-                    });
+          <div className="rb-table-wrap">
+            <table className="rb-table">
+              <thead>
+                <tr>
+                  <th>Vendor</th>
+                  <th>Plan</th>
+                  <th>Expiry Date</th>
+                  <th>Days Left</th>
+                </tr>
+              </thead>
+              <tbody>
+                {subscriptions.map((sub, i) => {
+                  let dateStr = sub.expiryDate;
+                  if (dateStr) {
+                    const d = new Date(dateStr);
+                    if (!isNaN(d.valueOf())) {
+                      dateStr = d.toLocaleDateString("en-IN", {
+                        day: "numeric", month: "short", year: "numeric",
+                      });
+                    }
                   }
-                }
-                return (
-                  <tr key={i}>
-                    <td className="rb-td-turf">{sub.vendorName || "Vendor"}</td>
-                    <td className="rb-td-user">{sub.plan || "base plan"}</td>
-                    <td className="rb-td-date">{dateStr}</td>
-                    <td>
-                      <span className="rb-badge rb-badge--rejected">{sub.daysLeft}</span>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+                  return (
+                    <tr key={i}>
+                      <td className="rb-td-turf">{sub.vendorName || "Vendor"}</td>
+                      <td className="rb-td-user">{sub.plan || "base plan"}</td>
+                      <td className="rb-td-date">{dateStr}</td>
+                      <td>
+                        <span style={{ color: '#ea580c', fontWeight: 600 }}>{sub.daysLeft}</span>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
         )}
       </div>
     </div>
@@ -291,16 +293,12 @@ export default function Dashboard() {
 
 
         <div className="dashboard-turf-approvals">
-          <div className="card">
-            <RecentTurfApprovals />
-          </div>
+          <RecentTurfApprovals />
         </div>
 
         <div className="dashboard-bottom-row">
           <div className="dashboard-recent-bookings">
-            <div className="card">
-              <RecentBookings />
-            </div>
+            <RecentBookings />
           </div>
 
           <div className="dashboard-future-space">

@@ -81,12 +81,11 @@ body,
 
 .stat-content h3 {
   margin: 0 0 6px 0;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 500;
   line-height: normal;
-  color: #888888;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
+  color: #6b7280;
+  letter-spacing: 0.01em;
   white-space: nowrap;
 }
 
@@ -100,10 +99,10 @@ body,
 
 .stat-content p {
   margin-top: 8px;
-  font-size: 13px;
-  font-weight: 500;
+  font-size: 12px;
+  font-weight: 600;
   line-height: 1.2;
-  color: #0a9847;
+  color: #10B981;
   display: flex;
   align-items: center;
   gap: 4px;
@@ -139,17 +138,17 @@ body,
 
 .revenue-icon {
   background: #ecfdf5;
-  color: #0a9847;
+  color: #10B981;
 }
 
 .subscription-icon {
-  background: #fff6a8;
-  color: #edb200;
+  background: #f3e8ff;
+  color: #8b5cf6;
 }
 
 .turf-icon {
-  background: #eef2ff;
-  color: #4f46e5;
+  background: #fef9c3;
+  color: #eab308;
 }
 
 .revenue-section {
@@ -175,9 +174,9 @@ body,
 }
 
 .revenue-header h3 {
-  font-size: 24px;
+  font-size: 18px;
   font-weight: 700;
-  margin-bottom: 6px;
+  margin-bottom: 4px;
   color: #111111;
 }
 
@@ -196,41 +195,42 @@ body,
 
 .segmented-control {
   display: flex;
-  background: #f4f6f8;
-  border: 1px solid #f0f0f0;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
   border-radius: 8px;
   padding: 4px;
 }
 
 .filter-btn {
   background: transparent;
-  border: none;
-  padding: 8px 12px;
+  border: 1px solid transparent;
+  padding: 6px 12px;
   border-radius: 6px;
-  font-size: 14px;
-  font-weight: 600;
-  color: #555555;
+  font-size: 11.5px;
+  font-weight: 500;
+  color: #6b7280;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
 .filter-btn.active {
-  background: #ffffff;
-  color: #0a9847;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  background: #f0fdf4;
+  color: #10B981;
+  border-color: #bbf7d0;
+  box-shadow: none;
 }
 
 .action-btn {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   background: #ffffff;
-  border: 1px solid #ebebeb;
-  padding: 10px 16px;
-  border-radius: 8px;
-  font-size: 14px;
-  font-weight: 600;
-  color: #111111;
+  border: 1px solid #e5e7eb;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 500;
+  color: #4b5563;
   cursor: pointer;
   transition: all 0.2s ease;
 }
@@ -240,9 +240,9 @@ body,
 }
 
 .revenue-summary span {
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
-  color: #888888;
+  color: #9ca3af;
   letter-spacing: 0.05em;
   text-transform: uppercase;
 }

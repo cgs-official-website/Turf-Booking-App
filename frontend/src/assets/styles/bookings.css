@@ -628,14 +628,7 @@
   }
 
   .bk-toolbar {
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
     padding-bottom: 8px;
-  }
-  
-  .bk-toolbar > * {
-    flex-shrink: 0;
   }
 
   .bk-table-wrap {

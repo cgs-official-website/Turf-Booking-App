@@ -73,41 +73,44 @@ export default function RecentTurfApprovals({ limit = 5 }) {
       ) : turfs.length === 0 ? (
         <p className="rta-empty">No recent turf approvals found.</p>
       ) : (
-        <table className="rta-table">
-          <thead>
-            <tr>
-              <th>TURF NAME</th>
-              <th>VENDOR</th>
-              <th>LOCATION</th>
-              <th>SUBMITTED DATE</th>
-              <th>STATUS</th>
-              <th>ACTION</th>
-            </tr>
-          </thead>
-          <tbody>
-            {turfs.map((turf) => (
-              <tr key={turf._id}>
-                <td className="rta-td-name">{turf.name}</td>
-                <td className="rta-td-vendor">{turf.vendor}</td>
-                <td className="rta-td-loc">{turf.city}</td>
-                <td className="rta-td-date">{turf.date}</td>
-                <td>
-                  <span className={`rta-badge rta-badge--${turf.approvalStatus}`}>
-                    {turf.approvalStatus.charAt(0).toUpperCase() + turf.approvalStatus.slice(1)}
-                  </span>
-                </td>
-                <td>
-                  <button 
-                    className="rta-action-btn"
-                    onClick={() => navigate(`/admin/turf-approvals/${turf._id}`)}
-                  >
-                    Review
-                  </button>
-                </td>
+        <div className="rta-table-wrap">
+          <table className="rta-table">
+            <thead>
+              <tr>
+                <th>TURF NAME</th>
+                <th>VENDOR</th>
+                <th>LOCATION</th>
+                <th>SUBMITTED DATE</th>
+                <th>STATUS</th>
+                <th>ACTION</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {turfs.map((turf) => (
+                <tr key={turf._id}>
+                  <td className="rta-td-name">{turf.name}</td>
+                  <td className="rta-td-vendor">{turf.vendor}</td>
+                  <td className="rta-td-loc">{turf.city}</td>
+                  <td className="rta-td-date">{turf.date}</td>
+                  <td>
+                    <span className={`rta-badge rta-badge--${turf.approvalStatus}`}>
+                      {turf.approvalStatus.charAt(0).toUpperCase() + turf.approvalStatus.slice(1)}
+                    </span>
+                  </td>
+                  <td>
+                    <button 
+                      className="rta-action-btn"
+                      onClick={() => navigate(`/admin/turf-approvals/${turf._id}`)}
+                      aria-label="Review Turf"
+                    >
+                      Review
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
     </div>
   );

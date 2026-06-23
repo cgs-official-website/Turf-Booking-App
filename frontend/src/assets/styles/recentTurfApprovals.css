@@ -1,10 +1,10 @@
 /* recentTurfApprovals.css */
 .rta-card {
   background: #ffffff;
-  border: 1px solid #e5e7eb;
-  border-radius: 12px;
-  padding: 18px 20px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  border: 1px solid #f0f0f0;
+  border-radius: 14px;
+  padding: 24px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
   font-family: "Poppins", system-ui, sans-serif;
 }
 
@@ -102,7 +102,7 @@
   font-size: 12px;
   font-weight: 600;
 }
-.rta-badge--pending { background: #FEF3C7; color: #92400E; }
+.rta-badge--pending { background: #ffedd5; color: #ea580c; }
 .rta-badge--approved { background: #D1FAE5; color: #065F46; }
 .rta-badge--rejected { background: #FEE2E2; color: #991B1B; }
 
@@ -118,3 +118,5 @@
 /* .rta-action-btn:hover {
   text-decoration: underline;
 } */
+
+.rta-table-wrap { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }

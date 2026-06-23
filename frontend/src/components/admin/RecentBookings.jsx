@@ -106,28 +106,30 @@ export default function RecentBookings({ limit = 3, showHeader = true }) {
       ) : bookings.length === 0 ? (
         <p className="rb-empty">No recent bookings found.</p>
       ) : (
-        <table className="rb-table" aria-label="Recent bookings">
-          <thead>
-            <tr>
-              <th>Booking ID</th>
-              <th>Turf</th>
-              <th>User</th>
-              <th>Date</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {bookings.map((bk) => (
-              <tr key={bk._id}>
-                <td className="rb-td-id">{bk.displayId}</td>
-                <td className="rb-td-turf">{bk.turfName}</td>
-                <td className="rb-td-user">{bk.userName}</td>
-                <td className="rb-td-date">{bk.date}</td>
-                <td><RbBadge status={bk.status} /></td>
+        <div className="rb-table-wrap">
+          <table className="rb-table" aria-label="Recent bookings">
+            <thead>
+              <tr>
+                <th>Booking ID</th>
+                <th>Turf</th>
+                <th>User</th>
+                <th>Date</th>
+                <th>Status</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {bookings.map((bk) => (
+                <tr key={bk._id}>
+                  <td className="rb-td-id">{bk.displayId}</td>
+                  <td className="rb-td-turf">{bk.turfName}</td>
+                  <td className="rb-td-user">{bk.userName}</td>
+                  <td className="rb-td-date">{bk.date}</td>
+                  <td><RbBadge status={bk.status} /></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
     </div>
   );
