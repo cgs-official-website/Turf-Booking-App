@@ -91,7 +91,8 @@ const getProfile = async (req, res, next) => {
 // Dashboard Stats
 const getDashboardStats = async (req, res, next) => {
   try {
-    const stats = await adminService.getDashboardStats();
+    const period = req.query.period || "month";
+    const stats = await adminService.getDashboardStats(period);
 
     res.status(200).json(
       new ApiResponse(
@@ -201,6 +202,52 @@ const getLoginActivity = async (req, res, next) => {
   }
 };
 
+const getVendorBookingStats = async (req, res, next) => {
+  try {
+    const stats = await adminService.getVendorBookingStats(req.params.vendorId);
+    res.status(200).json(
+      new ApiResponse(
+        200,
+        "Vendor booking stats fetched successfully",
+        stats
+      )
+    );
+  } catch (error) {
+    next(error);
+  }
+};
+
+const getAllBookings = async (req, res, next) => {
+  try {
+    const { vendorId } = req.query;
+    const bookings = await adminService.getAllBookings(vendorId);
+    res.status(200).json(
+      new ApiResponse(
+        200,
+        "Bookings fetched successfully",
+        bookings
+      )
+    );
+  } catch (error) {
+    next(error);
+  }
+};
+
+const getVendorRecentBookings = async (req, res, next) => {
+  try {
+    const bookings = await adminService.getVendorRecentBookings(req.params.vendorId);
+    res.status(200).json(
+      new ApiResponse(
+        200,
+        "Vendor recent bookings fetched successfully",
+        bookings
+      )
+    );
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   loginAdmin,
   getProfile,
@@ -209,4 +256,7 @@ module.exports = {
   forgotPassword,
   resetPassword,
   getLoginActivity,
+  getVendorBookingStats,
+  getAllBookings,
+  getVendorRecentBookings,
 };

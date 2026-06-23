@@ -8,6 +8,9 @@ const {
   forgotPassword,
   resetPassword,
   getLoginActivity,
+  getVendorBookingStats,
+  getAllBookings,
+  getVendorRecentBookings,
 } = require("../controllers/admin.controller");
 
 const validate = require("../middlewares/validation.middleware");
@@ -49,5 +52,14 @@ router.get("/dashboard", protect, authorizeRoles("admin"), getDashboardStats);
 
 // GET /api/admin/vendors
 router.get("/vendors", authorizeAdmin, getAllVendors);
+
+// GET /api/admin/vendors/:vendorId/bookings
+router.get("/vendors/:vendorId/bookings", authorizeAdmin, getVendorBookingStats);
+
+// GET /api/admin/vendors/:vendorId/recent-bookings
+router.get("/vendors/:vendorId/recent-bookings", authorizeAdmin, getVendorRecentBookings);
+
+// GET /api/admin/bookings
+router.get("/bookings", authorizeAdmin, getAllBookings);
 
 module.exports = router;

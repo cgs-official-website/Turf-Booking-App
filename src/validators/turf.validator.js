@@ -11,11 +11,16 @@
 
     sportType: Joi.string()
       .valid("football", "cricket", "badminton", "multi-sport")
-      .required()
+      .optional()
       .messages({
         "any.only": "Invalid sport type",
-        "any.required": "Sport type is required",
       }),
+
+    sports: Joi.array().items(Joi.string().valid("football", "cricket", "badminton", "multi-sport", "tennis", "basketball", "volleyball", "swimming", "table-tennis")).default([]).messages({
+      "any.only": "Invalid sport type in array",
+    }),
+
+    facilities: Joi.array().items(Joi.string()).default([]),
 
     pricePerHour: Joi.object({
       basePrice: Joi.number().min(0).required(),
@@ -53,6 +58,10 @@
       "badminton",
       "multi-sport"
     ),
+
+    sports: Joi.array().items(Joi.string().valid("football", "cricket", "badminton", "multi-sport", "tennis", "basketball", "volleyball", "swimming", "table-tennis")),
+
+    facilities: Joi.array().items(Joi.string()),
 
     pricePerHour: Joi.object({
       basePrice: Joi.number().min(0),

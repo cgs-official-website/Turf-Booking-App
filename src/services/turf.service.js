@@ -17,7 +17,7 @@ function assertObjectId(id, label = "ID") {
 // ADD a new turf
 // ─────────────────────────────────────────────
 const addTurf = async ({
-  name, location, sportType, pricePerHour, description,
+  name, location, sportType, sports, facilities, pricePerHour, description,
   amenities, mainImage, secondaryImages, ownerId,
 }) => {
   const existing = await Turf.findOne({ name, location });
@@ -26,7 +26,7 @@ const addTurf = async ({
   }
 
   const turf = await Turf.create({
-    name, location, sportType, pricePerHour, description,
+    name, location, sportType, sports, facilities, pricePerHour, description,
     amenities: amenities || [],
     mainImage,
     secondaryImages: secondaryImages || [],
@@ -98,7 +98,8 @@ const getPendingTurfs = async () => {
 // ─────────────────────────────────────────────
 const getTurfById = async (turfId) => {
   assertObjectId(turfId, "turf ID");
-  const turf = await Turf.findById(turfId).populate("owner", "name email phone");
+  const turf = await Turf.findById(turfId)
+    .populate("owner", "name email phone");
   if (!turf) throw new ApiError(404, "Turf not found");
   return turf;
 };
@@ -108,7 +109,8 @@ const getTurfById = async (turfId) => {
 // ─────────────────────────────────────────────
 const getPublicTurfById = async (turfId) => {
   assertObjectId(turfId, "turf ID");
-  const turf = await Turf.findById(turfId).populate("owner", "name email");
+  const turf = await Turf.findById(turfId)
+    .populate("owner", "name email");
   if (!turf) throw new ApiError(404, "Turf not found");
   if (turf.approvalStatus !== "approved") throw new ApiError(404, "Turf not found");
   return turf;
@@ -171,7 +173,7 @@ const updateTurf = async (turfId, requesterId, requesterRole, updateData) => {
   }
 
   const allowedFields = [
-    "name", "location", "sportType", "pricePerHour", "description",
+    "name", "location", "sportType", "sports", "facilities", "pricePerHour", "description",
     "amenities", "mainImage", "secondaryImages", "isAvailable",
   ];
 

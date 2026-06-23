@@ -43,8 +43,21 @@ const turfSchema = new mongoose.Schema(
     sportType: {
       type: String,
       enum: ["football", "cricket", "badminton", "multi-sport"],
-      required: [true, "Sport type is required"],
+      required: false, // Made optional for backward compatibility
     },
+
+    sports: [
+      {
+        type: String,
+        enum: ["football", "cricket", "badminton", "multi-sport", "tennis", "basketball", "volleyball", "swimming", "table-tennis"],
+      },
+    ],
+
+    facilities: [
+      {
+        type: String,
+      },
+    ],
 
     pricePerHour: {
       basePrice: {
