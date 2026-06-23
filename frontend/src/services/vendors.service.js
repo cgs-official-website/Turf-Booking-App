@@ -19,6 +19,18 @@ export const getVendorStats = async () => {
   return response.data;
 };
 
+// GET vendor bookings statistics (admin)
+export const getVendorBookingsStats = async (vendorId) => {
+  const response = await axiosInstance.get(`/admin/vendors/${vendorId}/bookings`);
+  return response.data;
+};
+
+// GET vendor recent bookings (admin)
+export const getVendorRecentBookings = async (vendorId) => {
+  const response = await axiosInstance.get(`/admin/vendors/${vendorId}/recent-bookings`);
+  return response.data;
+};
+
 // UPDATE vendor status (admin)
 export const updateVendorStatus = async (vendorId, status) => {
   const response = await axiosInstance.put(`/admin/vendors/${vendorId}/status`, { status });

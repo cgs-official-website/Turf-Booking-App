@@ -26,6 +26,56 @@ const CustomTooltip = ({ active, payload, label }) => {
   }
   return null;
 };
+
+const ExpiringSubscriptionCard = ({ subscriptions = [] }) => {
+  return (
+    <div className="rb-card" style={{height: '100%', boxSizing: 'border-box'}}>
+      <div className="rb-card-header">
+        <h2 className="rb-card-title">Expiring Subscriptions</h2>
+        <a href="#" className="rb-view-all" onClick={(e) => e.preventDefault()}>View All &rarr;</a>
+      </div>
+      <div>
+        {subscriptions.length === 0 ? (
+          <p className="rb-empty">No expiring subscriptions</p>
+        ) : (
+          <table className="rb-table">
+            <thead>
+              <tr>
+                <th>Vendor</th>
+                <th>Plan</th>
+                <th>Expiry Date</th>
+                <th>Days Left</th>
+              </tr>
+            </thead>
+            <tbody>
+              {subscriptions.map((sub, i) => {
+                let dateStr = sub.expiryDate;
+                if (dateStr) {
+                  const d = new Date(dateStr);
+                  if (!isNaN(d.valueOf())) {
+                    dateStr = d.toLocaleDateString("en-IN", {
+                      day: "numeric", month: "short", year: "numeric",
+                    });
+                  }
+                }
+                return (
+                  <tr key={i}>
+                    <td className="rb-td-turf">{sub.vendorName || "Vendor"}</td>
+                    <td className="rb-td-user">{sub.plan || "base plan"}</td>
+                    <td className="rb-td-date">{dateStr}</td>
+                    <td>
+                      <span className="rb-badge rb-badge--rejected">{sub.daysLeft}</span>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        )}
+      </div>
+    </div>
+  );
+};
 import {
   AreaChart,
   Area,
@@ -36,6 +86,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 export default function Dashboard() {
+  const [dashboardPeriod, setDashboardPeriod] = useState("current-month");
   const [stats, setStats] = useState({
     totalVendors: 0,
     totalTurfs: 0,
@@ -46,10 +97,11 @@ export default function Dashboard() {
     subscriptionGrowth: { count: 0, type: "month" },
     turfGrowth: { count: 0, type: "month" },
     monthlyRevenue: [],
+    expiringSubscriptions: [],
   });
   const fetchDashboardStats = async () => {
     try {
-      const data = await getDashboardStats();
+      const data = await getDashboardStats(dashboardPeriod);
 
       console.log(data);
 
@@ -60,7 +112,7 @@ export default function Dashboard() {
   };
   useEffect(() => {
     fetchDashboardStats();
-  }, []);
+  }, [dashboardPeriod]);
   return (
     <div className="dashboard-wrapper">
       <div className="dashboard-content">
@@ -141,8 +193,22 @@ export default function Dashboard() {
             </div>
             <div className="revenue-actions">
               <div className="segmented-control">
-                <button className="filter-btn active">Last Month</button>
-                <button className="filter-btn">Last Year</button>
+                <button 
+                  className={`filter-btn ${dashboardPeriod === 'last-month' ? 'active' : ''}`}
+                  onClick={() => setDashboardPeriod('last-month')}
+                >Last Month</button>
+                <button 
+                  className={`filter-btn ${dashboardPeriod === 'current-month' ? 'active' : ''}`}
+                  onClick={() => setDashboardPeriod('current-month')}
+                >Current Month</button>
+                <button 
+                  className={`filter-btn ${dashboardPeriod === 'last-year' ? 'active' : ''}`}
+                  onClick={() => setDashboardPeriod('last-year')}
+                >Last Year</button>
+                <button 
+                  className={`filter-btn ${dashboardPeriod === 'current-year' ? 'active' : ''}`}
+                  onClick={() => setDashboardPeriod('current-year')}
+                >Current Year</button>
               </div>
               <button className="action-btn">
                 Choose plan <FiChevronDown />
@@ -159,12 +225,13 @@ export default function Dashboard() {
               <div className="revenue-total">
                 <h2>
                   ₹
-                  {stats.totalRevenue?.toLocaleString("en-IN") ||
-                    stats.totalRevenue}
+                  {stats.chartTotalRevenue !== undefined 
+                    ? stats.chartTotalRevenue.toLocaleString("en-IN") 
+                    : 0}
                 </h2>
                 <p>
-                  {stats.revenueGrowth?.percentage >= 0 ? "↑" : "↓"}{" "}
-                  {Math.abs(stats.revenueGrowth?.percentage || 0)}%
+                  {stats.chartRevenueGrowth?.percentage >= 0 ? "↑" : "↓"}{" "}
+                  {Math.abs(stats.chartRevenueGrowth?.percentage || 0)}%
                 </p>
               </div>
             </div>
@@ -195,6 +262,7 @@ export default function Dashboard() {
                   tickFormatter={(value) =>
                     value === 0 ? "₹0" : `₹${value / 1000}K`
                   }
+                  domain={[0, 'auto']}
                   tick={{ fill: "#98A2B3", fontSize: 12 }}
                   axisLine={false}
                   tickLine={false}
@@ -236,7 +304,9 @@ export default function Dashboard() {
             </div>
           </div>
 
-          <div className="dashboard-future-space"></div>
+          <div className="dashboard-future-space">
+            <ExpiringSubscriptionCard subscriptions={stats.expiringSubscriptions || []} />
+          </div>
         </div>
       </div>
     </div>

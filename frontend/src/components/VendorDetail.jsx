@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import '../assets/styles/VendorDetail.css';
 import VenueCard from '../components/VenueCard';
 import SuspendModal from '../context/SuspendModal';
-import { suspendVendor, getVendorSubscriptionHistory } from '../services/vendors.service';
+import { suspendVendor, getVendorSubscriptionHistory, getVendorBookingsStats, getVendorRecentBookings } from '../services/vendors.service';
 
 // React Icons
 import {
@@ -24,10 +25,20 @@ const DOC_IMAGES = {
 };
 
 export default function VendorDetail({ vendor, onBack }) {
+  const navigate = useNavigate();
   const [vendorData, setVendorData] = useState(null);
+  const [vendorStats, setVendorStats] = useState({ 
+    totalBookings: 0, 
+    activeBookings: 0, 
+    confirmedBookings: 0, 
+    pendingBookings: 0,
+    cancelledBookings: 0 
+  });
   const [subscriptionHistory, setSubscriptionHistory] = useState([]);
   const [subscriptionLoading, setSubscriptionLoading] = useState(true);
   const [subscriptionError, setSubscriptionError] = useState(null);
+  const [recentBookings, setRecentBookings] = useState([]);
+  const [recentBookingsLoading, setRecentBookingsLoading] = useState(true);
   const [selectedTurf, setSelectedTurf] = useState(null);
   const [showSuspendModal, setShowSuspendModal] = useState(false);
   const [previewDoc, setPreviewDoc] = useState(null);
@@ -36,6 +47,16 @@ export default function VendorDetail({ vendor, onBack }) {
 
   // Transform vendor prop data into the format needed for display
   useEffect(() => {
+    if (vendor && (vendor._id || vendor.id)) {
+      getVendorBookingsStats(vendor._id || vendor.id)
+        .then(res => {
+          if (res && res.data) {
+            setVendorStats(res.data);
+          }
+        })
+        .catch(err => console.error("Error fetching vendor stats", err));
+    }
+
     if (vendor) {
       console.log("🔍 Vendor Data Received:", vendor);
       
@@ -85,7 +106,6 @@ export default function VendorDetail({ vendor, onBack }) {
           logo: 'https://images.unsplash.com/photo-1516399653135-68efc5e5cf13?w=100&h=100&fit=crop',
           totalTurfs: String(transformedTurfs.length).padStart(2, '0'),
           newTurfs: '+2 New',
-          activeBookings: '15',
           subscription: 'Active',
           email: vendor.email || 'Not Available',
           phone: vendor.phone || 'Not Available',
@@ -93,11 +113,6 @@ export default function VendorDetail({ vendor, onBack }) {
           registrationDate: registrationDate,
           turfs: transformedTurfs,
           _id: vendor._id || vendor.id,
-          recentBookings: [
-            { date: 'Oct 24', name: 'Rahul Sharma', time: '05:00 PM - 06:00 PM', amount: '₹1,200', status: 'PAID' },
-            { date: 'Oct 24', name: 'Prestige FC', time: '08:00 PM - 10:00 PM', amount: '₹2,400', status: 'PAID' },
-            { date: 'Oct 24', name: 'Rahul Sharma', time: '05:00 PM - 06:00 PM', amount: '₹1,200', status: 'PAID' },
-          ],
         };
 
         console.log("✅ Transformed Vendor Data:", newData);
@@ -182,6 +197,32 @@ export default function VendorDetail({ vendor, onBack }) {
     };
 
     fetchSubscriptionHistory();
+  }, [vendor]);
+
+  // Fetch recent bookings from backend
+  useEffect(() => {
+    const fetchRecentBookings = async () => {
+      if (!vendor || (!vendor._id && !vendor.id)) {
+        setRecentBookings([]);
+        setRecentBookingsLoading(false);
+        return;
+      }
+      setRecentBookingsLoading(true);
+      try {
+        const response = await getVendorRecentBookings(vendor._id || vendor.id);
+        if (response && response.data) {
+          setRecentBookings(response.data);
+        } else {
+          setRecentBookings([]);
+        }
+      } catch (err) {
+        console.error("Failed to fetch recent bookings:", err);
+        setRecentBookings([]);
+      } finally {
+        setRecentBookingsLoading(false);
+      }
+    };
+    fetchRecentBookings();
   }, [vendor]);
 
   const handleSuspendConfirm = async () => {
@@ -315,7 +356,7 @@ export default function VendorDetail({ vendor, onBack }) {
           </div>
           <div className="stat-content">
             <div className="stat-label">ACTIVE BOOKINGS</div>
-            <div className="stat-value">{vendorData.activeBookings}</div>
+            <div className="stat-value">{vendorStats.activeBookings ?? 0}</div>
           </div>
         </div>
         <div className="subscription-card active">
@@ -328,6 +369,7 @@ export default function VendorDetail({ vendor, onBack }) {
           </div>
         </div>
       </div>
+
 
       {/* Information Sections */}
       <div className="info-sections">
@@ -458,19 +500,53 @@ export default function VendorDetail({ vendor, onBack }) {
             Recent Bookings
           </h3>
           <div className="bookings-list">
-            {vendorData.recentBookings && vendorData.recentBookings.map((booking, index) => (
-              <div key={index} className="booking-item">
-                <div className="booking-date">{booking.date}</div>
-                <div className="booking-info">
-                  <div className="booking-name">{booking.name}</div>
-                  <div className="booking-time">{booking.time}</div>
-                </div>
-                <div className="booking-amount">{booking.amount}</div>
-                <span className="booking-status">{booking.status}</span>
+            {recentBookingsLoading ? (
+              <div style={{ padding: '20px', textAlign: 'center', color: '#666' }}>
+                Loading recent bookings...
               </div>
-            ))}
+            ) : recentBookings && recentBookings.length > 0 ? (
+              recentBookings.map((booking, index) => {
+                const date = new Date(booking.bookingDate).toLocaleDateString('en-IN', {
+                  month: 'short',
+                  day: 'numeric'
+                });
+                const time = `${booking.startTime} - ${booking.endTime}`;
+                const statusColor = 
+                  booking.status === 'confirmed' ? 'green' :
+                  booking.status === 'pending' ? '#f39c12' :
+                  booking.status === 'cancelled' || booking.status === 'rejected' ? 'red' :
+                  booking.status === 'completed' ? 'blue' : 'gray';
+
+                return (
+                  <div key={booking._id || index} className="booking-item">
+                    <div className="booking-date">{date}</div>
+                    <div className="booking-info">
+                      <div className="booking-name">{booking.userName}</div>
+                      <div className="booking-time">{time}</div>
+                    </div>
+                    <div className="booking-amount">₹{booking.amount?.toLocaleString('en-IN')}</div>
+                    <span 
+                      className="booking-status"
+                      style={{ 
+                        backgroundColor: `${statusColor}20`, 
+                        color: statusColor,
+                        padding: '4px 8px',
+                        borderRadius: '4px',
+                        fontSize: '12px',
+                        fontWeight: '600',
+                        textTransform: 'uppercase'
+                      }}
+                    >{booking.status}</span>
+                  </div>
+                );
+              })
+            ) : (
+              <div style={{ padding: '20px', textAlign: 'center', color: '#999' }}>
+                No recent bookings found
+              </div>
+            )}
           </div>
-          <button className="view-all-btn">View all bookings</button>
+          <button className="view-all-btn" onClick={() => navigate(`/admin/bookings?vendorId=${vendor._id || vendor.id}`)}>View all bookings</button>
         </div>
 
         {/* Subscription History - NOW FROM BACKEND! */}

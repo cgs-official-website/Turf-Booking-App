@@ -3,7 +3,7 @@
 //   GET /bookings/admin/all  → ADMIN — ALL bookings
 
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import axiosInstance from "../../services/axiosInstance";
 import "../../assets/styles/bookings.css";
 
@@ -183,6 +183,8 @@ function TurfImage({ src, alt }) {
 /* ── Main component ── */
 export default function Bookings() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const vendorId = new URLSearchParams(location.search).get("vendorId");
 
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -206,7 +208,8 @@ export default function Bookings() {
       }
 
       try {
-        const { data } = await axiosInstance.get("/bookings/admin/all", {
+        const url = vendorId ? `/admin/bookings?vendorId=${vendorId}` : "/bookings/admin/all";
+        const { data } = await axiosInstance.get(url, {
           signal: ctrl.signal,
         });
         if (ctrl.signal.aborted) return;
@@ -228,7 +231,7 @@ export default function Bookings() {
 
     load();
     return () => ctrl.abort();
-  }, [navigate]);
+  }, [navigate, vendorId]);
 
   /* ── Derived values ── */
   const locations = [
