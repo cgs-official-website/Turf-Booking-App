@@ -206,7 +206,7 @@
   background: transparent;
   font-size: 13px;
   color: var(--clr-text-primary);
-  outline: none;
+  
   flex: 1;
   font-family: inherit;
 }
@@ -265,7 +265,7 @@
 
 .ta-reset-btn:focus-visible {
   border-color: var(--clr-brand);
-  box-shadow: 0 0 0 3px rgba(10, 152, 71, 0.12);
+  
 }
 
 .ta-refresh-btn {
@@ -295,7 +295,7 @@
 
 .ta-refresh-btn:focus-visible {
   border-color: var(--clr-brand);
-  box-shadow: 0 0 0 3px rgba(10, 152, 71, 0.12);
+  
 }
 
 /* ── 6. Table ─────────────────────────── */
@@ -440,9 +440,9 @@
   font-family: inherit;
 }
 
-.ta-action-btn:focus-visible {
-  box-shadow: 0 0 0 3px rgba(10, 152, 71, 0.12);
-}
+/* .ta-action-btn:focus-visible {
+  
+} */
 
 .ta-action-btn--review {
   color: var(--clr-review);
@@ -524,7 +524,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  outline: none;
+  
   transition: all 0.12s;
 }
 
@@ -534,7 +534,7 @@
 
 .ta-page-btn:focus-visible {
   border-color: var(--clr-brand);
-  box-shadow: 0 0 0 3px rgba(10, 152, 71, 0.12);
+  
 }
 
 .ta-page-btn--active {
@@ -565,7 +565,7 @@
   padding: 28px 28px 24px;
   width: 460px;
   max-width: 90vw;
-  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.18);
+  
 }
 
 .ta-modal-header {
