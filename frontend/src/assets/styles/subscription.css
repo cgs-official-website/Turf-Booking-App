@@ -836,3 +836,8 @@
     font-size: 12px;
   }
 }
+@media (max-width: 768px) {
+  .sub-page__title {
+    display: none;
+  }
+}
