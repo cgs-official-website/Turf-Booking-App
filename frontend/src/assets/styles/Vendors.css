@@ -3,7 +3,7 @@
    =========================== */
 
 .vendor-management-container {
-  padding: 0;
+  padding: 28px 28px 40px;
   background-color: #f8f8f8;
   min-height: 100%;
   width: 100%;
@@ -13,12 +13,11 @@
 }
 
 .page-title {
-  font-size: 28px;
-  font-weight: 700;
-  color: #1a1a1a;
-  margin: 0 0 24px 0;
-  line-height: 1.2;
-  display: block; /* Visible on desktop */
+  font-size: 2rem;
+  font-weight: 600;
+  color: #111111;
+  letter-spacing: -0.3px;
+  margin: 0 0 24px;
 }
 
 /* ===========================

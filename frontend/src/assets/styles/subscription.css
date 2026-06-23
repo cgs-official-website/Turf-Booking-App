@@ -1,14 +1,18 @@
 .sub-page {
-  padding: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  width: 100%;
+  padding: 28px 28px 40px;
+  background: #f4f6f8;
+  font-family: "Poppins", system-ui, sans-serif;
+
 }
 
 /* ── Title ── */
 .sub-page__title {
-  font-size: 28px;
-  font-weight: 800;
-  color: #111;
-  margin: 0 0 1.5rem;
+   font-size: 2rem;
+  font-weight: 600;
+  color: #111111;
+  letter-spacing: -0.3px;
+  margin: 0 0 24px;
 }
 
 /* ── Stat cards ── */
@@ -77,6 +81,7 @@
   gap: 32px;
   border-bottom: 1px solid #e8e8e8;
   margin-bottom: 1.5rem;
+  align-items: center;
 }
 
 .sub-tab {
@@ -137,7 +142,7 @@
 
 .sub-search__input {
   border: none;
-  
+  outline: none;
   font-size: 13px;
   color: #333;
   background: transparent;
@@ -156,12 +161,13 @@
   font-size: 13px;
   color: #555;
   background: #fff;
-  
+  outline: none;
   cursor: pointer;
   width: 150px;
   flex-shrink: 0;
   transition: border-color 0.2s;
 }
+
 .sub-select:focus {
   border-color: #22c55e;
 }
@@ -278,7 +284,7 @@
   line-height: 1;
 }
 
-/* ── Plan Management tab ── */
+/* ── Plan Management ── */
 .sub-plan-management {
   padding-top: 8px;
   width: 100%;
@@ -311,7 +317,12 @@
   background: #f0fdf4;
 }
 
-/* ── Plan Management scrollable wrapper ── */
+.sub-edit-plans-btn--tab-inline {
+  display: none;
+  margin-left: auto;
+}
+
+/* ── Scrollable cards ── */
 .sub-plan-management__scroll-wrapper {
   width: 100%;
   overflow-x: auto;
@@ -340,45 +351,32 @@
   background: #16a34a;
 }
 
-.sub-plan-management__row {
+.sub-plan-management__cards {
   display: flex;
-  align-items: stretch;
-  gap: 0;
-  width: 100%;
-}
-
-.sub-plan-management__grid {
-  display: flex;
-  gap: 28px;
-  padding: 32px 16px 48px;
-  align-items: stretch;
+  gap: 24px;
+  padding: 8px 4px 32px 4px;
   min-width: min-content;
-  width: 100%;
+  align-items: stretch;
 }
 
-/* Each grid cell should stretch and maintain min-width */
-.sub-plan-management__grid > .plan-card-wrapper {
-  flex: 0 0 280px;
-  max-width: 320px;
-  min-width: 260px;
+.sub-plan-management__cards>.plan-card-wrapper {
+  flex: 0 0 300px;
+  min-width: 280px;
+  max-width: 340px;
   display: flex;
   flex-direction: column;
-  height: auto;
-  min-height: 100%;
 }
 
-/* Make PricingCard fill the wrapper */
-.sub-plan-management__grid .pricing-card {
+.sub-plan-management__cards .pricing-card {
   flex: 1;
   height: 100%;
-  min-height: 380px;
+  min-height: 400px;
   display: flex;
   flex-direction: column;
 }
 
-/* ── Most Popular card — scaled up on desktop/tablet ── */
 .plan-card--popular-wrapper {
-  transform: scale(1.08);
+  transform: scale(1.05);
   transform-origin: center top;
   z-index: 1;
   position: relative;
@@ -389,12 +387,8 @@
   display: none;
 }
 
-.sub-edit-plans-btn--tab-inline {
-  display: none;
-}
-
 /* ════════════════════════════════════════════
-   TABLET  (641px – 1024px)
+   TABLET (641px – 1024px)
    ════════════════════════════════════════════ */
 @media (min-width: 641px) and (max-width: 1024px) {
   .sub-page {
@@ -404,7 +398,6 @@
   .sub-page__stats {
     grid-template-columns: repeat(4, 1fr);
     gap: 10px;
-    margin-bottom: 1.25rem;
   }
 
   .sub-stat-card {
@@ -415,153 +408,26 @@
     font-size: 22px;
   }
 
-  .sub-stat-card__label {
-    font-size: 11px;
-  }
-
-  .sub-stat-card__icon {
-    width: 36px;
-    height: 36px;
-  }
-
-  .sub-page__filters {
-    flex-wrap: nowrap;
-    gap: 8px;
-  }
-
-  .sub-search {
-    flex: 1 1 auto;
-    min-width: 140px;
-    max-width: none;
-  }
-
-  .sub-select {
-    width: 110px;
-    flex-shrink: 1;
-    font-size: 12px;
-    padding: 0 8px;
-  }
-
-  .sub-reset-btn {
-    padding: 0 12px;
-    font-size: 12px;
-    white-space: nowrap;
-  }
-
-  .sub-page__tabs {
-    gap: 24px;
-    margin-bottom: 1.25rem;
-  }
-
   .sub-page__grid {
     grid-template-columns: repeat(2, 1fr);
     gap: 16px;
-    margin-bottom: 1.5rem;
     padding: 2rem;
   }
 
-  .sub-plan-tabs {
-    display: none;
+  .sub-plan-management__cards>.plan-card-wrapper {
+    flex: 0 0 260px;
+    min-width: 240px;
+    max-width: 290px;
   }
 
-  .sub-edit-plans-btn--tab-inline {
-    display: none;
-  }
-
-  /* Tablet: scrollable plan cards */
-  .sub-plan-management__grid > .plan-card-wrapper {
-    flex: 0 0 240px;
-    min-width: 220px;
-    max-width: 280px;
-  }
-
-  .sub-plan-management__grid {
-    gap: 20px;
-    padding: 24px 12px 40px;
-  }
-}
-
-/* Mobile pagination - works for 320px and 375px */
-@media (max-width: 480px) {
-  .sub-page__pagination {
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    gap: 4px;
-    flex-wrap: nowrap;
-  }
-
-  .sub-page__showing {
-    font-size: 11px;
-    white-space: nowrap;
-    flex-shrink: 0;
-  }
-
-  .sub-page__pager {
-    gap: 4px;
-    flex-shrink: 1;
-    min-width: 0;
-  }
-
-  .sub-pager-btn {
-    width: 32px;
-    height: 32px;
-    font-size: 12px;
-    border-radius: 8px;
-    min-width: 32px;
-    flex-shrink: 0;
-  }
-
-  .sub-pager-btn--num {
-    width: 32px;
-    height: 32px;
-    font-size: 12px;
-    min-width: 32px;
-  }
-
-  .sub-pager-btn--arrow {
-    font-size: 16px;
-    width: 28px;
-    height: 32px;
-    min-width: 28px;
-  }
-}
-
-/* For very small screens (320px) */
-@media (max-width: 360px) {
-  .sub-page__showing {
-    font-size: 10px;
-  }
-
-  .sub-pager-btn {
-    width: 28px;
-    height: 28px;
-    font-size: 11px;
-    min-width: 28px;
-    border-radius: 6px;
-  }
-
-  .sub-pager-btn--num {
-    width: 28px;
-    height: 28px;
-    font-size: 11px;
-    min-width: 28px;
-  }
-
-  .sub-pager-btn--arrow {
-    font-size: 14px;
-    width: 24px;
-    height: 28px;
-    min-width: 24px;
-  }
-
-  .sub-page__pager {
-    gap: 3px;
+  .sub-plan-management__cards {
+    gap: 18px;
+    padding: 8px 4px 24px 4px;
   }
 }
 
 /* ════════════════════════════════════════════
-   MOBILE  (≤ 640px)
+   MOBILE (≤ 640px)
    ════════════════════════════════════════════ */
 @media (max-width: 640px) {
   .sub-page {
@@ -569,15 +435,12 @@
   }
 
   .sub-page__title {
-    font-size: 20px;
-    margin-bottom: 1rem;
+    display: none;
   }
 
-  /* Stat cards: 2 × 2 grid */
   .sub-page__stats {
     grid-template-columns: repeat(2, 1fr);
     gap: 10px;
-    margin-bottom: 1rem;
   }
 
   .sub-stat-card {
@@ -588,27 +451,7 @@
     font-size: 22px;
   }
 
-  .sub-stat-card__label {
-    font-size: 11px;
-  }
-
-  .sub-stat-card__delta {
-    font-size: 10.5px;
-  }
-
-  .sub-stat-card__icon {
-    width: 36px;
-    height: 36px;
-  }
-
-  .sub-stat-card__icon svg {
-    width: 17px;
-    height: 17px;
-  }
-
-  /* ── Mobile Filters: Horizontal Scrollable Row ── */
   .sub-page__filters {
-    display: flex;
     flex-wrap: nowrap;
     gap: 8px;
     overflow-x: auto;
@@ -616,8 +459,6 @@
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
     padding: 4px 2px 12px 2px;
-    margin-bottom: 1.25rem;
-    align-items: center;
   }
 
   .sub-page__filters::-webkit-scrollbar {
@@ -628,12 +469,7 @@
     flex: 0 0 180px;
     min-width: 150px;
     height: 40px;
-    flex-shrink: 0;
     padding: 0 12px;
-  }
-
-  .sub-search__input {
-    font-size: 13px;
   }
 
   .sub-select {
@@ -643,21 +479,16 @@
     height: 40px;
     font-size: 12px;
     padding: 0 10px;
-    flex-shrink: 0;
   }
 
   .sub-reset-btn {
-    flex: 0 0 auto;
     height: 40px;
     font-size: 12px;
     padding: 0 14px;
-    flex-shrink: 0;
   }
 
-  /* ── Tabs ── */
   .sub-page__tabs {
     gap: 0;
-    margin-bottom: 1.25rem;
   }
 
   .sub-tab {
@@ -667,15 +498,12 @@
     padding-bottom: 10px;
   }
 
-  /* ── Turf Grid: Single column ── */
   .sub-page__grid {
     grid-template-columns: 1fr !important;
     gap: 16px;
     padding: 0 !important;
-    margin-bottom: 1.25rem;
   }
 
-  /* ── Pagination ── */
   .sub-page__pagination {
     flex-direction: row;
     justify-content: space-between;
@@ -698,11 +526,11 @@
     height: 34px;
   }
 
-  /* ── Plan Management – mobile ── */
+  /* Mobile Plan Management */
   .sub-plan-tabs {
     display: flex !important;
     gap: 8px;
-    margin-bottom: 1.25rem;
+    margin-bottom: 1rem;
     overflow-x: auto;
     overflow-y: hidden;
     -webkit-overflow-scrolling: touch;
@@ -775,27 +603,19 @@
     padding: 0 14px;
   }
 
-  .sub-plan-management__row {
-    flex-direction: column;
-    gap: 0;
-    overflow: visible;
-  }
-
   .sub-plan-management__scroll-wrapper {
     overflow-x: auto;
     padding: 4px 0 12px 0;
   }
 
-  .sub-plan-management__grid {
+  .sub-plan-management__cards {
     display: flex !important;
     gap: 16px !important;
     padding: 0 4px 16px 4px !important;
-    align-items: stretch !important;
     min-width: min-content;
   }
 
-  /* On mobile: show only selected plan in scrollable container */
-  .sub-plan-management__grid > .plan-card-wrapper {
+  .sub-plan-management__cards>.plan-card-wrapper {
     flex: 0 0 280px !important;
     min-width: 260px !important;
     max-width: 300px !important;
@@ -803,64 +623,42 @@
     flex-direction: column;
   }
 
-  /* Hide all plan cards by default on mobile */
-  .sub-plan-management__grid > .plan-card-wrapper {
+  .sub-plan-management__cards>.plan-card-wrapper {
     display: none !important;
-    min-height: auto;
   }
 
-  /* Show only the selected plan card */
-  .sub-plan-management__grid > .plan-card-wrapper.plan-card--visible {
+  .sub-plan-management__cards>.plan-card-wrapper.plan-card--visible {
     display: flex !important;
-    width: 100%;
-    height: auto;
   }
 
-  /* No scale on mobile — full width single card */
   .plan-card--popular-wrapper {
     transform: none;
   }
 
-  /* Mobile PricingCard adjustments */
-  .sub-plan-management__grid .pricing-card {
+  .sub-plan-management__cards .pricing-card {
     min-height: 300px;
-    height: auto;
     padding: 24px 20px;
-  }
-
-  .sub-plan-management__grid .pricing-card-title {
-    font-size: 18px;
-    padding-right: 80px;
-    min-height: 28px;
-  }
-
-  .sub-plan-management__grid .pricing-card-amount {
-    font-size: 36px;
-  }
-
-  .sub-plan-management__grid .pricing-card-currency {
-    font-size: 22px;
-  }
-
-  .sub-plan-management__grid .pricing-card-features {
-    gap: 10px;
-    min-height: 40px;
-  }
-
-  .sub-plan-management__grid .pricing-card-feature-item {
-    font-size: 13px;
-    min-height: 22px;
-  }
-
-  .sub-plan-management__grid .pricing-card-toggle-btn {
-    margin-top: auto;
-    height: 36px;
-    font-size: 12px;
   }
 }
 
-@media (max-width: 768px) {
-  .sub-page__title {
-    display: none;
+@media (max-width: 480px) {
+  .sub-page__pagination {
+    flex-wrap: nowrap;
+  }
+
+  .sub-page__showing {
+    font-size: 11px;
+  }
+
+  .sub-pager-btn {
+    width: 32px;
+    height: 32px;
+    font-size: 12px;
+  }
+
+  .sub-pager-btn--num {
+    width: 32px;
+    height: 32px;
+    font-size: 12px;
   }
 }
