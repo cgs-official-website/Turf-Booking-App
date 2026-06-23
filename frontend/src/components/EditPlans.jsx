@@ -243,10 +243,10 @@ export default function EditPlans({ onBack, onSave }) {
       prev.map((p) => {
         if (p.id === selectedId) {
           setHasChanges(true);
-          return { 
-            ...p, 
-            duration: val, 
-            billingLabel: durationToBilling(val) 
+          return {
+            ...p,
+            duration: val,
+            billingLabel: durationToBilling(val)
           };
         }
         return p;
@@ -313,41 +313,6 @@ export default function EditPlans({ onBack, onSave }) {
     }
   };
 
-<<<<<<< HEAD
-  // ── Loading ───────────────────────────────────────────────────────────────
-  if (isLoading) {
-    return (
-      <div className="ep-container">
-        <div className="ep-loading">
-          <FiLoader className="ep-loading-spinner" size={40} />
-          <p>Loading plans from backend...</p>
-        </div>
-      </div>
-    );
-  }
-
-  // ── Error ─────────────────────────────────────────────────────────────────
-  if (error && plans.length === 0) {
-    return (
-      <div className="ep-container">
-        <div className="ep-error">
-          <FiAlertCircle size={40} color="#ef4444" />
-          <h3>Failed to load plans</h3>
-          <p>{error}</p>
-          <button className="ep-retry-btn" onClick={reset}>
-            <FiRefreshCw size={16} /> Retry
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  // ── Render ────────────────────────────────────────────────────────────────
-  return (
-    <>
-      <div className="ep-container">
-        {/* Header */}
-=======
   // Loading state
   if (isLoading) {
     return (
@@ -458,7 +423,6 @@ export default function EditPlans({ onBack, onSave }) {
         </div>
 
         {/* ── Desktop Header (hidden on mobile) ── */}
->>>>>>> cc0d211b034a9ae24538c1a00d8d81cc02d0a950
         <div className="ep-header">
           <div className="ep-header-left">
             <button className="ep-back-btn" onClick={onBack}>
@@ -466,38 +430,23 @@ export default function EditPlans({ onBack, onSave }) {
               Edit plans
             </button>
             <p className="ep-header-sub">
-<<<<<<< HEAD
-              Update pricing, features, and visibility. Changes saved to
-              backend.
-=======
               Update pricing, features, and visibility. Changes saved to backend.
->>>>>>> cc0d211b034a9ae24538c1a00d8d81cc02d0a950
             </p>
             {hasChanges && (
               <span className="ep-unsaved-badge">● Unsaved changes</span>
             )}
           </div>
           <div className="ep-header-actions">
-<<<<<<< HEAD
-            <button
-              className="ep-reset-btn"
-=======
             <button 
               className="ep-reset-btn" 
->>>>>>> cc0d211b034a9ae24538c1a00d8d81cc02d0a950
               onClick={reset}
               disabled={isSaving}
             >
               <FiRefreshCw size={16} />
               Reset
             </button>
-<<<<<<< HEAD
-            <button
-              className="ep-save-btn"
-=======
             <button 
               className="ep-save-btn" 
->>>>>>> cc0d211b034a9ae24538c1a00d8d81cc02d0a950
               onClick={handleSaveChanges}
               disabled={isSaving || !hasChanges}
             >
@@ -515,281 +464,6 @@ export default function EditPlans({ onBack, onSave }) {
             </button>
           </div>
         </div>
-<<<<<<< HEAD
-        <div className="ep-header-actions">
-          <button className="ep-reset-btn" onClick={reset} disabled={isSaving}>
-            <FiRefreshCw size={16} /> Reset
-          </button>
-          <button
-            className="ep-save-btn"
-            onClick={handleSaveChanges}
-            disabled={isSaving || !hasChanges}
-          >
-            {isSaving ? (
-              <>
-                <FiLoader className="ep-spin" size={16} /> Saving...
-              </>
-            ) : (
-              <>
-                <FiSave size={16} /> Save Changes
-              </>
-            )}
-          </button>
-        </div>
-      </div>
-
-      {/* Main */}
-      <div className="ep-main">
-        {/* Left — Plan list */}
-        <div className="ep-left">
-          <h3 className="ep-left-title">Plans</h3>
-          <p className="ep-left-sub">Select a plan to edit.</p>
-
-          <div className="ep-plans-list">
-            {plans.map((p) => (
-              <div
-                key={p.id}
-                className={`ep-plan-card${selectedId === p.id ? " ep-plan-card-active" : ""}`}
-                onClick={() => setSelectedId(p.id)}
-              >
-                <div className="ep-plan-card-top">
-                  <span
-                    className={`ep-plan-icon-box${p.isMostPopular ? " ep-plan-icon-box--popular" : ""}`}
-                  >
-                    {PLAN_ICON}
-                  </span>
-                  {p.isMostPopular && (
-                    <span className="ep-most-popular-badge">
-                      <FiStar size={10} /> Most Popular
-                    </span>
-                  )}
-                </div>
-                <div className="ep-plan-info">
-                  <div className="ep-plan-name">{p.name}</div>
-                  <div className="ep-plan-price">
-                    ₹{p.price.toLocaleString("en-IN")}
-                    <span className="ep-plan-period">
-                      {" "}
-                      / {p.duration.toLowerCase()}
-                    </span>
-                  </div>
-                  <div className="ep-plan-billing">{p.billingLabel}</div>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <button
-            className="ep-add-plan"
-            onClick={addNewPlan}
-            disabled={isSaving}
-          >
-            <FiPlus size={16} /> Add New Plan
-          </button>
-        </div>
-
-        {/* Center — Editor */}
-        <div className="ep-center">
-          {selected ? (
-            <>
-              <div className="ep-details-header">
-                <h3 className="ep-details-title">Plan Details</h3>
-                <button
-                  className={`ep-most-popular-btn${selected.isMostPopular ? " ep-most-popular-btn-active" : ""}`}
-                  onClick={toggleMostPopular}
-                  disabled={isSaving}
-                >
-                  <FiStar size={14} /> Most Popular
-                </button>
-              </div>
-
-              <div className="ep-field">
-                <label className="ep-label">Plan Name</label>
-                <input
-                  type="text"
-                  className="ep-input"
-                  value={selected.name}
-                  onChange={(e) => updateSelected("name", e.target.value)}
-                  disabled={isSaving}
-                />
-              </div>
-
-              <div className="ep-field">
-                <label className="ep-label">Tagline</label>
-                <div className="ep-textarea-wrapper">
-                  <textarea
-                    className="ep-textarea"
-                    value={selected.tagline}
-                    onChange={(e) => updateSelected("tagline", e.target.value)}
-                    rows={2}
-                    maxLength={150}
-                    disabled={isSaving}
-                  />
-                  <span className="ep-char-count">
-                    {selected.tagline.length}/150
-                  </span>
-                </div>
-              </div>
-
-              <div className="ep-section-label">PRICING &amp; DURATION</div>
-
-              <div className="ep-two-cols">
-                <div className="ep-field">
-                  <label className="ep-label">Price (₹)</label>
-                  <input
-                    type="number"
-                    className="ep-input"
-                    value={selected.price}
-                    onChange={(e) =>
-                      updateSelected("price", Number(e.target.value))
-                    }
-                    disabled={isSaving}
-                    min={0}
-                  />
-                </div>
-                <div className="ep-field">
-                  <label className="ep-label">Duration</label>
-                  <select
-                    className="ep-input ep-select"
-                    value={selected.duration}
-                    onChange={(e) => handleDurationChange(e.target.value)}
-                    disabled={isSaving}
-                  >
-                    {DURATION_OPTIONS.map((d) => (
-                      <option key={d} value={d}>
-                        {d}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-
-              <div className="ep-section-label">FEATURES</div>
-
-              <div className="ep-features-list">
-                {selected.features.map((feature, index) => (
-                  <div key={index} className="ep-feature-item">
-                    <FiCheck className="ep-check" size={15} color="#22c55e" />
-                    <span className="ep-feature-text">{feature}</span>
-                    <button
-                      className="ep-feature-delete"
-                      onClick={() => deleteFeature(index)}
-                      disabled={isSaving}
-                    >
-                      <FiTrash2 size={14} color="#ef4444" />
-                    </button>
-                  </div>
-                ))}
-
-                {addingFeature ? (
-                  <div className="ep-add-feature-form">
-                    <input
-                      type="text"
-                      className="ep-input"
-                      placeholder="Enter feature name..."
-                      value={newFeatureText}
-                      onChange={(e) => setNewFeatureText(e.target.value)}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter") confirmAddFeature();
-                        if (e.key === "Escape") {
-                          setAddingFeature(false);
-                          setNewFeatureText("");
-                        }
-                      }}
-                      autoFocus
-                      disabled={isSaving}
-                    />
-                    <div className="ep-add-feature-actions">
-                      <button
-                        className="ep-add-feature-confirm"
-                        onClick={confirmAddFeature}
-                        disabled={isSaving}
-                      >
-                        Add
-                      </button>
-                      <button
-                        className="ep-add-feature-cancel"
-                        onClick={() => {
-                          setAddingFeature(false);
-                          setNewFeatureText("");
-                        }}
-                        disabled={isSaving}
-                      >
-                        Cancel
-                      </button>
-                    </div>
-                  </div>
-                ) : (
-                  <button
-                    className="ep-add-feature-btn"
-                    onClick={() => setAddingFeature(true)}
-                    disabled={isSaving}
-                  >
-                    <FiPlus size={16} /> Add New Feature
-                  </button>
-                )}
-              </div>
-
-              <button
-                className="ep-delete-plan"
-                onClick={() => setShowDeleteModal(true)}
-                disabled={isSaving || plans.length === 1}
-              >
-                <FiTrash2 size={16} />
-                {plans.length === 1 ? "Cannot delete last plan" : "Delete plan"}
-              </button>
-            </>
-          ) : (
-            <div className="ep-no-plan-selected">
-              <p>No plan selected</p>
-              <button className="ep-add-plan" onClick={addNewPlan}>
-                <FiPlus size={16} /> Add a plan
-              </button>
-            </div>
-          )}
-        </div>
-
-        {/* Right — Preview */}
-        <div className="ep-right">
-          <h3 className="ep-right-title">Live Preview</h3>
-          {selected ? (
-            <div
-              className={`ep-preview${selected.isMostPopular ? " ep-preview-popular" : ""}`}
-            >
-              {selected.isMostPopular && (
-                <div className="ep-preview-popular-tag">
-                  <FiStar size={12} /> Most popular
-                </div>
-              )}
-              <div className="ep-preview-name">{selected.name}</div>
-              <div className="ep-preview-tagline">{selected.tagline}</div>
-              <div className="ep-preview-price">
-                <span className="ep-preview-currency">₹</span>
-                <span className="ep-preview-amount">
-                  {selected.price.toLocaleString("en-IN")}
-                </span>
-                <span className="ep-preview-period">
-                  / {getPeriodLabel(selected.duration)}
-                </span>
-              </div>
-              <ul className="ep-preview-features">
-                {selected.features.map((feature, index) => (
-                  <li key={index}>
-                    <FiCheck size={14} color="#22c55e" />
-                    <span>{feature}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ) : (
-            <div className="ep-preview-empty">
-              <p>Select or create a plan to preview</p>
-            </div>
-          )}
-        </div>
-      </div>
-      {/* end ep-main */}
-=======
 
         {/* ── Main Content ── */}
         <div className="ep-main">
@@ -1034,21 +708,22 @@ export default function EditPlans({ onBack, onSave }) {
 
         </div>
       </div>
->>>>>>> cc0d211b034a9ae24538c1a00d8d81cc02d0a950
 
-      {/* Delete Modal */}
-      {showDeleteModal && (
-        <div className="ep-modal-overlay">
-          <div className="ep-modal">
-            <h3>Delete Plan</h3>
-            <p>Are you sure you want to delete "{selected?.name}"?</p>
-            <div className="ep-modal-actions">
-              <button onClick={() => setShowDeleteModal(false)}>Cancel</button>
-              <button onClick={handleDeletePlan} className="ep-modal-delete-btn">Delete</button>
-            </div>
-          </div>
+{/* Delete Modal */ }
+{
+  showDeleteModal && (
+    <div className="ep-modal-overlay">
+      <div className="ep-modal">
+        <h3>Delete Plan</h3>
+        <p>Are you sure you want to delete "{selected?.name}"?</p>
+        <div className="ep-modal-actions">
+          <button onClick={() => setShowDeleteModal(false)}>Cancel</button>
+          <button onClick={handleDeletePlan} className="ep-modal-delete-btn">Delete</button>
         </div>
-      )}
+      </div>
+    </div>
+  )
+}
     </AdminLayout>
   );
 }

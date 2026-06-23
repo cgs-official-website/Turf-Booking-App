@@ -102,15 +102,33 @@ export default function Bookings() {
       }
 
       try {
-
         const url = vendorId ? `/admin/bookings?vendorId=${vendorId}` : "/bookings/admin/all";
-        const { data } = await axiosInstance.get(url, {
+        const response = await axiosInstance.get(url, {
           signal: ctrl.signal,
         });
         if (ctrl.signal.aborted) return;
 
-        // Create a map of turf ID/Name to Vendor Name
-        const turfsList = Array.isArray(turfsRes.data) ? turfsRes.data : [];
+        console.log("API Response:", response);
+        console.log("Bookings:", response.data);
+
+        // Fetch turfs list to construct vendor map
+        let turfsList = [];
+        try {
+          const turfsRes = await axiosInstance.get("/turfs", { signal: ctrl.signal });
+          const turfsData = turfsRes.data;
+          if (turfsData?.data?.turfs) {
+            turfsList = turfsData.data.turfs;
+          } else if (turfsData?.turfs) {
+            turfsList = turfsData.turfs;
+          } else if (turfsData?.data) {
+            turfsList = turfsData.data;
+          } else if (Array.isArray(turfsData)) {
+            turfsList = turfsData;
+          }
+        } catch (turfErr) {
+          console.error("Failed to fetch turfs for vendor map:", turfErr);
+        }
+
         const turfVendorMap = {};
         turfsList.forEach((t) => {
           const vName = t.owner?.name ?? t.ownerName ?? t.vendor ?? "—";
@@ -118,7 +136,10 @@ export default function Bookings() {
           if (t._id) turfVendorMap[t._id] = vName;
         });
 
-        const list = Array.isArray(bookingsRes.data) ? bookingsRes.data : [];
+        const list = Array.isArray(response.data) 
+          ? response.data 
+          : (response.data?.bookings || response.data?.data || []);
+
         setBookings(list.map((b) => normalizeBooking(b, turfVendorMap)));
       } catch (err) {
         if (err?.name === "CanceledError" || err?.name === "AbortError") return;

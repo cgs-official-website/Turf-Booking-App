@@ -337,34 +337,25 @@ export default function Subscriptions() {
                   disabled={safePage === 1}
                   onClick={() => setPage((p) => Math.max(1, p - 1))}
                 >
-<<<<<<< HEAD
-
-  <i className="bi bi-chevron-left" />
-
-=======
                   &#8249;
->>>>>>> cc0d211b034a9ae24538c1a00d8d81cc02d0a950
-                </button >
-  {
-    Array.from({ length: totalPages }, (_, i) => i + 1).map((n) => (
-      <button
-        key={n}
-        className={`sub-pager-btn sub-pager-btn--num ${safePage === n ? "sub-pager-btn--active" : ""}`}
-        onClick={() => setPage(n)}
-      >
-        {n}
-      </button>
-    ))
-  }
-    < button
-  className = "sub-pager-btn sub-pager-btn--arrow"
-  disabled = { safePage === totalPages
-}
-onClick = {() => setPage((p) => Math.min(totalPages, p + 1))}
+                </button>
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((n) => (
+                  <button
+                    key={n}
+                    className={`sub-pager-btn sub-pager-btn--num ${safePage === n ? "sub-pager-btn--active" : ""}`}
+                    onClick={() => setPage(n)}
+                  >
+                    {n}
+                  </button>
+                ))}
+                <button
+                  className="sub-pager-btn sub-pager-btn--arrow"
+                  disabled={safePage === totalPages}
+                  onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                 >
                   &#8250;
-                </button >
-              </div >
+                </button>
+              </div>
             </div >
           </>
         )}
