@@ -5,7 +5,7 @@
 //   PATCH /turfs/:id/reject     → ADMIN — reject
 
 import { useState, useEffect, useRef } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import axiosInstance from "../../services/axiosInstance";
 import "../../assets/styles/turfDetails.css";
 
@@ -207,6 +207,66 @@ function ResultModal({ type, turfName, onClose }) {
   );
 }
 
+const PREDEFINED_SPORTS = [
+  "football", "cricket", "badminton", "multi-sport", 
+  "tennis", "basketball", "volleyball", "swimming", "table-tennis"
+];
+
+const PREDEFINED_FACILITIES = [
+  "Parking", "Washroom", "Drinking Water", "First Aid", "Floodlights", "Seating", "Locker Room", "CCTV"
+];
+
+function EditCategoryModal({ turf, onConfirm, onCancel, acting }) {
+  const [selectedSports, setSelectedSports] = useState([...(turf.sportTypes || [])]);
+  const [selectedFacilities, setSelectedFacilities] = useState([...(turf.amenities || [])]);
+
+  const handleToggleSport = (id) => {
+    setSelectedSports(prev => prev.includes(id) ? prev.filter(s => s !== id) : [...prev, id]);
+  };
+
+  const handleToggleFacility = (id) => {
+    setSelectedFacilities(prev => prev.includes(id) ? prev.filter(f => f !== id) : [...prev, id]);
+  };
+
+  return (
+    <div className="td-modal-backdrop" role="dialog" aria-modal="true">
+      <div className="td-modal" style={{maxWidth: '500px'}}>
+        <h2 className="td-modal-title">Edit Category</h2>
+        <div className="td-modal-body" style={{textAlign: 'left', maxHeight: '60vh', overflowY: 'auto'}}>
+          <div style={{marginBottom: '1rem'}}>
+            <h3 style={{fontSize: '14px', marginBottom: '8px'}}>Sports</h3>
+            <div style={{display: 'flex', flexWrap: 'wrap', gap: '8px'}}>
+              {PREDEFINED_SPORTS.map(s => (
+                <label key={s} style={{display: 'flex', alignItems: 'center', gap: '4px', background: '#F3F4F6', padding: '4px 8px', borderRadius: '4px', cursor: 'pointer'}}>
+                  <input type="checkbox" checked={selectedSports.includes(s)} onChange={() => handleToggleSport(s)} />
+                  <span style={{fontSize: '13px'}}>{s.charAt(0).toUpperCase() + s.slice(1)}</span>
+                </label>
+              ))}
+            </div>
+          </div>
+          <div>
+            <h3 style={{fontSize: '14px', marginBottom: '8px'}}>Facilities</h3>
+            <div style={{display: 'flex', flexWrap: 'wrap', gap: '8px'}}>
+              {PREDEFINED_FACILITIES.map(f => (
+                <label key={f} style={{display: 'flex', alignItems: 'center', gap: '4px', background: '#F3F4F6', padding: '4px 8px', borderRadius: '4px', cursor: 'pointer'}}>
+                  <input type="checkbox" checked={selectedFacilities.includes(f)} onChange={() => handleToggleFacility(f)} />
+                  <span style={{fontSize: '13px'}}>{f}</span>
+                </label>
+              ))}
+            </div>
+          </div>
+        </div>
+        <div className="td-modal-actions">
+          <button className="td-modal-btn td-modal-btn--cancel" onClick={onCancel} disabled={acting}>Cancel</button>
+          <button className="td-modal-btn td-modal-btn--approve" onClick={() => onConfirm({ sports: selectedSports, facilities: selectedFacilities })} disabled={acting}>
+            {acting ? "Saving..." : "Save"}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ── DocBadge ──────────────────────────────────────────────────────────────────
 function DocBadge({ status }) {
   if (status === "verified")
@@ -350,6 +410,21 @@ export default function TurfDetails() {
     }
   }
 
+  // ── PUT /turfs/:id ───────────────────────────────────────────────
+  async function handleEditCategorySave(data) {
+    setActing(true);
+    try {
+      await axiosInstance.put(`/turfs/${id}`, data);
+      setTurf((prev) => ({ ...prev, sportTypes: data.sports, amenities: data.facilities }));
+      setModal(null);
+    } catch (err) {
+      console.error(err);
+      alert("Failed to update category.");
+    } finally {
+      setActing(false);
+    }
+  }
+
   // ── Loading ───────────────────────────────────────────────────────────────
   if (loading) {
     return (
@@ -413,6 +488,14 @@ export default function TurfDetails() {
             setModal(null);
             navigate(-1); // go back to list after result
           }}
+        />
+      )}
+      {modal === "edit-category" && (
+        <EditCategoryModal
+          turf={turf}
+          acting={acting}
+          onConfirm={handleEditCategorySave}
+          onCancel={() => setModal(null)}
         />
       )}
 
@@ -540,10 +623,15 @@ export default function TurfDetails() {
 
       {/* Category — full width */}
       <div className="td-card td-card--full">
-        <div className="td-card-header">
+        <div className="td-card-header" style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
           <span className="td-card-title">
             <i className="bi bi-info-circle" /> Category
           </span>
+          {!isDone && (
+            <button className="td-edit-link" onClick={() => setModal("edit-category")} style={{background: 'none', border: 'none', color: '#10B981', cursor: 'pointer'}}>
+              <i className="bi bi-pencil" /> Edit
+            </button>
+          )}
         </div>
         <div className="td-category-grid">
           <div>
