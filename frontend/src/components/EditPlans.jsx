@@ -109,6 +109,8 @@ export default function EditPlans({ onBack, onSave }) {
   const [error, setError] = useState(null);
   const [hasChanges, setHasChanges] = useState(false);
 
+  const selected = plans.find((p) => p.id === selectedId);
+
   // ── Load plans from backend ──
   const loadPlans = async () => {
     setIsLoading(true);
@@ -144,7 +146,9 @@ export default function EditPlans({ onBack, onSave }) {
 
   useEffect(() => {
     loadPlans();
+  }, []);
 
+  const updateSelected = (field, value) => {
     setPlans((prev) =>
       prev.map((p) => {
         if (p.id === selectedId) {
@@ -154,8 +158,7 @@ export default function EditPlans({ onBack, onSave }) {
         return p;
       })
     );
-  });
-
+  };
   const toggleMostPopular = () => {
     if (!selected) return;
     const willBePopular = !selected.isMostPopular;
