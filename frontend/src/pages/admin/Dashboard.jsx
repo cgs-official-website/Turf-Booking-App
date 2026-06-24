@@ -29,7 +29,7 @@ const CustomTooltip = ({ active, payload, label }) => {
 
 const ExpiringSubscriptionCard = ({ subscriptions = [] }) => {
   return (
-    <div className="rb-card" style={{height: '100%', boxSizing: 'border-box'}}>
+    <div className="rb-card" style={{ height: '100%', boxSizing: 'border-box' }}>
       <div className="rb-card-header">
         <h2 className="rb-card-title">Expiring Subscriptions</h2>
         <a href="#" className="rb-view-all" onClick={(e) => e.preventDefault()}>View All &rarr;</a>
@@ -192,19 +192,19 @@ export default function Dashboard() {
             </div>
             <div className="revenue-actions">
               <div className="segmented-control">
-                <button 
+                <button
                   className={`filter-btn ${dashboardPeriod === 'last-month' ? 'active' : ''}`}
                   onClick={() => setDashboardPeriod('last-month')}
                 >Last Month</button>
-                <button 
+                <button
                   className={`filter-btn ${dashboardPeriod === 'current-month' ? 'active' : ''}`}
                   onClick={() => setDashboardPeriod('current-month')}
                 >Current Month</button>
-                <button 
+                <button
                   className={`filter-btn ${dashboardPeriod === 'last-year' ? 'active' : ''}`}
                   onClick={() => setDashboardPeriod('last-year')}
                 >Last Year</button>
-                <button 
+                <button
                   className={`filter-btn ${dashboardPeriod === 'current-year' ? 'active' : ''}`}
                   onClick={() => setDashboardPeriod('current-year')}
                 >Current Year</button>
@@ -224,8 +224,8 @@ export default function Dashboard() {
               <div className="revenue-total">
                 <h2>
                   ₹
-                  {stats.chartTotalRevenue !== undefined 
-                    ? stats.chartTotalRevenue.toLocaleString("en-IN") 
+                  {stats.chartTotalRevenue !== undefined
+                    ? stats.chartTotalRevenue.toLocaleString("en-IN")
                     : 0}
                 </h2>
 

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-hot-toast';
 import '../assets/styles/VendorDetail.css';
 import VenueCard from '../components/VenueCard';
 import SuspendModal from '../context/SuspendModal';
@@ -20,19 +21,19 @@ import {
 
 // Document preview popup images (placeholder)
 const DOC_IMAGES = {
-  pan:    'https://images.unsplash.com/photo-1618005198919-d3d4b5a92ead?w=600&h=400&fit=crop',
+  pan: 'https://images.unsplash.com/photo-1618005198919-d3d4b5a92ead?w=600&h=400&fit=crop',
   aadhar: 'https://images.unsplash.com/photo-1618005198919-d3d4b5a92ead?w=600&h=400&fit=crop',
 };
 
-export default function VendorDetail({ vendor, onBack }) {
+export default function VendorDetail({ vendor, onBack, onVendorSuspended }) {
   const navigate = useNavigate();
   const [vendorData, setVendorData] = useState(null);
-  const [vendorStats, setVendorStats] = useState({ 
-    totalBookings: 0, 
-    activeBookings: 0, 
-    confirmedBookings: 0, 
+  const [vendorStats, setVendorStats] = useState({
+    totalBookings: 0,
+    activeBookings: 0,
+    confirmedBookings: 0,
     pendingBookings: 0,
-    cancelledBookings: 0 
+    cancelledBookings: 0
   });
   const [subscriptionHistory, setSubscriptionHistory] = useState([]);
   const [subscriptionLoading, setSubscriptionLoading] = useState(true);
@@ -47,8 +48,14 @@ export default function VendorDetail({ vendor, onBack }) {
 
   // Transform vendor prop data into the format needed for display
   useEffect(() => {
-    if (vendor && (vendor._id || vendor.id)) {
-      getVendorBookingsStats(vendor._id || vendor.id)
+    if (vendor) {
+      console.log("Vendor Detail Received:", vendor);
+      console.log("Mongo ID:", vendor._id);
+      console.log("Table ID:", vendor.id);
+    }
+
+    if (vendor && vendor._id) {
+      getVendorBookingsStats(vendor._id)
         .then(res => {
           if (res && res.data) {
             setVendorStats(res.data);
@@ -59,7 +66,7 @@ export default function VendorDetail({ vendor, onBack }) {
 
     if (vendor) {
       console.log("🔍 Vendor Data Received:", vendor);
-      
+
       try {
         // Transform turfs data
         const transformedTurfs = (vendor.turfs || []).map((turf, index) => {
@@ -140,23 +147,23 @@ export default function VendorDetail({ vendor, onBack }) {
       try {
         console.log("📡 Fetching subscription history for vendor:", vendor._id);
         const response = await getVendorSubscriptionHistory(vendor._id);
-        
+
         console.log("📦 Subscription history response:", response);
 
         // Transform subscription data from backend format
         const transformedSubscriptions = response.data.map((subscription) => {
           const plan = subscription.plan || {};
-          
+
           // Format dates
           const startDate = new Date(subscription.startDate);
           const endDate = new Date(subscription.endDate);
-          
+
           const startDateFormatted = startDate.toLocaleDateString('en-IN', {
             year: 'numeric',
             month: 'short',
             day: 'numeric',
           });
-          
+
           const endDateFormatted = endDate.toLocaleDateString('en-IN', {
             year: 'numeric',
             month: 'short',
@@ -202,14 +209,14 @@ export default function VendorDetail({ vendor, onBack }) {
   // Fetch recent bookings from backend
   useEffect(() => {
     const fetchRecentBookings = async () => {
-      if (!vendor || (!vendor._id && !vendor.id)) {
+      if (!vendor || !vendor._id) {
         setRecentBookings([]);
         setRecentBookingsLoading(false);
         return;
       }
       setRecentBookingsLoading(true);
       try {
-        const response = await getVendorRecentBookings(vendor._id || vendor.id);
+        const response = await getVendorRecentBookings(vendor._id);
         if (response && response.data) {
           setRecentBookings(response.data);
         } else {
@@ -228,22 +235,25 @@ export default function VendorDetail({ vendor, onBack }) {
   const handleSuspendConfirm = async () => {
     setSuspendLoading(true);
     setSuspendError(null);
-    
+
+    console.log("Suspending Vendor:", vendor);
+    console.log("Vendor Mongo ID:", vendor._id);
+
     try {
-      const vendorId = vendor._id || vendor.id;
-      console.log("Suspending vendor ID:", vendorId);
-      
-      // Call API to suspend vendor
-      await suspendVendor(vendorId);
-      setShowSuspendModal(false);
-      console.log("✅ Vendor suspended successfully");
-      // Go back to vendor list after suspending
-      onBack();
+      await suspendVendor(vendor._id);
+      toast.success("Vendor suspended successfully");
+      if (onVendorSuspended) {
+        onVendorSuspended(vendor._id);
+      }
+      navigate("/admin/vendors");
     } catch (err) {
       console.error("Failed to suspend vendor:", err);
-      setSuspendError(err.message || "Failed to suspend vendor. Please try again.");
+      const errMsg = err.response?.data?.message || "Failed to suspend vendor";
+      setSuspendError(errMsg);
+      toast.error(errMsg);
     } finally {
       setSuspendLoading(false);
+      setShowSuspendModal(false);
     }
   };
 
@@ -328,8 +338,8 @@ export default function VendorDetail({ vendor, onBack }) {
             </div>
           </div>
         </div>
-        <button 
-          className="suspend-btn" 
+        <button
+          className="suspend-btn"
           onClick={() => setShowSuspendModal(true)}
           disabled={suspendLoading}
         >
@@ -347,7 +357,7 @@ export default function VendorDetail({ vendor, onBack }) {
           <div className="stat-content">
             <div className="stat-label">TOTAL TURFS</div>
             <div className="stat-value">{vendorData.totalTurfs}</div>
-            <div className="stat-badge">{vendorData.newTurfs}</div>
+
           </div>
         </div>
         <div className="stat-card">
@@ -511,11 +521,11 @@ export default function VendorDetail({ vendor, onBack }) {
                   day: 'numeric'
                 });
                 const time = `${booking.startTime} - ${booking.endTime}`;
-                const statusColor = 
+                const statusColor =
                   booking.status === 'confirmed' ? 'green' :
-                  booking.status === 'pending' ? '#f39c12' :
-                  booking.status === 'cancelled' || booking.status === 'rejected' ? 'red' :
-                  booking.status === 'completed' ? 'blue' : 'gray';
+                    booking.status === 'pending' ? '#f39c12' :
+                      booking.status === 'cancelled' || booking.status === 'rejected' ? 'red' :
+                        booking.status === 'completed' ? 'blue' : 'gray';
 
                 return (
                   <div key={booking._id || index} className="booking-item">
@@ -524,11 +534,11 @@ export default function VendorDetail({ vendor, onBack }) {
                       <div className="booking-name">{booking.userName}</div>
                       <div className="booking-time">{time}</div>
                     </div>
-                    <div className="booking-amount">₹{booking.amount?.toLocaleString('en-IN')}</div>
-                    <span 
+
+                    <span
                       className="booking-status"
-                      style={{ 
-                        backgroundColor: `${statusColor}20`, 
+                      style={{
+                        backgroundColor: `${statusColor}20`,
                         color: statusColor,
                         padding: '4px 8px',
                         borderRadius: '4px',
@@ -546,7 +556,7 @@ export default function VendorDetail({ vendor, onBack }) {
               </div>
             )}
           </div>
-          <button className="view-all-btn" onClick={() => navigate(`/admin/bookings?vendorId=${vendor._id || vendor.id}`)}>View all bookings</button>
+          <button className="view-all-btn" onClick={() => navigate(`/admin/bookings?vendorId=${vendor._id}`)}>View all bookings</button>
         </div>
 
         {/* Subscription History - NOW FROM BACKEND! */}
@@ -555,7 +565,7 @@ export default function VendorDetail({ vendor, onBack }) {
             <span className="section-icon-circle star"><MdStar size={16} /></span>
             Subscription History
           </h3>
-          
+
           {subscriptionLoading ? (
             <div style={{ padding: '20px', textAlign: 'center', color: '#666' }}>
               Loading subscription history...
@@ -598,1232 +608,3 @@ export default function VendorDetail({ vendor, onBack }) {
     </div>
   );
 }
-
-
-// import '../assets/styles/VendorDetail.css';
-// import VenueCard from '../components/VenueCard';
-// import SuspendModal from '../context/SuspendModal';
-// import { suspendVendor } from '../services/vendors.service'
-
-// // React Icons
-// import {
-//   MdArrowBack,
-//   MdEmail,
-//   MdPhone,
-//   MdCalendarToday,
-//   MdBadge,
-//   MdAccountBalance,
-//   MdStar,
-//   MdRemoveRedEye,
-//   MdSportsSoccer,
-// } from 'react-icons/md';
-
-// // Document preview popup images (placeholder)
-// const DOC_IMAGES = {
-//   pan:    'https://images.unsplash.com/photo-1618005198919-d3d4b5a92ead?w=600&h=400&fit=crop',
-//   aadhar: 'https://images.unsplash.com/photo-1618005198919-d3d4b5a92ead?w=600&h=400&fit=crop',
-// };
-
-// export default function VendorDetail({ vendor, onBack }) {
-//   const [vendorData, setVendorData] = useState(null);
-//   const [selectedTurf, setSelectedTurf] = useState(null);
-//   const [showSuspendModal, setShowSuspendModal] = useState(false);
-//   const [previewDoc, setPreviewDoc] = useState(null);
-//   const [suspendLoading, setSuspendLoading] = useState(false);
-//   const [suspendError, setSuspendError] = useState(null);
-
-//   // Transform vendor prop data into the format needed for display
-//   useEffect(() => {
-//     if (vendor) {
-//       console.log("🔍 Vendor Data Received:", vendor);
-      
-//       try {
-//         // Transform turfs data
-//         const transformedTurfs = (vendor.turfs || []).map((turf, index) => {
-//           console.log("Turf data:", turf);
-//           return {
-//             id: index + 1,
-//             name: turf.turfName || turf.name || 'Unknown Turf',
-//             location: turf.location || 'Unknown Location',
-//             hourlyRate: `₹${(turf.pricePerHour || turf.price || 0).toLocaleString('en-IN')}`,
-//             status: turf.approvalStatus || turf.status || 'Pending',
-//             image: 'https://images.unsplash.com/photo-1624880357913-a8539238245b?w=48&h=48&fit=crop',
-//             venueCardData: {
-//               name: turf.turfName || turf.name || 'Unnamed Turf',
-//               location: `${turf.location || 'Unknown'}, Bangalore`,
-//               rating: 4.5,
-//               reviewCount: 128,
-//               pricePerHour: turf.pricePerHour || turf.price || 0,
-//               facilities: ['Floodlights', 'Parking', 'Water', 'Restroom'],
-//               sports: [turf.sportType || turf.type || 'Football'],
-//               photoCount: 4,
-//               verified: (turf.approvalStatus || turf.status || '').toLowerCase() === 'approved',
-//             },
-//           };
-//         });
-
-//         // Get current date formatted with fallback
-//         let registrationDate = 'Not Available';
-//         try {
-//           const dateObj = vendor.createdAt ? new Date(vendor.createdAt) : new Date();
-//           registrationDate = dateObj.toLocaleDateString('en-IN', {
-//             year: 'numeric',
-//             month: 'short',
-//             day: 'numeric',
-//           });
-//         } catch (e) {
-//           console.error("Date parsing error:", e);
-//         }
-
-//         const newData = {
-//           id: vendor.id || 1,
-//           name: vendor.name || vendor.vendorName || 'Unknown Vendor',
-//           vendorId: vendor.vendorId || 'VND-0000',
-//           description: 'Multi-turf Facility Management & Booking Partner',
-//           logo: 'https://images.unsplash.com/photo-1516399653135-68efc5e5cf13?w=100&h=100&fit=crop',
-//           totalTurfs: String(transformedTurfs.length).padStart(2, '0'),
-//           newTurfs: '+2 New',
-//           activeBookings: '15',
-//           subscription: 'Active',
-//           email: vendor.email || 'Not Available',
-//           phone: vendor.phone || 'Not Available',
-//           location: vendor.location || 'Not Available',
-//           registrationDate: registrationDate,
-//           turfs: transformedTurfs,
-//           _id: vendor._id || vendor.id,
-//           recentBookings: [
-//             { date: 'Oct 24', name: 'Rahul Sharma', time: '05:00 PM - 06:00 PM', amount: '₹1,200', status: 'PAID' },
-//             { date: 'Oct 24', name: 'Prestige FC', time: '08:00 PM - 10:00 PM', amount: '₹2,400', status: 'PAID' },
-//             { date: 'Oct 24', name: 'Rahul Sharma', time: '05:00 PM - 06:00 PM', amount: '₹1,200', status: 'PAID' },
-//           ],
-//           subscriptionHistory: [
-//             {
-//               plan: 'Premium Enterprise Plan',
-//               renewedDate: 'Oct 01, 2023',
-//               nextBillingDate: 'Nov 01, 2023',
-//               status: 'ACTIVE',
-//             },
-//             {
-//               plan: 'Growth Plan',
-//               duration: 'Sep 01, 2023 - Sep 30, 2023',
-//               status: 'EXPIRED',
-//             },
-//             {
-//               plan: 'Starter Plan',
-//               duration: 'Aug 01, 2023 - Aug 31, 2023',
-//               status: 'EXPIRED',
-//             },
-//           ],
-//         };
-
-//         console.log("✅ Transformed Vendor Data:", newData);
-//         setVendorData(newData);
-//       } catch (error) {
-//         console.error("❌ Error transforming vendor data:", error);
-//         setVendorData(null);
-//       }
-//     }
-//   }, [vendor]);
-
-//   const handleSuspendConfirm = async () => {
-//     setSuspendLoading(true);
-//     setSuspendError(null);
-    
-//     try {
-//       const vendorId = vendor._id || vendor.id;
-//       console.log("Suspending vendor ID:", vendorId);
-      
-//       // Call API to suspend vendor
-//       await suspendVendor(vendorId);
-//       setShowSuspendModal(false);
-//       console.log("✅ Vendor suspended successfully");
-//       // Go back to vendor list after suspending
-//       onBack();
-//     } catch (err) {
-//       console.error("Failed to suspend vendor:", err);
-//       setSuspendError(err.message || "Failed to suspend vendor. Please try again.");
-//     } finally {
-//       setSuspendLoading(false);
-//     }
-//   };
-
-//   if (!vendor) {
-//     return (
-//       <div style={{ padding: '20px', textAlign: 'center' }}>
-//         <p>❌ No vendor data received</p>
-//         <button onClick={onBack} style={{ padding: '10px 20px', marginTop: '10px' }}>
-//           Go Back
-//         </button>
-//       </div>
-//     );
-//   }
-
-//   if (!vendorData) {
-//     return (
-//       <div style={{ padding: '20px', textAlign: 'center' }}>
-//         <p>Loading vendor details...</p>
-//         <p style={{ fontSize: '12px', color: '#666' }}>
-//           Vendor: {vendor.name || 'Unknown'}
-//         </p>
-//       </div>
-//     );
-//   }
-
-//   return (
-//     <div className="vendor-detail-container">
-
-//       {/* ── Turf VenueCard Popup ── */}
-//       {selectedTurf && (
-//         <div className="vd-popup-backdrop" onClick={() => setSelectedTurf(null)}>
-//           <div className="vd-popup-box" onClick={(e) => e.stopPropagation()}>
-//             <button className="vd-popup-close" onClick={() => setSelectedTurf(null)}>✕</button>
-//             <VenueCard {...selectedTurf.venueCardData} />
-//           </div>
-//         </div>
-//       )}
-
-//       {/* ── Document Preview Popup ── */}
-//       {previewDoc && (
-//         <div className="vd-popup-backdrop" onClick={() => setPreviewDoc(null)}>
-//           <div className="vd-doc-popup" onClick={(e) => e.stopPropagation()}>
-//             <div className="vd-doc-popup-header">
-//               <span>{previewDoc.title}</span>
-//               <button className="vd-popup-close" onClick={() => setPreviewDoc(null)}>✕</button>
-//             </div>
-//             <img src={previewDoc.src} alt={previewDoc.title} className="vd-doc-img" />
-//           </div>
-//         </div>
-//       )}
-
-//       {/* ── Suspend Modal ── */}
-//       <SuspendModal
-//         isOpen={showSuspendModal}
-//         onClose={() => setShowSuspendModal(false)}
-//         onConfirm={handleSuspendConfirm}
-//         title="Confirm suspend account?"
-//         message={`Are you sure? Do you want to suspend ${vendorData.name}'s account?`}
-//         loading={suspendLoading}
-//         error={suspendError}
-//       />
-
-//       {/* Back Navigation */}
-//       <div className="back-navigation">
-//         <button className="back-btn" onClick={onBack}>
-//           <MdArrowBack size={20} />
-//           <span>Vendor Management</span>
-//           <span className="breadcrumb-separator">/</span>
-//           <span className="vendor-name-breadcrumb">{vendorData.name}</span>
-//         </button>
-//       </div>
-
-//       {/* Vendor Header */}
-//       <div className="vendor-header">
-//         <div className="vendor-header-left">
-//           <img src={vendorData.logo} alt={vendorData.name} className="vendor-logo" />
-//           <div className="vendor-header-info">
-//             <h1 className="vendor-header-name">{vendorData.name}</h1>
-//             <div className="vendor-meta">
-//               <span className="vendor-id-badge">{vendorData.vendorId}</span>
-//               <p className="vendor-description">{vendorData.description}</p>
-//             </div>
-//           </div>
-//         </div>
-//         {/* IMPORTANT: The button must have both spans with proper classes */}
-//         <button 
-//           className="suspend-btn" 
-//           onClick={() => setShowSuspendModal(true)}
-//           disabled={suspendLoading}
-//         >
-//           <span className="suspend-icon">⋯</span>
-//           <span className="suspend-text">{suspendLoading ? 'Suspending...' : 'Suspend account'}</span>
-//         </button>
-//       </div>
-
-//       {/* Stats Cards */}
-//       <div className="stats-grid">
-//         <div className="stat-card">
-//           <div className="stat-icon-circle green">
-//             <MdSportsSoccer size={20} />
-//           </div>
-//           <div className="stat-content">
-//             <div className="stat-label">TOTAL TURFS</div>
-//             <div className="stat-value">{vendorData.totalTurfs}</div>
-//             <div className="stat-badge">{vendorData.newTurfs}</div>
-//           </div>
-//         </div>
-//         <div className="stat-card">
-//           <div className="stat-icon-circle green">
-//             <MdCalendarToday size={20} />
-//           </div>
-//           <div className="stat-content">
-//             <div className="stat-label">ACTIVE BOOKINGS</div>
-//             <div className="stat-value">{vendorData.activeBookings}</div>
-//           </div>
-//         </div>
-//         <div className="subscription-card active">
-//           <div className="stat-icon-circle white">
-//             <MdCalendarToday size={20} />
-//           </div>
-//           <div className="subscription-content">
-//             <div className="subscription-label">SUBSCRIPTION</div>
-//             <div className="subscription-value">{vendorData.subscription}</div>
-//           </div>
-//         </div>
-//       </div>
-
-//       {/* Information Sections */}
-//       <div className="info-sections">
-//         {/* Vendor Information */}
-//         <div className="info-card">
-//           <h3 className="info-title">
-//             <span className="info-icon-circle gray"><MdBadge size={18} /></span>
-//             Vendor Information
-//           </h3>
-//           <div className="info-content">
-//             <div className="info-row">
-//               <div className="info-row-left">
-//                 <span className="info-row-icon"><MdEmail size={20} /></span>
-//                 <div className="info-stacked">
-//                   <span className="info-label">Email Address</span>
-//                   <span className="info-value">{vendorData.email}</span>
-//                 </div>
-//               </div>
-//             </div>
-//             <div className="info-row">
-//               <div className="info-row-left">
-//                 <span className="info-row-icon"><MdPhone size={20} /></span>
-//                 <div className="info-stacked">
-//                   <span className="info-label">Phone Number</span>
-//                   <span className="info-value">{vendorData.phone}</span>
-//                 </div>
-//               </div>
-//             </div>
-//             <div className="info-row last">
-//               <div className="info-row-left">
-//                 <span className="info-row-icon"><MdCalendarToday size={20} /></span>
-//                 <div className="info-stacked">
-//                   <span className="info-label">Registration Date</span>
-//                   <span className="info-value">{vendorData.registrationDate}</span>
-//                 </div>
-//               </div>
-//             </div>
-//           </div>
-//         </div>
-
-//         {/* Document Information */}
-//         <div className="info-card">
-//           <h3 className="info-title">
-//             <span className="info-icon-circle gray"><MdAccountBalance size={18} /></span>
-//             Document information
-//           </h3>
-//           <div className="info-content">
-//             <div className="info-row">
-//               <div className="info-row-left">
-//                 <span className="info-row-icon"><MdBadge size={20} /></span>
-//                 <span className="info-label-standalone">PAN Card</span>
-//               </div>
-//               <button
-//                 className="preview-btn"
-//                 onClick={() => setPreviewDoc({ title: 'PAN Card', src: DOC_IMAGES.pan })}
-//               >
-//                 Preview <MdRemoveRedEye size={16} />
-//               </button>
-//             </div>
-//             <div className="info-row last">
-//               <div className="info-row-left">
-//                 <span className="info-row-icon"><MdBadge size={20} /></span>
-//                 <span className="info-label-standalone">Aadhar card</span>
-//               </div>
-//               <button
-//                 className="preview-btn"
-//                 onClick={() => setPreviewDoc({ title: 'Aadhar Card', src: DOC_IMAGES.aadhar })}
-//               >
-//                 Preview <MdRemoveRedEye size={16} />
-//               </button>
-//             </div>
-//           </div>
-//         </div>
-//       </div>
-
-//       {/* Turfs Table */}
-//       <div className="turfs-section">
-//         <table className="turfs-table">
-//           <thead>
-//             <tr>
-//               <th>TURF NAME</th>
-//               <th>LOCATION</th>
-//               <th>HOURLY RATE</th>
-//               <th>STATUS</th>
-//               <th>ACTIONS</th>
-//             </tr>
-//           </thead>
-//           <tbody>
-//             {vendorData.turfs && vendorData.turfs.length > 0 ? (
-//               vendorData.turfs.map((turf) => (
-//                 <tr key={turf.id}>
-//                   <td>
-//                     <div className="turf-name-cell">
-//                       <img src={turf.image} alt={turf.name} className="turf-thumb" />
-//                       <span className="turf-name-text">{turf.name}</span>
-//                     </div>
-//                   </td>
-//                   <td>{turf.location}</td>
-//                   <td>{turf.hourlyRate}</td>
-//                   <td>
-//                     <span className={`status-badge ${turf.status.toLowerCase().replace(' ', '-')}`}>
-//                       • {turf.status}
-//                     </span>
-//                   </td>
-//                   <td>
-//                     <button className="view-btn" onClick={() => setSelectedTurf(turf)}>
-//                       VIEW
-//                     </button>
-//                   </td>
-//                 </tr>
-//               ))
-//             ) : (
-//               <tr>
-//                 <td colSpan="5" style={{ textAlign: 'center', padding: '20px', color: '#999' }}>
-//                   No turfs found for this vendor
-//                 </td>
-//               </tr>
-//             )}
-//           </tbody>
-//         </table>
-//       </div>
-
-//       {/* Recent Bookings & Subscription History */}
-//       <div className="bottom-sections">
-//         <div className="recent-bookings">
-//           <h3 className="section-title">
-//             <span className="section-icon-circle"><MdCalendarToday size={16} /></span>
-//             Recent Bookings
-//           </h3>
-//           <div className="bookings-list">
-//             {vendorData.recentBookings && vendorData.recentBookings.map((booking, index) => (
-//               <div key={index} className="booking-item">
-//                 <div className="booking-date">{booking.date}</div>
-//                 <div className="booking-info">
-//                   <div className="booking-name">{booking.name}</div>
-//                   <div className="booking-time">{booking.time}</div>
-//                 </div>
-//                 <div className="booking-amount">{booking.amount}</div>
-//                 <span className="booking-status">{booking.status}</span>
-//               </div>
-//             ))}
-//           </div>
-//           <button className="view-all-btn">View all bookings</button>
-//         </div>
-
-//         {/* Subscription History */}
-//         <div className="subscription-history">
-//           <h3 className="section-title">
-//             <span className="section-icon-circle star"><MdStar size={16} /></span>
-//             Subscription History
-//           </h3>
-//           <div className="subscriptions-scroll">
-//             {vendorData.subscriptionHistory && vendorData.subscriptionHistory.map((sub, index) => (
-//               <div key={index} className={`subscription-item ${sub.status.toLowerCase()}`}>
-//                 <div className="sub-top-row">
-//                   <div className="sub-plan">{sub.plan}</div>
-//                   <span className={`sub-status-badge ${sub.status.toLowerCase()}`}>{sub.status}</span>
-//                 </div>
-//                 {sub.status === 'ACTIVE' ? (
-//                   <>
-//                     <div className="sub-date">Renewed on {sub.renewedDate}</div>
-//                     <div className="sub-date">Next Billing: {sub.nextBillingDate}</div>
-//                   </>
-//                 ) : (
-//                   <div className="sub-date">{sub.duration}</div>
-//                 )}
-//               </div>
-//             ))}
-//           </div>
-//           <button className="scroll-previous-btn">Scroll previous Plans</button>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// }
-
-
-// // import '../assets/styles/VendorDetail.css';
-// // import VenueCard from '../components/VenueCard';
-// // import SuspendModal from '../context/SuspendModal';
-// // import { suspendVendor } from '../services/vendors.service';
-
-// // // React Icons
-// // import {
-// //   MdArrowBack,
-// //   MdEmail,
-// //   MdPhone,
-// //   MdCalendarToday,
-// //   MdBadge,
-// //   MdAccountBalance,
-// //   MdStar,
-// //   MdRemoveRedEye,
-// //   MdSportsSoccer,
-// // } from 'react-icons/md';
-
-// // // Document preview popup images (placeholder)
-// // const DOC_IMAGES = {
-// //   pan:    'https://images.unsplash.com/photo-1618005198919-d3d4b5a92ead?w=600&h=400&fit=crop',
-// //   aadhar: 'https://images.unsplash.com/photo-1618005198919-d3d4b5a92ead?w=600&h=400&fit=crop',
-// // };
-
-// // export default function VendorDetail({ vendor, onBack }) {
-// //   const [vendorData, setVendorData] = useState(null);
-// //   const [selectedTurf, setSelectedTurf] = useState(null);
-// //   const [showSuspendModal, setShowSuspendModal] = useState(false);
-// //   const [previewDoc, setPreviewDoc] = useState(null);
-// //   const [suspendLoading, setSuspendLoading] = useState(false);
-// //   const [suspendError, setSuspendError] = useState(null);
-
-// //   // Transform vendor prop data into the format needed for display
-// //   useEffect(() => {
-// //     if (vendor) {
-// //       // Transform turfs data
-// //       const transformedTurfs = (vendor.turfs || []).map((turf, index) => ({
-// //         id: index + 1,
-// //         name: turf.turfName,
-// //         location: turf.location,
-// //         hourlyRate: `₹${turf.pricePerHour?.toLocaleString('en-IN') || 0}`,
-// //         status: turf.approvalStatus || 'Pending',
-// //         image: 'https://images.unsplash.com/photo-1624880357913-a8539238245b?w=48&h=48&fit=crop',
-// //         venueCardData: {
-// //           name: turf.turfName,
-// //           location: `${turf.location}, Bangalore`,
-// //           rating: 4.5,
-// //           reviewCount: 128,
-// //           pricePerHour: turf.pricePerHour || 0,
-// //           facilities: ['Floodlights', 'Parking', 'Water', 'Restroom'],
-// //           sports: [turf.sportType || 'Football'],
-// //           photoCount: 4,
-// //           verified: turf.approvalStatus === 'approved',
-// //         },
-// //       }));
-
-// //       // Get current date formatted
-// //       const registrationDate = new Date(vendor.createdAt || new Date()).toLocaleDateString('en-IN', {
-// //         year: 'numeric',
-// //         month: 'short',
-// //         day: 'numeric',
-// //       });
-
-// //       setVendorData({
-// //         id: vendor.id,
-// //         name: vendor.name,
-// //         vendorId: vendor.vendorId,
-// //         description: 'Multi-turf Facility Management & Booking Partner',
-// //         logo: 'https://images.unsplash.com/photo-1516399653135-68efc5e5cf13?w=100&h=100&fit=crop',
-// //         totalTurfs: String(transformedTurfs.length).padStart(2, '0'),
-// //         newTurfs: '+2 New',
-// //         activeBookings: '15', // This would come from bookings API if available
-// //         subscription: 'Active',
-// //         email: vendor.email,
-// //         phone: vendor.phone,
-// //         location: vendor.location,
-// //         registrationDate: registrationDate,
-// //         turfs: transformedTurfs,
-// //         recentBookings: [
-// //           { date: 'Oct 24', name: 'Rahul Sharma', time: '05:00 PM - 06:00 PM', amount: '₹1,200', status: 'PAID' },
-// //           { date: 'Oct 24', name: 'Prestige FC', time: '08:00 PM - 10:00 PM', amount: '₹2,400', status: 'PAID' },
-// //           { date: 'Oct 24', name: 'Rahul Sharma', time: '05:00 PM - 06:00 PM', amount: '₹1,200', status: 'PAID' },
-// //         ],
-// //         subscriptionHistory: [
-// //           {
-// //             plan: 'Premium Enterprise Plan',
-// //             renewedDate: 'Oct 01, 2023',
-// //             nextBillingDate: 'Nov 01, 2023',
-// //             status: 'ACTIVE',
-// //           },
-// //           {
-// //             plan: 'Growth Plan',
-// //             duration: 'Sep 01, 2023 - Sep 30, 2023',
-// //             status: 'EXPIRED',
-// //           },
-// //           {
-// //             plan: 'Starter Plan',
-// //             duration: 'Aug 01, 2023 - Aug 31, 2023',
-// //             status: 'EXPIRED',
-// //           },
-// //         ],
-// //       });
-// //     }
-// //   }, [vendor]);
-
-// //   const handleSuspendConfirm = async () => {
-// //     setSuspendLoading(true);
-// //     setSuspendError(null);
-    
-// //     try {
-// //       // Call API to suspend vendor
-// //       await suspendVendor(vendor._id || vendor.id);
-// //       setShowSuspendModal(false);
-// //       console.log("✅ Vendor suspended successfully");
-// //       // Go back to vendor list after suspending
-// //       onBack();
-// //     } catch (err) {
-// //       console.error("Failed to suspend vendor:", err);
-// //       setSuspendError("Failed to suspend vendor. Please try again.");
-// //     } finally {
-// //       setSuspendLoading(false);
-// //     }
-// //   };
-
-// //   if (!vendorData) {
-// //     return <div>Loading vendor details...</div>;
-// //   }
-
-// //   return (
-// //     <div className="vendor-detail-container">
-
-// //       {/* ── Turf VenueCard Popup ── */}
-// //       {selectedTurf && (
-// //         <div className="vd-popup-backdrop" onClick={() => setSelectedTurf(null)}>
-// //           <div className="vd-popup-box" onClick={(e) => e.stopPropagation()}>
-// //             <button className="vd-popup-close" onClick={() => setSelectedTurf(null)}>✕</button>
-// //             <VenueCard {...selectedTurf.venueCardData} />
-// //           </div>
-// //         </div>
-// //       )}
-
-// //       {/* ── Document Preview Popup ── */}
-// //       {previewDoc && (
-// //         <div className="vd-popup-backdrop" onClick={() => setPreviewDoc(null)}>
-// //           <div className="vd-doc-popup" onClick={(e) => e.stopPropagation()}>
-// //             <div className="vd-doc-popup-header">
-// //               <span>{previewDoc.title}</span>
-// //               <button className="vd-popup-close" onClick={() => setPreviewDoc(null)}>✕</button>
-// //             </div>
-// //             <img src={previewDoc.src} alt={previewDoc.title} className="vd-doc-img" />
-// //           </div>
-// //         </div>
-// //       )}
-
-// //       {/* ── Suspend Modal ── */}
-// //       <SuspendModal
-// //         isOpen={showSuspendModal}
-// //         onClose={() => setShowSuspendModal(false)}
-// //         onConfirm={handleSuspendConfirm}
-// //         title="Confirm suspend account?"
-// //         message={`Are you sure? Do you want to suspend ${vendorData.name}'s account?`}
-// //         loading={suspendLoading}
-// //         error={suspendError}
-// //       />
-
-// //       {/* Back Navigation */}
-// //       <div className="back-navigation">
-// //         <button className="back-btn" onClick={onBack}>
-// //           <MdArrowBack size={20} />
-// //           <span>Vendor Management</span>
-// //           <span className="breadcrumb-separator">/</span>
-// //           <span className="vendor-name-breadcrumb">{vendorData.name}</span>
-// //         </button>
-// //       </div>
-
-// //       {/* Vendor Header */}
-// //       <div className="vendor-header">
-// //         <div className="vendor-header-left">
-// //           <img src={vendorData.logo} alt={vendorData.name} className="vendor-logo" />
-// //           <div className="vendor-header-info">
-// //             <h1 className="vendor-header-name">{vendorData.name}</h1>
-// //             <div className="vendor-meta">
-// //               <span className="vendor-id-badge">{vendorData.vendorId}</span>
-// //               <p className="vendor-description">{vendorData.description}</p>
-// //             </div>
-// //           </div>
-// //         </div>
-// //         {/* IMPORTANT: The button must have both spans with proper classes */}
-// //         <button 
-// //           className="suspend-btn" 
-// //           onClick={() => setShowSuspendModal(true)}
-// //           disabled={suspendLoading}
-// //         >
-// //           <span className="suspend-icon">⋯</span>
-// //           <span className="suspend-text">{suspendLoading ? 'Suspending...' : 'Suspend account'}</span>
-// //         </button>
-// //       </div>
-
-// //       {/* Stats Cards */}
-// //       <div className="stats-grid">
-// //         <div className="stat-card">
-// //           <div className="stat-icon-circle green">
-// //             <MdSportsSoccer size={20} />
-// //           </div>
-// //           <div className="stat-content">
-// //             <div className="stat-label">TOTAL TURFS</div>
-// //             <div className="stat-value">{vendorData.totalTurfs}</div>
-// //             <div className="stat-badge">{vendorData.newTurfs}</div>
-// //           </div>
-// //         </div>
-// //         <div className="stat-card">
-// //           <div className="stat-icon-circle green">
-// //             <MdCalendarToday size={20} />
-// //           </div>
-// //           <div className="stat-content">
-// //             <div className="stat-label">ACTIVE BOOKINGS</div>
-// //             <div className="stat-value">{vendorData.activeBookings}</div>
-// //           </div>
-// //         </div>
-// //         <div className="subscription-card active">
-// //           <div className="stat-icon-circle white">
-// //             <MdCalendarToday size={20} />
-// //           </div>
-// //           <div className="subscription-content">
-// //             <div className="subscription-label">SUBSCRIPTION</div>
-// //             <div className="subscription-value">{vendorData.subscription}</div>
-// //           </div>
-// //         </div>
-// //       </div>
-
-// //       {/* Information Sections */}
-// //       <div className="info-sections">
-// //         {/* Vendor Information */}
-// //         <div className="info-card">
-// //           <h3 className="info-title">
-// //             <span className="info-icon-circle gray"><MdBadge size={18} /></span>
-// //             Vendor Information
-// //           </h3>
-// //           <div className="info-content">
-// //             <div className="info-row">
-// //               <div className="info-row-left">
-// //                 <span className="info-row-icon"><MdEmail size={20} /></span>
-// //                 <div className="info-stacked">
-// //                   <span className="info-label">Email Address</span>
-// //                   <span className="info-value">{vendorData.email}</span>
-// //                 </div>
-// //               </div>
-// //             </div>
-// //             <div className="info-row">
-// //               <div className="info-row-left">
-// //                 <span className="info-row-icon"><MdPhone size={20} /></span>
-// //                 <div className="info-stacked">
-// //                   <span className="info-label">Phone Number</span>
-// //                   <span className="info-value">{vendorData.phone}</span>
-// //                 </div>
-// //               </div>
-// //             </div>
-// //             <div className="info-row last">
-// //               <div className="info-row-left">
-// //                 <span className="info-row-icon"><MdCalendarToday size={20} /></span>
-// //                 <div className="info-stacked">
-// //                   <span className="info-label">Registration Date</span>
-// //                   <span className="info-value">{vendorData.registrationDate}</span>
-// //                 </div>
-// //               </div>
-// //             </div>
-// //           </div>
-// //         </div>
-
-// //         {/* Document Information */}
-// //         <div className="info-card">
-// //           <h3 className="info-title">
-// //             <span className="info-icon-circle gray"><MdAccountBalance size={18} /></span>
-// //             Document information
-// //           </h3>
-// //           <div className="info-content">
-// //             <div className="info-row">
-// //               <div className="info-row-left">
-// //                 <span className="info-row-icon"><MdBadge size={20} /></span>
-// //                 <span className="info-label-standalone">PAN Card</span>
-// //               </div>
-// //               <button
-// //                 className="preview-btn"
-// //                 onClick={() => setPreviewDoc({ title: 'PAN Card', src: DOC_IMAGES.pan })}
-// //               >
-// //                 Preview <MdRemoveRedEye size={16} />
-// //               </button>
-// //             </div>
-// //             <div className="info-row last">
-// //               <div className="info-row-left">
-// //                 <span className="info-row-icon"><MdBadge size={20} /></span>
-// //                 <span className="info-label-standalone">Aadhar card</span>
-// //               </div>
-// //               <button
-// //                 className="preview-btn"
-// //                 onClick={() => setPreviewDoc({ title: 'Aadhar Card', src: DOC_IMAGES.aadhar })}
-// //               >
-// //                 Preview <MdRemoveRedEye size={16} />
-// //               </button>
-// //             </div>
-// //           </div>
-// //         </div>
-// //       </div>
-
-// //       {/* Turfs Table */}
-// //       <div className="turfs-section">
-// //         <table className="turfs-table">
-// //           <thead>
-// //             <tr>
-// //               <th>TURF NAME</th>
-// //               <th>LOCATION</th>
-// //               <th>HOURLY RATE</th>
-// //               <th>STATUS</th>
-// //               <th>ACTIONS</th>
-// //             </tr>
-// //           </thead>
-// //           <tbody>
-// //             {vendorData.turfs.length > 0 ? (
-// //               vendorData.turfs.map((turf) => (
-// //                 <tr key={turf.id}>
-// //                   <td>
-// //                     <div className="turf-name-cell">
-// //                       <img src={turf.image} alt={turf.name} className="turf-thumb" />
-// //                       <span className="turf-name-text">{turf.name}</span>
-// //                     </div>
-// //                   </td>
-// //                   <td>{turf.location}</td>
-// //                   <td>{turf.hourlyRate}</td>
-// //                   <td>
-// //                     <span className={`status-badge ${turf.status.toLowerCase()}`}>
-// //                       • {turf.status}
-// //                     </span>
-// //                   </td>
-// //                   <td>
-// //                     <button className="view-btn" onClick={() => setSelectedTurf(turf)}>
-// //                       VIEW
-// //                     </button>
-// //                   </td>
-// //                 </tr>
-// //               ))
-// //             ) : (
-// //               <tr>
-// //                 <td colSpan="5" style={{ textAlign: 'center', padding: '20px' }}>
-// //                   No turfs found for this vendor
-// //                 </td>
-// //               </tr>
-// //             )}
-// //           </tbody>
-// //         </table>
-// //       </div>
-
-// //       {/* Recent Bookings & Subscription History */}
-// //       <div className="bottom-sections">
-// //         <div className="recent-bookings">
-// //           <h3 className="section-title">
-// //             <span className="section-icon-circle"><MdCalendarToday size={16} /></span>
-// //             Recent Bookings
-// //           </h3>
-// //           <div className="bookings-list">
-// //             {vendorData.recentBookings.map((booking, index) => (
-// //               <div key={index} className="booking-item">
-// //                 <div className="booking-date">{booking.date}</div>
-// //                 <div className="booking-info">
-// //                   <div className="booking-name">{booking.name}</div>
-// //                   <div className="booking-time">{booking.time}</div>
-// //                 </div>
-// //                 <div className="booking-amount">{booking.amount}</div>
-// //                 <span className="booking-status">{booking.status}</span>
-// //               </div>
-// //             ))}
-// //           </div>
-// //           <button className="view-all-btn">View all bookings</button>
-// //         </div>
-
-// //         {/* Subscription History */}
-// //         <div className="subscription-history">
-// //           <h3 className="section-title">
-// //             <span className="section-icon-circle star"><MdStar size={16} /></span>
-// //             Subscription History
-// //           </h3>
-// //           <div className="subscriptions-scroll">
-// //             {vendorData.subscriptionHistory.map((sub, index) => (
-// //               <div key={index} className={`subscription-item ${sub.status.toLowerCase()}`}>
-// //                 <div className="sub-top-row">
-// //                   <div className="sub-plan">{sub.plan}</div>
-// //                   <span className={`sub-status-badge ${sub.status.toLowerCase()}`}>{sub.status}</span>
-// //                 </div>
-// //                 {sub.status === 'ACTIVE' ? (
-// //                   <>
-// //                     <div className="sub-date">Renewed on {sub.renewedDate}</div>
-// //                     <div className="sub-date">Next Billing: {sub.nextBillingDate}</div>
-// //                   </>
-// //                 ) : (
-// //                   <div className="sub-date">{sub.duration}</div>
-// //                 )}
-// //               </div>
-// //             ))}
-// //           </div>
-// //           <button className="scroll-previous-btn">Scroll previous Plans</button>
-// //         </div>
-// //       </div>
-// //     </div>
-// //   );
-// // }
-
-
-
-// // import '../assets/styles/VendorDetail.css';
-// // import VenueCard from '../components/VenueCard';
-// // import SuspendModal from '../context/SuspendModal';
-
-// // // React Icons
-// // import {
-// //   MdArrowBack,
-// //   MdEmail,
-// //   MdPhone,
-// //   MdCalendarToday,
-// //   MdBadge,
-// //   MdAccountBalance,
-// //   MdStar,
-// //   MdRemoveRedEye,
-// //   MdSportsSoccer,
-// // } from 'react-icons/md';
-
-// // const vendorData = {
-// //   id: 1,
-// //   name: 'Karthikeyan',
-// //   vendorId: 'VND-1001',
-// //   description: 'Multi-turf Facility Management & Booking Partner',
-// //   logo: 'https://images.unsplash.com/photo-1516399653135-68efc5e5cf13?w=100&h=100&fit=crop',
-// //   totalTurfs: '03',
-// //   newTurfs: '+2 New',
-// //   activeBookings: '15',
-// //   subscription: 'Active',
-// //   email: 'contact@sporthub.ventures',
-// //   phone: '+91 98765 43210',
-// //   registrationDate: '12 Oct 2023',
-// //   turfs: [
-// //     {
-// //       id: 1,
-// //       name: 'Green Valley Arena',
-// //       location: 'Indranagar',
-// //       hourlyRate: '₹1,200',
-// //       status: 'Approved',
-// //       image: 'https://images.unsplash.com/photo-1624880357913-a8539238245b?w=48&h=48&fit=crop',
-// //       venueCardData: {
-// //         name: 'Green Valley Arena',
-// //         location: 'Indranagar, Bangalore',
-// //         rating: 4.8,
-// //         reviewCount: 234,
-// //         pricePerHour: 1200,
-// //         facilities: ['Floodlights', 'Parking', 'Water', 'CCTV Security', 'Restroom'],
-// //         sports: ['Football', 'Cricket', 'Badminton', 'Volleyball'],
-// //         photoCount: 4,
-// //         verified: true,
-// //       },
-// //     },
-// //     {
-// //       id: 2,
-// //       name: 'Skyline Multisport',
-// //       location: 'Whitefield',
-// //       hourlyRate: '₹1,500',
-// //       status: 'Pending',
-// //       image: 'https://images.unsplash.com/photo-1624880357913-a8539238245b?w=48&h=48&fit=crop',
-// //       venueCardData: {
-// //         name: 'Skyline Multisport',
-// //         location: 'Whitefield, Bangalore',
-// //         rating: 4.5,
-// //         reviewCount: 128,
-// //         pricePerHour: 1500,
-// //         facilities: ['Floodlights', 'Parking', 'Water', 'Restroom'],
-// //         sports: ['Football', 'Cricket'],
-// //         photoCount: 4,
-// //         verified: false,
-// //       },
-// //     },
-// //   ],
-// //   recentBookings: [
-// //     { date: 'Oct 24', name: 'Rahul Sharma', time: '05:00 PM - 06:00 PM', amount: '₹1,200', status: 'PAID' },
-// //     { date: 'Oct 24', name: 'Prestige FC',  time: '08:00 PM - 10:00 PM', amount: '₹2,400', status: 'PAID' },
-// //     { date: 'Oct 24', name: 'Rahul Sharma', time: '05:00 PM - 06:00 PM', amount: '₹1,200', status: 'PAID' },
-// //   ],
-// //   subscriptionHistory: [
-// //     {
-// //       plan: 'Premium Enterprise Plan',
-// //       renewedDate: 'Oct 01, 2023',
-// //       nextBillingDate: 'Nov 01, 2023',
-// //       status: 'ACTIVE',
-// //     },
-// //     {
-// //       plan: 'Growth Plan',
-// //       duration: 'Sep 01, 2023 - Sep 30, 2023',
-// //       status: 'EXPIRED',
-// //     },
-// //     {
-// //       plan: 'Starter Plan',
-// //       duration: 'Aug 01, 2023 - Aug 31, 2023',
-// //       status: 'EXPIRED',
-// //     },
-// //   ],
-// // };
-
-// // // Document preview popup images (placeholder)
-// // const DOC_IMAGES = {
-// //   pan:    'https://images.unsplash.com/photo-1618005198919-d3d4b5a92ead?w=600&h=400&fit=crop',
-// //   aadhar: 'https://images.unsplash.com/photo-1618005198919-d3d4b5a92ead?w=600&h=400&fit=crop',
-// // };
-
-// // export default function VendorDetail({ vendor, onBack }) {
-// //   const [selectedTurf, setSelectedTurf]       = useState(null);
-// //   const [showSuspendModal, setShowSuspendModal] = useState(false);
-// //   const [previewDoc, setPreviewDoc]           = useState(null);
-
-// //   const handleSuspendConfirm = () => {
-// //     setShowSuspendModal(false);
-// //     onBack();
-// //   };
-
-// //   return (
-// //     <div className="vendor-detail-container">
-
-// //       {/* ── Turf VenueCard Popup ── */}
-// //       {selectedTurf && (
-// //         <div className="vd-popup-backdrop" onClick={() => setSelectedTurf(null)}>
-// //           <div className="vd-popup-box" onClick={(e) => e.stopPropagation()}>
-// //             <button className="vd-popup-close" onClick={() => setSelectedTurf(null)}>✕</button>
-// //             <VenueCard {...selectedTurf.venueCardData} />
-// //           </div>
-// //         </div>
-// //       )}
-
-// //       {/* ── Document Preview Popup ── */}
-// //       {previewDoc && (
-// //         <div className="vd-popup-backdrop" onClick={() => setPreviewDoc(null)}>
-// //           <div className="vd-doc-popup" onClick={(e) => e.stopPropagation()}>
-// //             <div className="vd-doc-popup-header">
-// //               <span>{previewDoc.title}</span>
-// //               <button className="vd-popup-close" onClick={() => setPreviewDoc(null)}>✕</button>
-// //             </div>
-// //             <img src={previewDoc.src} alt={previewDoc.title} className="vd-doc-img" />
-// //           </div>
-// //         </div>
-// //       )}
-
-// //       {/* ── Suspend Modal ── */}
-// //       <SuspendModal
-// //         isOpen={showSuspendModal}
-// //         onClose={() => setShowSuspendModal(false)}
-// //         onConfirm={handleSuspendConfirm}
-// //         title="Confirm suspend account?"
-// //         message={`Are you sure? Do you want to suspend ${vendorData.name}'s account?`}
-// //       />
-
-// //       {/* Back Navigation */}
-// //       <div className="back-navigation">
-// //         <button className="back-btn" onClick={onBack}>
-// //           <MdArrowBack size={20} />
-// //           <span>Vendor Management</span>
-// //           <span className="breadcrumb-separator">/</span>
-// //           <span className="vendor-name-breadcrumb">{vendorData.name}</span>
-// //         </button>
-// //       </div>
-
-// //       {/* Vendor Header */}
-// //       <div className="vendor-header">
-// //         <div className="vendor-header-left">
-// //           <img src={vendorData.logo} alt={vendorData.name} className="vendor-logo" />
-// //           <div className="vendor-header-info">
-// //             <h1 className="vendor-header-name">{vendorData.name}</h1>
-// //             <div className="vendor-meta">
-// //               <span className="vendor-id-badge">{vendorData.vendorId}</span>
-// //               <p className="vendor-description">{vendorData.description}</p>
-// //             </div>
-// //           </div>
-// //         </div>
-// //         {/* IMPORTANT: The button must have both spans with proper classes */}
-// //         <button className="suspend-btn" onClick={() => setShowSuspendModal(true)}>
-// //           <span className="suspend-icon">⋯</span>
-// //           <span className="suspend-text">Suspend account</span>
-// //         </button>
-// //       </div>
-
-// //       {/* Stats Cards */}
-// //       <div className="stats-grid">
-// //         <div className="stat-card">
-// //           <div className="stat-icon-circle green">
-// //             <MdSportsSoccer size={20} />
-// //           </div>
-// //           <div className="stat-content">
-// //             <div className="stat-label">TOTAL TURFS</div>
-// //             <div className="stat-value">{vendorData.totalTurfs}</div>
-// //             <div className="stat-badge">{vendorData.newTurfs}</div>
-// //           </div>
-// //         </div>
-// //         <div className="stat-card">
-// //           <div className="stat-icon-circle green">
-// //             <MdCalendarToday size={20} />
-// //           </div>
-// //           <div className="stat-content">
-// //             <div className="stat-label">ACTIVE BOOKINGS</div>
-// //             <div className="stat-value">{vendorData.activeBookings}</div>
-// //           </div>
-// //         </div>
-// //         <div className="subscription-card active">
-// //           <div className="stat-icon-circle white">
-// //             <MdCalendarToday size={20} />
-// //           </div>
-// //           <div className="subscription-content">
-// //             <div className="subscription-label">SUBSCRIPTION</div>
-// //             <div className="subscription-value">{vendorData.subscription}</div>
-// //           </div>
-// //         </div>
-// //       </div>
-
-// //       {/* Information Sections */}
-// //       <div className="info-sections">
-// //         {/* Vendor Information */}
-// //         <div className="info-card">
-// //           <h3 className="info-title">
-// //             <span className="info-icon-circle gray"><MdBadge size={18} /></span>
-// //             Vendor Information
-// //           </h3>
-// //           <div className="info-content">
-// //             <div className="info-row">
-// //               <div className="info-row-left">
-// //                 <span className="info-row-icon"><MdEmail size={20} /></span>
-// //                 <div className="info-stacked">
-// //                   <span className="info-label">Email Address</span>
-// //                   <span className="info-value">{vendorData.email}</span>
-// //                 </div>
-// //               </div>
-// //             </div>
-// //             <div className="info-row">
-// //               <div className="info-row-left">
-// //                 <span className="info-row-icon"><MdPhone size={20} /></span>
-// //                 <div className="info-stacked">
-// //                   <span className="info-label">Phone Number</span>
-// //                   <span className="info-value">{vendorData.phone}</span>
-// //                 </div>
-// //               </div>
-// //             </div>
-// //             <div className="info-row last">
-// //               <div className="info-row-left">
-// //                 <span className="info-row-icon"><MdCalendarToday size={20} /></span>
-// //                 <div className="info-stacked">
-// //                   <span className="info-label">Registration Date</span>
-// //                   <span className="info-value">{vendorData.registrationDate}</span>
-// //                 </div>
-// //               </div>
-// //             </div>
-// //           </div>
-// //         </div>
-
-// //         {/* Document Information */}
-// //         <div className="info-card">
-// //           <h3 className="info-title">
-// //             <span className="info-icon-circle gray"><MdAccountBalance size={18} /></span>
-// //             Document information
-// //           </h3>
-// //           <div className="info-content">
-// //             <div className="info-row">
-// //               <div className="info-row-left">
-// //                 <span className="info-row-icon"><MdBadge size={20} /></span>
-// //                 <span className="info-label-standalone">PAN Card</span>
-// //               </div>
-// //               <button
-// //                 className="preview-btn"
-// //                 onClick={() => setPreviewDoc({ title: 'PAN Card', src: DOC_IMAGES.pan })}
-// //               >
-// //                 Preview <MdRemoveRedEye size={16} />
-// //               </button>
-// //             </div>
-// //             <div className="info-row last">
-// //               <div className="info-row-left">
-// //                 <span className="info-row-icon"><MdBadge size={20} /></span>
-// //                 <span className="info-label-standalone">Aadhar card</span>
-// //               </div>
-// //               <button
-// //                 className="preview-btn"
-// //                 onClick={() => setPreviewDoc({ title: 'Aadhar Card', src: DOC_IMAGES.aadhar })}
-// //               >
-// //                 Preview <MdRemoveRedEye size={16} />
-// //               </button>
-// //             </div>
-// //           </div>
-// //         </div>
-// //       </div>
-
-// //       {/* Turfs Table */}
-// //       <div className="turfs-section">
-// //         <table className="turfs-table">
-// //           <thead>
-// //             <tr>
-// //               <th>TURF NAME</th>
-// //               <th>LOCATION</th>
-// //               <th>HOURLY RATE</th>
-// //               <th>STATUS</th>
-// //               <th>ACTIONS</th>
-// //             </tr>
-// //           </thead>
-// //           <tbody>
-// //             {vendorData.turfs.map((turf) => (
-// //               <tr key={turf.id}>
-// //                 <td>
-// //                   <div className="turf-name-cell">
-// //                     <img src={turf.image} alt={turf.name} className="turf-thumb" />
-// //                     <span className="turf-name-text">{turf.name}</span>
-// //                   </div>
-// //                 </td>
-// //                 <td>{turf.location}</td>
-// //                 <td>{turf.hourlyRate}</td>
-// //                 <td>
-// //                   <span className={`status-badge ${turf.status.toLowerCase()}`}>
-// //                     • {turf.status}
-// //                   </span>
-// //                 </td>
-// //                 <td>
-// //                   <button className="view-btn" onClick={() => setSelectedTurf(turf)}>
-// //                     VIEW
-// //                   </button>
-// //                 </td>
-// //               </tr>
-// //             ))}
-// //           </tbody>
-// //         </table>
-// //       </div>
-
-// //       {/* Recent Bookings & Subscription History */}
-// //       <div className="bottom-sections">
-// //         <div className="recent-bookings">
-// //           <h3 className="section-title">
-// //             <span className="section-icon-circle"><MdCalendarToday size={16} /></span>
-// //             Recent Bookings
-// //           </h3>
-// //           <div className="bookings-list">
-// //             {vendorData.recentBookings.map((booking, index) => (
-// //               <div key={index} className="booking-item">
-// //                 <div className="booking-date">{booking.date}</div>
-// //                 <div className="booking-info">
-// //                   <div className="booking-name">{booking.name}</div>
-// //                   <div className="booking-time">{booking.time}</div>
-// //                 </div>
-// //                 <div className="booking-amount">{booking.amount}</div>
-// //                 <span className="booking-status">{booking.status}</span>
-// //               </div>
-// //             ))}
-// //           </div>
-// //           <button className="view-all-btn">View all bookings</button>
-// //         </div>
-
-// //         {/* Subscription History */}
-// //         <div className="subscription-history">
-// //           <h3 className="section-title">
-// //             <span className="section-icon-circle star"><MdStar size={16} /></span>
-// //             Subscription History
-// //           </h3>
-// //           <div className="subscriptions-scroll">
-// //             {vendorData.subscriptionHistory.map((sub, index) => (
-// //               <div key={index} className={`subscription-item ${sub.status.toLowerCase()}`}>
-// //                 <div className="sub-top-row">
-// //                   <div className="sub-plan">{sub.plan}</div>
-// //                   <span className={`sub-status-badge ${sub.status.toLowerCase()}`}>{sub.status}</span>
-// //                 </div>
-// //                 {sub.status === 'ACTIVE' ? (
-// //                   <>
-// //                     <div className="sub-date">Renewed on {sub.renewedDate}</div>
-// //                     <div className="sub-date">Next Billing: {sub.nextBillingDate}</div>
-// //                   </>
-// //                 ) : (
-// //                   <div className="sub-date">{sub.duration}</div>
-// //                 )}
-// //               </div>
-// //             ))}
-// //           </div>
-// //           <button className="scroll-previous-btn">Scroll previous Plans</button>
-// //         </div>
-// //       </div>
-// //     </div>
-// //   );
-// // }

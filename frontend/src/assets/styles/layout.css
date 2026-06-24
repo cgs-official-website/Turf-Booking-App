@@ -93,8 +93,9 @@
     margin-left: 0;
   }
   
-  /* .layout-content {
+  .layout-content {
     padding: 16px;
+<<<<<<< HEAD
   } */
 }
 
@@ -124,5 +125,7 @@
     max-width: 425px;
     width: 100%;
     margin: 0;
+=======
+>>>>>>> 383197ff0c966e71d4ad8ad94cb13070853232e2
   }
 }

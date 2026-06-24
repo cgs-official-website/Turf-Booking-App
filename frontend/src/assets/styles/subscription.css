@@ -406,7 +406,7 @@
    ════════════════════════════════════════════ */
 @media (min-width: 641px) and (max-width: 1024px) {
   .sub-page {
-    padding:20px 24px;
+    padding: 4px 8px;
   }
 
   .sub-page__stats {
