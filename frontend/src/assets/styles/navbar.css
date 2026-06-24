@@ -256,3 +256,33 @@
     padding: 4px;
   }
 }
+
+/* ===========================
+   CUSTOM NAVBAR WIDTHS
+   =========================== */
+@media (max-width: 1024px) and (min-width: 769px) {
+  .navbar {
+    max-width: 1024px;
+    min-width: 769px;
+    width: 100%;
+    margin: 0;
+  }
+}
+
+@media (max-width: 768px) and (min-width: 426px) {
+  .navbar {
+    max-width: 768px;
+    min-width: 426px;
+    width: 100%;
+    margin: 0;
+  }
+}
+
+@media (max-width: 425px) and (min-width: 375px) {
+  .navbar {
+    max-width: 425px;
+    min-width: 375px;
+    width: 100%;
+    margin: 0;
+  }
+}

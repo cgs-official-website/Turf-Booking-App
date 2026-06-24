@@ -371,7 +371,7 @@
   border-radius: 6px;
   padding: 5px 10px;
 }
-.td-tag i { font-size: 13px; color: var(--td-text-muted); }
+.td-tag i, .td-tag svg { font-size: 14px; color: var(--td-text-muted); }
 
 /* ── Checklist ────────────────────────────────────────────────────────────── */
 .td-checklist { display: flex; flex-direction: column; gap: 14px; }

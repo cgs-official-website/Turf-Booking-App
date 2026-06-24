@@ -91,13 +91,13 @@ function GrowthTag({ pct, invertColor }) {
 function StatCard({ icon, iconVariant, label, value, growthPct, invertGrowthColor }) {
   return (
     <div className="pay-stat-card">
-      <div className={`pay-stat-card__icon pay-stat-card__icon--${iconVariant}`}>
-        <i className={`bi ${icon}`} />
-      </div>
       <div className="pay-stat-card__info">
         <p className="pay-stat-card__label">{label}</p>
         <p className="pay-stat-card__value">{value ?? "—"}</p>
         <GrowthTag pct={growthPct} invertColor={invertGrowthColor} />
+      </div>
+      <div className={`pay-stat-card__icon pay-stat-card__icon--${iconVariant}`}>
+        <i className={`bi ${icon}`} />
       </div>
     </div>
   );

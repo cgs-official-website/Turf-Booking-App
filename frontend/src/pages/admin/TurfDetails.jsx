@@ -7,24 +7,62 @@
 import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import axiosInstance from "../../services/axiosInstance";
+import {
+  MdCategory,
+  MdLocalParking,
+  MdSportsSoccer,
+  MdSportsCricket,
+  MdSportsTennis,
+  MdSportsBasketball,
+  MdSports,
+  MdCheck,
+  MdChair
+} from "react-icons/md";
+import { GiShuttlecock, GiCctvCamera } from "react-icons/gi";
+import { FaSwimmer, FaVolleyballBall, FaTableTennis, FaRestroom, FaFirstAid, FaRegLightbulb } from "react-icons/fa";
+import { FaGlassWater } from "react-icons/fa6";
+import { PiLockersFill } from "react-icons/pi";
 import "../../assets/styles/turfDetails.css";
 
 // ── Icon maps ─────────────────────────────────────────────────────────────────
 const FACILITY_ICON = {
-  Parking:         "bi-p-circle",
-  Water:           "bi-droplet",
-  Floodlights:     "bi-lightbulb",
-  "CCTV Security": "bi-camera-video",
-  Restroom:        "bi-door-open",
+  Parking:         MdLocalParking,
+  parking:         MdLocalParking,
+  Water:           FaGlassWater,
+  water:           FaGlassWater,
+  "Drinking Water": FaGlassWater,
+  "drinking water": FaGlassWater,
+  Floodlights:     FaRegLightbulb,
+  floodlights:     FaRegLightbulb,
+  "CCTV Security": GiCctvCamera,
+  CCTV:            GiCctvCamera,
+  cctv:            GiCctvCamera,
+  "cctv camera":   GiCctvCamera,
+  Restroom:        FaRestroom,
+  restroom:        FaRestroom,
+  Washroom:        FaRestroom,
+  washroom:        FaRestroom,
+  "First Aid":     FaFirstAid,
+  "first aid":     FaFirstAid,
+  Lockers:         PiLockersFill,
+  lockers:         PiLockersFill,
+  locker:          PiLockersFill,
+  "Locker Room":   PiLockersFill,
+  "locker room":   PiLockersFill,
+  Seating:         MdChair,
+  seating:         MdChair,
 };
 const SPORT_ICON = {
-  football:      "bi-dribbble",
-  cricket:       "bi-trophy",
-  badminton:     "bi-lightning-charge",
-  basketball:    "bi-dribbble",
-  tennis:        "bi-circle",
-  swimming:      "bi-water",
-  "multi-sport": "bi-grid",
+  football:      MdSportsSoccer,
+  cricket:       MdSportsCricket,
+  badminton:     GiShuttlecock,
+  basketball:    MdSportsBasketball,
+  tennis:        MdSportsTennis,
+  swimming:      FaSwimmer,
+  volleyball:    FaVolleyballBall,
+  "table tennis": FaTableTennis,
+  "table-tennis": FaTableTennis,
+  "multi-sport": MdSports,
 };
 const DOC_ICON = {
   "PAN Card":         "bi-person-badge",
@@ -624,8 +662,8 @@ export default function TurfDetails() {
       {/* Category — full width */}
       <div className="td-card td-card--full">
         <div className="td-card-header" style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
-          <span className="td-card-title">
-            <i className="bi bi-info-circle" /> Category
+          <span className="td-card-title" style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
+            <MdCategory /> Category
           </span>
           {!isDone && (
             <button className="td-edit-link" onClick={() => setModal("edit-category")} style={{background: 'none', border: 'none', color: '#10B981', cursor: 'pointer'}}>
@@ -638,11 +676,14 @@ export default function TurfDetails() {
             <p className="td-category-label">FACILITIES</p>
             <div className="td-tags">
               {turf.amenities.length > 0
-                ? turf.amenities.map((a) => (
-                    <span key={a} className="td-tag">
-                      <i className={`bi ${FACILITY_ICON[a] ?? "bi-check2"}`} /> {a}
-                    </span>
-                  ))
+                ? turf.amenities.map((a) => {
+                    const Icon = FACILITY_ICON[a] || MdCheck;
+                    return (
+                      <span key={a} className="td-tag" style={{display: 'inline-flex', alignItems: 'center', gap: '4px'}}>
+                        <Icon /> {a}
+                      </span>
+                    );
+                  })
                 : <span className="td-field-value">—</span>}
             </div>
           </div>
@@ -650,12 +691,15 @@ export default function TurfDetails() {
             <p className="td-category-label">SPORTS</p>
             <div className="td-tags">
               {turf.sportTypes.length > 0
-                ? turf.sportTypes.map((s) => (
-                    <span key={s} className="td-tag">
-                      <i className={`bi ${SPORT_ICON[s] ?? "bi-trophy"}`} />
-                      {s.charAt(0).toUpperCase() + s.slice(1)}
-                    </span>
-                  ))
+                ? turf.sportTypes.map((s) => {
+                    const Icon = SPORT_ICON[s] || MdSports;
+                    return (
+                      <span key={s} className="td-tag" style={{display: 'inline-flex', alignItems: 'center', gap: '4px'}}>
+                        <Icon />
+                        {s.charAt(0).toUpperCase() + s.slice(1)}
+                      </span>
+                    );
+                  })
                 : <span className="td-field-value">—</span>}
             </div>
           </div>

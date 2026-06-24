@@ -1,183 +1,164 @@
-/* TurfCard.css */
-
+/* assets/styles/TurfCard.css */
 .turf-card {
-  max-width: 380px;
-  width: 100%;
-  background: #ffffff;
+  background: #fff;
+  border: 1px solid #e8e8e8;
   border-radius: 16px;
-  /* overflow: hidden; */
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
-/* ── Image wrapper ── */
-.turf-card__image-wrapper {
+.turf-card:hover {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  transform: translateY(-2px);
+}
+
+.turf-card__image-container {
   position: relative;
-  width: 100%;
-  height: 200px;
-  background: #eef0f2;
-  overflow: visible;
+  height: 180px;
+  background: #f0fdf4;
+  overflow: hidden;
 }
 
 .turf-card__image {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  display: block;
 }
 
-/* Empty state when backend has no image yet — plain, no upload affordance */
 .turf-card__image-placeholder {
   width: 100%;
   height: 100%;
-  background: #eef0f2;
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-.turf-card__image-placeholder-icon {
-  width: 36px;
-  height: 36px;
-  color: #c4c9d0;
-}
-
-/* ── Logo circle ── */
-.turf-card__logo-circle {
-  position: absolute;
-  bottom: -22px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 52px;
-  height: 52px;
-  border-radius: 50%;
-  background: #ffffff;
-  border: 2px solid #ffffff;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  /* overflow: hidden; */
-  z-index: 2;
-}
-
-.turf-card__logo-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.turf-card__logo-placeholder {
-  width: 100%;
-  height: 100%;
-  background: #f5f5f5;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.turf-card__logo-placeholder-icon {
-  width: 22px;
-  height: 22px;
-  color: #c4c9d0;
-}
-
-/* ── Content ── */
-.turf-card__content {
-  padding: 2rem 1.5rem 1.5rem;
-}
-
-/* Meta row: ID + Status badge */
-.turf-card__meta-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 6px;
-}
-
-.turf-card__turf-id {
-  font-size: 13px;
-  font-weight: 500;
-  color: #1d9e75;
-}
-
-.turf-card__status {
-  font-size: 12px;
-  font-weight: 500;
-  padding: 4px 14px;
-  border-radius: 20px;
-}
-
-.turf-card__status--active {
-  background: #d6f5e3;
+  background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+  font-size: 48px;
+  font-weight: 700;
   color: #16a34a;
 }
 
-.turf-card__status--inactive {
-  background: #f5e1e1;
-  color: #8b1a1a;
+.turf-card__status {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* Title */
-.turf-card__title {
-  font-size: 22px;
-  font-weight: 700;
-  color: #111;
-  margin: 4px 0 8px;
-  line-height: 1.2;
+.turf-card__status.active {
+  color: #16a34a;
 }
 
-/* Price */
-.turf-card__price {
-  font-size: 24px;
-  font-weight: 700;
-  color: #111;
-  margin: 0 0 10px;
+.turf-card__status.inactive {
+  color: #d97706;
 }
 
-.turf-card__price-unit {
-  font-size: 14px;
-  font-weight: 400;
-  color: #888;
+.turf-card__status.expired {
+  color: #dc2626;
 }
 
-/* Dates */
-.turf-card__dates {
-  font-size: 13px;
-  color: #888;
-  margin: 0 0 18px;
+.turf-card__status.pending {
+  color: #d97706;
 }
 
-/* Footer row */
-.turf-card__footer {
-  display: flex;
-  align-items: stretch;
-  border-top: 1px solid #f0f0f0;
-  padding-top: 14px;
-}
-
-.turf-card__footer-item {
+.turf-card__content {
+  padding: 16px 20px 20px;
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 4px;
 }
 
-.turf-card__footer-divider {
-  width: 1px;
-  background: #f0f0f0;
-  margin: 0 16px;
+.turf-card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+  gap: 8px;
 }
 
-.turf-card__footer-label {
-  font-size: 12px;
-  color: #888;
-}
-
-
-
-.turf-card__footer-value {
-  font-size: 15px;
-  
+.turf-card__title {
+  font-size: 18px;
+  font-weight: 700;
   color: #111;
+  margin: 0;
+  line-height: 1.3;
+}
+
+.turf-card__id {
+  font-size: 11px;
+  color: #9ca3af;
+  white-space: nowrap;
+  background: #f3f4f6;
+  padding: 2px 8px;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+
+.turf-card__details {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 12px;
+  flex: 1;
+}
+
+.turf-card__detail {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.turf-card__detail-label {
+  font-size: 11px;
+  color: #9ca3af;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.turf-card__detail-value {
+  font-size: 14px;
+  color: #111;
+  font-weight: 500;
+}
+
+.turf-card__footer {
+  padding-top: 12px;
+  border-top: 1px solid #f3f4f6;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.turf-card__availability {
+  font-size: 13px;
+  color: #22c55e;
+  font-weight: 500;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .turf-card__image-container {
+    height: 150px;
+  }
+
+  .turf-card__title {
+    font-size: 16px;
+  }
+
+  .turf-card__details {
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+  }
+
+  .turf-card__detail-value {
+    font-size: 13px;
+  }
 }

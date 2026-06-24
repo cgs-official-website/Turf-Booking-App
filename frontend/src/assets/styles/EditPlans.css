@@ -16,7 +16,9 @@
   gap: 16px;
 }
 
-.ep-header-left { flex: 1; }
+.ep-header-left {
+  flex: 1;
+}
 
 .ep-back-btn {
   background: none;
@@ -30,7 +32,10 @@
   align-items: center;
   gap: 8px;
 }
-.ep-back-btn:hover { color: #22c55e; }
+
+.ep-back-btn:hover {
+  color: #22c55e;
+}
 
 .ep-header-sub {
   font-size: 13px;
@@ -59,7 +64,11 @@
   align-items: center;
   gap: 6px;
 }
-.ep-reset-btn:hover { background: #f9fafb; border-color: #d1d5db; }
+
+.ep-reset-btn:hover {
+  background: #f9fafb;
+  border-color: #d1d5db;
+}
 
 .ep-save-btn {
   padding: 9px 24px;
@@ -75,10 +84,11 @@
   align-items: center;
   gap: 6px;
 }
+
 .ep-save-btn:hover {
   background: #16a34a;
   transform: translateY(-1px);
-  
+
 }
 
 /* ── Main 3-Column Layout ── */
@@ -130,7 +140,11 @@
   -ms-overflow-style: none; /* IE/Edge */
 }
 
-/* Plan card – vertical layout */
+.ep-plans-list::-webkit-scrollbar {
+  width: 0;
+  display: none;
+}
+
 .ep-plan-card {
   display: flex;
   flex-direction: column;
@@ -141,8 +155,15 @@
   border: 2px solid #f3f4f6;
   background: white;
 }
-.ep-plan-card:hover { background: #f9fafb; }
-.ep-plan-card-active { border-color: #22c55e; background: white; }
+
+.ep-plan-card:hover {
+  background: #f9fafb;
+}
+
+.ep-plan-card-active {
+  border-color: #22c55e;
+  background: white;
+}
 
 /* Top row inside card: icon on left, badge on right */
 .ep-plan-card-top {
@@ -187,7 +208,9 @@
   white-space: nowrap;
 }
 
-.ep-plan-info { width: 100%; }
+.ep-plan-info {
+  width: 100%;
+}
 
 .ep-plan-name {
   font-size: 14px;
@@ -234,7 +257,11 @@
   justify-content: center;
   gap: 6px;
 }
-.ep-add-plan:hover { border-color: #22c55e; background: #f0fdf4; }
+
+.ep-add-plan:hover {
+  border-color: #22c55e;
+  background: #f0fdf4;
+}
 
 /* ── Center Column – Form ── */
 .ep-center {
@@ -275,10 +302,21 @@
   align-items: center;
   gap: 5px;
 }
-.ep-most-popular-btn:hover { border-color: #22c55e; color: #16a34a; }
-.ep-most-popular-btn-active { background: #f0fdf4; border-color: #22c55e; color: #16a34a; }
 
-.ep-field { margin-bottom: 14px; }
+.ep-most-popular-btn:hover {
+  border-color: #22c55e;
+  color: #16a34a;
+}
+
+.ep-most-popular-btn-active {
+  background: #f0fdf4;
+  border-color: #22c55e;
+  color: #16a34a;
+}
+
+.ep-field {
+  margin-bottom: 14px;
+}
 
 .ep-label {
   display: block;
@@ -299,9 +337,14 @@
   background: white;
   box-sizing: border-box;
 }
-.ep-input:focus {  border-color: #22c55e; }
 
-.ep-textarea-wrapper { position: relative; }
+.ep-input:focus {
+  border-color: #22c55e;
+}
+
+.ep-textarea-wrapper {
+  position: relative;
+}
 
 .ep-textarea {
   width: 100%;
@@ -315,7 +358,10 @@
   transition: border-color 0.15s;
   box-sizing: border-box;
 }
-.ep-textarea:focus {  border-color: #22c55e; }
+
+.ep-textarea:focus {
+  border-color: #22c55e;
+}
 
 .ep-char-count {
   position: absolute;
@@ -366,9 +412,14 @@
   background: white;
   transition: background 0.15s;
 }
-.ep-feature-item:hover { background: #f9fafb; }
 
-.ep-check { flex-shrink: 0; }
+.ep-feature-item:hover {
+  background: #f9fafb;
+}
+
+.ep-check {
+  flex-shrink: 0;
+}
 
 .ep-feature-text {
   flex: 1;
@@ -387,8 +438,14 @@
   display: flex;
   align-items: center;
 }
-.ep-feature-item:hover .ep-feature-delete { opacity: 1; }
-.ep-feature-delete:hover { background: #fef2f2; }
+
+.ep-feature-item:hover .ep-feature-delete {
+  opacity: 1;
+}
+
+.ep-feature-delete:hover {
+  background: #fef2f2;
+}
 
 .ep-add-feature-form {
   display: flex;
@@ -397,9 +454,16 @@
   margin-top: 6px;
   flex-wrap: wrap;
 }
-.ep-add-feature-form .ep-input { flex: 1; min-width: 150px; }
 
-.ep-add-feature-actions { display: flex; gap: 6px; }
+.ep-add-feature-form .ep-input {
+  flex: 1;
+  min-width: 150px;
+}
+
+.ep-add-feature-actions {
+  display: flex;
+  gap: 6px;
+}
 
 .ep-add-feature-confirm {
   padding: 8px 18px;
@@ -411,7 +475,10 @@
   font-weight: 500;
   cursor: pointer;
 }
-.ep-add-feature-confirm:hover { background: #16a34a; }
+
+.ep-add-feature-confirm:hover {
+  background: #16a34a;
+}
 
 .ep-add-feature-cancel {
   padding: 8px 16px;
@@ -423,7 +490,10 @@
   font-weight: 500;
   cursor: pointer;
 }
-.ep-add-feature-cancel:hover { background: #f9fafb; }
+
+.ep-add-feature-cancel:hover {
+  background: #f9fafb;
+}
 
 .ep-add-feature-btn {
   background: none;
@@ -438,7 +508,10 @@
   align-items: center;
   gap: 6px;
 }
-.ep-add-feature-btn:hover { color: #16a34a; }
+
+.ep-add-feature-btn:hover {
+  color: #16a34a;
+}
 
 /* Delete plan – solid red filled */
 .ep-delete-plan {
@@ -458,10 +531,11 @@
   justify-content: center;
   gap: 8px;
 }
+
 .ep-delete-plan:hover {
   background: #dc2626;
   transform: translateY(-1px);
-  
+
 }
 
 /* ── Right Column – Live Preview ── */
@@ -522,7 +596,10 @@
   padding-right: 100px; /* room for the badge */
   line-height: 1.2;
 }
-.ep-preview-popular .ep-preview-name { color: #16a34a; }
+
+.ep-preview-popular .ep-preview-name {
+  color: #16a34a;
+}
 
 /* Tagline – muted gray normally, green when popular (was violet) */
 .ep-preview-tagline {
@@ -531,7 +608,10 @@
   margin-bottom: 14px;
   line-height: 1.4;
 }
-.ep-preview-popular .ep-preview-tagline { color: #16a34a; }
+
+.ep-preview-popular .ep-preview-tagline {
+  color: #16a34a;
+}
 
 /* Price row */
 .ep-preview-price {
@@ -546,7 +626,10 @@
   font-weight: 700;
   color: #111827;
 }
-.ep-preview-popular .ep-preview-currency { color: #16a34a; }
+
+.ep-preview-popular .ep-preview-currency {
+  color: #16a34a;
+}
 
 .ep-preview-amount {
   font-size: 44px;
@@ -554,7 +637,10 @@
   color: #111827;
   line-height: 1;
 }
-.ep-preview-popular .ep-preview-amount { color: #16a34a; }
+
+.ep-preview-popular .ep-preview-amount {
+  color: #16a34a;
+}
 
 .ep-preview-period {
   font-size: 15px;
@@ -582,7 +668,10 @@
   line-height: 1.4;
 }
 
-.ep-preview-features li svg { flex-shrink: 0; margin-top: 2px; }
+.ep-preview-features li svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
 
 /* ── Scrollbar (hidden — list still scrolls via mouse/touch) ── */
 .ep-plans-list::-webkit-scrollbar { width: 0; display: none; }
@@ -605,8 +694,13 @@
 }
 
 @keyframes ep-spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 /* Error State */
@@ -648,6 +742,10 @@
   background: #16a34a;
 }
 
+.ep-retry-btn:hover {
+  background: #16a34a;
+}
+
 /* Unsaved Changes Badge */
 .ep-unsaved-badge {
   display: inline-flex;
@@ -662,7 +760,6 @@
   margin-left: 12px;
 }
 
-/* Save Button Loading State */
 .ep-spin {
   animation: ep-spin 1s linear infinite;
 }
@@ -699,8 +796,85 @@
   padding: 20px;
 }
 
-/* Responsive adjustments */
-@media (max-width: 1200px) {
+/* ── Delete Modal ── */
+.ep-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.ep-modal {
+  background: white;
+  border-radius: 14px;
+  padding: 28px 32px;
+  width: 100%;
+  max-width: 420px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ep-modal h3 {
+  font-size: 18px;
+  font-weight: 700;
+  color: #111827;
+  margin: 0;
+}
+
+.ep-modal p {
+  font-size: 14px;
+  color: #6b7280;
+  margin: 0;
+}
+
+.ep-modal-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 8px;
+}
+
+.ep-modal-actions button {
+  padding: 9px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1.5px solid #e5e7eb;
+  background: white;
+  color: #374151;
+  transition: background 0.15s;
+}
+
+.ep-modal-actions button:hover {
+  background: #f9fafb;
+}
+
+.ep-modal-delete-btn {
+  background: #ef4444 !important;
+  border-color: #ef4444 !important;
+  color: white !important;
+}
+
+.ep-modal-delete-btn:hover {
+  background: #dc2626 !important;
+}
+
+/* ════════════════════════════════════════════
+   TABLET & MOBILE RESPONSIVE FIXES
+   ════════════════════════════════════════════ */
+
+/* ── Tablet (769px - 1024px) ── */
+@media (max-width: 1024px) {
+  .ep-container {
+    padding: 20px 24px;
+  }
+
   .ep-main {
     flex-direction: column;
   }
@@ -721,6 +895,229 @@
   .ep-header-actions {
     width: 100%;
     justify-content: flex-end;
+    width: 100%;
+  }
+
+  /* Show mobile elements */
+  .ep-mobile-header {
+    display: flex;
+  }
+
+  .ep-mobile-plan-tabs {
+    display: flex;
+  }
+
+  .ep-mobile-actions {
+    display: flex;
+  }
+}
+
+/* ── Tablet (≤ 768px) ── */
+@media (max-width: 768px) {
+  .ep-container {
+    padding: 16px 16px 32px;
+    min-height: 100vh;
+    width: 100%;
+  }
+
+  /* Hide desktop elements */
+  .ep-header {
+    display: none;
+  }
+
+  .ep-left {
+    display: none;
+  }
+
+  /* ── Mobile Header ── */
+  .ep-mobile-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    padding: 0 2px;
+    width: 100%;
+  }
+
+  .ep-mobile-header .ep-back-btn {
+    font-size: 20px;
+    font-weight: 700;
+    color: #111827;
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0;
+  }
+
+  .ep-mobile-header .ep-back-btn svg {
+    width: 22px;
+    height: 22px;
+  }
+
+  /* ── Horizontal scrollable plan cards ── */
+  .ep-mobile-plan-tabs {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding: 4px 2px 16px 2px;
+    margin-bottom: 4px;
+    width: 100%;
+  }
+
+  .ep-mobile-plan-tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .ep-mobile-plan-tab {
+    flex: 0 0 160px;
+    min-width: 150px;
+    background: white;
+    border: 1.5px solid #e5e7eb;
+    border-radius: 14px;
+    padding: 16px 14px 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  }
+
+  .ep-mobile-plan-tab--active {
+    border-color: #22c55e;
+    box-shadow: 0 2px 8px rgba(34, 197, 94, 0.15);
+  }
+
+  .ep-mobile-plan-tab:hover {
+    border-color: #22c55e;
+    transform: translateY(-1px);
+  }
+
+  .ep-mobile-plan-tab__top {
+    display: none;
+  }
+
+  .ep-mobile-plan-tab__name {
+    font-size: 15px;
+    font-weight: 700;
+    color: #111827;
+    letter-spacing: -0.2px;
+  }
+
+  .ep-mobile-plan-tab__price {
+    font-size: 18px;
+    font-weight: 700;
+    color: #111827;
+    display: flex;
+    align-items: baseline;
+    gap: 2px;
+  }
+
+  .ep-mobile-plan-tab__per {
+    font-size: 13px;
+    font-weight: 400;
+    color: #6b7280;
+  }
+
+  .ep-mobile-plan-tab__billing {
+    font-size: 10px;
+    font-weight: 600;
+    color: #9ca3af;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 4px;
+  }
+
+  /* ── Add plan card ── */
+  .ep-mobile-plan-tab--add {
+    flex: 0 0 130px;
+    min-width: 120px;
+    border: 2px dashed #d1d5db;
+    background: transparent;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 16px 12px;
+  }
+
+  .ep-mobile-plan-tab--add:hover {
+    border-color: #22c55e;
+    background: #f0fdf4;
+  }
+
+  .ep-mobile-plan-tab__add-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 1.5px solid #d1d5db;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #22c55e;
+    font-size: 18px;
+  }
+
+  .ep-mobile-plan-tab__add-label {
+    font-size: 13px;
+    font-weight: 500;
+    color: #22c55e;
+  }
+
+  /* ── Reset + Save row ── */
+  .ep-mobile-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-bottom: 16px;
+    padding: 0 4px;
+    width: 100%;
+  }
+
+  .ep-mobile-actions .ep-reset-btn {
+    padding: 7px 14px;
+    font-size: 12px;
+    border-radius: 8px;
+  }
+
+  .ep-mobile-actions .ep-save-btn {
+    padding: 8px 18px;
+    font-size: 12px;
+    border-radius: 8px;
+  }
+
+  .ep-mobile-actions .ep-save-btn svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  /* ── Main: single column stacked ── */
+  .ep-main {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 100%;
+  }
+
+  .ep-center {
+    border-radius: 12px;
+    padding: 20px 16px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .ep-right {
+    position: static;
+    border-radius: 12px;
+    padding: 20px 16px;
+    width: 100%;
+    box-sizing: border-box;
   }
 
   .ep-two-cols {
@@ -728,8 +1125,231 @@
   }
 
   .ep-details-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 12px;
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .ep-delete-plan {
+    border-radius: 10px;
+    font-size: 15px;
+    padding: 14px;
+  }
+
+  .ep-feature-delete {
+    opacity: 1;
+  }
+
+  /* Preview card on mobile */
+  .ep-preview-name {
+    font-size: 15px;
+    padding-right: 80px;
+  }
+
+  .ep-preview-amount {
+    font-size: 30px;
+  }
+
+  .ep-preview-currency {
+    font-size: 18px;
+  }
+
+  .ep-preview-period {
+    font-size: 13px;
+  }
+
+  .ep-preview-features li {
+    font-size: 12.5px;
+  }
+}
+
+/* ── Hide mobile on desktop ── */
+@media (min-width: 901px) {
+  .ep-mobile-header {
+    display: none;
+  }
+
+  .ep-mobile-plan-tabs {
+    display: none;
+  }
+
+  .ep-mobile-actions {
+    display: none;
+  }
+}
+
+/* ── Extra small screens (≤ 480px) ── */
+@media (max-width: 480px) {
+  .ep-container {
+    padding: 12px 12px 24px;
+    min-height: 100vh;
+    width: 100%;
+  }
+
+  .ep-mobile-plan-tab {
+    flex: 0 0 140px;
+    min-width: 130px;
+    padding: 14px 12px 12px;
+  }
+
+  .ep-mobile-plan-tab__name {
+    font-size: 13px;
+  }
+
+  .ep-mobile-plan-tab__price {
+    font-size: 16px;
+  }
+
+  .ep-mobile-plan-tab__per {
+    font-size: 11px;
+  }
+
+  .ep-mobile-plan-tab__billing {
+    font-size: 9px;
+    letter-spacing: 0.3px;
+  }
+
+  .ep-mobile-plan-tab--add {
+    flex: 0 0 110px;
+    min-width: 100px;
+  }
+
+  .ep-mobile-plan-tab__add-icon {
+    width: 34px;
+    height: 34px;
+    font-size: 15px;
+  }
+
+  .ep-mobile-plan-tab__add-label {
+    font-size: 11px;
+  }
+
+  .ep-center {
+    padding: 16px 12px;
+  }
+
+  .ep-two-cols {
+    grid-template-columns: 1fr;
+  }
+
+  .ep-right {
+    padding: 16px 12px;
+  }
+
+  .ep-mobile-header .ep-back-btn {
+    font-size: 18px;
+  }
+
+  .ep-mobile-header .ep-back-btn svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .ep-preview-name {
+    font-size: 16px;
+    padding-right: 70px;
+  }
+
+  .ep-preview-amount {
+    font-size: 28px;
+  }
+
+  .ep-preview-currency {
+    font-size: 16px;
+  }
+
+  .ep-preview-period {
+    font-size: 12px;
+  }
+
+  .ep-preview-features li {
+    font-size: 12px;
+  }
+
+  .ep-preview {
+    padding: 16px;
+  }
+}
+
+/* ── Fix for very small screens (≤ 360px) ── */
+@media (max-width: 360px) {
+  .ep-container {
+    padding: 8px 8px 16px;
+  }
+
+  .ep-mobile-plan-tab {
+    flex: 0 0 120px;
+    min-width: 110px;
+    padding: 12px 10px 10px;
+  }
+
+  .ep-mobile-plan-tab__name {
+    font-size: 12px;
+  }
+
+  .ep-mobile-plan-tab__price {
+    font-size: 14px;
+  }
+
+  .ep-mobile-plan-tab__per {
+    font-size: 10px;
+  }
+
+  .ep-mobile-plan-tab__billing {
+    font-size: 8px;
+  }
+
+  .ep-mobile-plan-tab--add {
+    flex: 0 0 95px;
+    min-width: 85px;
+    padding: 12px 8px;
+  }
+
+  .ep-mobile-plan-tab__add-icon {
+    width: 30px;
+    height: 30px;
+    font-size: 13px;
+  }
+
+  .ep-mobile-plan-tab__add-label {
+    font-size: 10px;
+  }
+
+  .ep-center {
+    padding: 12px 10px;
+  }
+
+  .ep-right {
+    padding: 12px 10px;
+  }
+
+  .ep-mobile-actions .ep-reset-btn {
+    padding: 5px 10px;
+    font-size: 11px;
+  }
+
+  .ep-mobile-actions .ep-save-btn {
+    padding: 6px 12px;
+    font-size: 11px;
+  }
+
+  .ep-preview-name {
+    font-size: 14px;
+    padding-right: 60px;
+  }
+
+  .ep-preview-amount {
+    font-size: 24px;
+  }
+
+  .ep-preview-currency {
+    font-size: 14px;
+  }
+
+  .ep-preview-period {
+    font-size: 11px;
+  }
+
+  .ep-preview {
+    padding: 12px;
   }
 }

@@ -351,9 +351,6 @@
 
 .ta-td-name {
   font-weight: 600;
-  display: flex;
-  align-items: center;
-  gap: 7px;
 }
 
 .ta-td-name i {
@@ -380,9 +377,6 @@
 .ta-td-date {
   color: var(--clr-text-secondary);
   font-size: 12px;
-  display: flex;
-  align-items: center;
-  gap: 5px;
 }
 
 .ta-td-date i {
