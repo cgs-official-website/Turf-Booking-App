@@ -644,23 +644,6 @@
   }
 }
 
-/* -- Mobile Table Optimizations -- */
-.bk-table td, .bk-table th { white-space: nowrap; }
-@media (max-width: 768px) {
-  .bk-table td { font-size: 11.5px; padding: 10px 12px; }
-  .bk-table th { font-size: 10px; padding: 10px 12px; }
-}
-
-/* -- 1024px Card 2x2 Grid + Text Fixes -- */
-@media (max-width: 1024px) {
-  .bk-stat-grid { grid-template-columns: repeat(2, 1fr); }
-  .bk-stat-card__label, .bk-stat-card__value { 
-    white-space: nowrap; 
-    overflow: hidden; 
-    text-overflow: ellipsis; 
-  }
-}
-
 @media (max-width: 992px) {
   .bk-stat-grid {
     grid-template-columns: repeat(2, 1fr);

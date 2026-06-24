@@ -712,6 +712,7 @@
   .rp-table td { font-size: 11.5px; padding: 10px 12px; }
   .rp-table th { font-size: 10px; padding: 10px 12px; }
   .rp-table, .rp-toolbar { min-width: 800px; }
+  .rp-search-box { flex: none; width: 180px; }
 }
 
 /* -- 1024px Card 2x2 Grid + Text Fixes -- */
