@@ -1,8 +1,5 @@
-<<<<<<< HEAD
+
 /* EditPlans.css */
-=======
-/* EditPlans.css - Complete */
->>>>>>> 383197ff0c966e71d4ad8ad94cb13070853232e2
 
 .ep-container {
   padding: 24px 32px;
@@ -96,13 +93,12 @@
 @media (max-width: 1200px) {
   .ep-main { grid-template-columns: 260px 1fr; }
   .ep-right { grid-column: 1 / -1; }
-<<<<<<< HEAD
+
 }
 @media (max-width: 768px) {
   .ep-main { grid-template-columns: 1fr; }
   .ep-container { padding: 16px; }
-=======
->>>>>>> 383197ff0c966e71d4ad8ad94cb13070853232e2
+
 }
 
 /* ── Left Column – Plans List ── */
@@ -776,7 +772,7 @@
   .ep-container {
     padding: 20px 24px;
   }
-<<<<<<< HEAD
+
 
   .ep-main {
     flex-direction: column;
@@ -816,13 +812,13 @@
 }
 
 /* ── Tablet (≤ 768px) ── */
-=======
-}
+
+
 
 /* ════════════════════════════════════════════
    MOBILE (≤ 768px)
    ════════════════════════════════════════════ */
->>>>>>> 383197ff0c966e71d4ad8ad94cb13070853232e2
+
 @media (max-width: 768px) {
   /* Hide desktop elements */
   .ep-header { display: none; }
