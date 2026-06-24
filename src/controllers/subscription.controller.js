@@ -184,6 +184,18 @@ const getExpiryAlerts = async (req, res, next) => {
   }
 };
 
+const getVendorSubscriptionHistory = async (req, res, next) => {
+  try {
+    const { vendorId } = req.params;
+    const subscriptions = await subscriptionService.getVendorSubscriptions(vendorId);
+    return res.status(200).json(
+      new ApiResponse(200, "Vendor subscription history fetched successfully", subscriptions)
+    );
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   createPlan,
   getAllPlans,
@@ -200,4 +212,5 @@ module.exports = {
   getAllSubscriptions,
   getSubscriptionStats,
   getExpiryAlerts,
+  getVendorSubscriptionHistory,
 };

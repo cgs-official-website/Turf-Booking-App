@@ -1,3 +1,4 @@
+const mongoose = require("mongoose");
 const adminService = require("../services/admin.service");
 const ApiResponse = require("../utils/ApiResponse");
 const ApiError = require("../utils/ApiError");
@@ -248,6 +249,24 @@ const getVendorRecentBookings = async (req, res, next) => {
   }
 };
 
+const suspendVendor = async (req, res, next) => {
+  try {
+    const { vendorId } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(vendorId)) {
+      throw new ApiError(400, "Invalid Vendor ID format");
+    }
+
+    await adminService.suspendVendor(vendorId);
+
+    res.status(200).json({
+      success: true,
+      message: "Vendor suspended successfully"
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   loginAdmin,
   getProfile,
@@ -259,4 +278,5 @@ module.exports = {
   getVendorBookingStats,
   getAllBookings,
   getVendorRecentBookings,
+  suspendVendor,
 };

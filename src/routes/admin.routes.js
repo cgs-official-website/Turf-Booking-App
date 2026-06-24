@@ -11,6 +11,7 @@ const {
   getVendorBookingStats,
   getAllBookings,
   getVendorRecentBookings,
+  suspendVendor,
 } = require("../controllers/admin.controller");
 
 const validate = require("../middlewares/validation.middleware");
@@ -61,5 +62,8 @@ router.get("/vendors/:vendorId/recent-bookings", authorizeAdmin, getVendorRecent
 
 // GET /api/admin/bookings
 router.get("/bookings", authorizeAdmin, getAllBookings);
+
+// DELETE /admin/vendors/:vendorId
+router.delete("/vendors/:vendorId", authorizeAdmin, suspendVendor);
 
 module.exports = router;

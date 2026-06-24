@@ -17,6 +17,7 @@ const {
   getAllSubscriptions,
   getSubscriptionStats,
   getExpiryAlerts,
+  getVendorSubscriptionHistory,
 } = require("../controllers/subscription.controller");
 
 const { protect, authorizeRoles } = require("../middlewares/auth.middleware");
@@ -85,6 +86,13 @@ router.get(
   protect,
   authorizeRoles("admin"),
   getExpiryAlerts
+);
+
+router.get(
+  "/vendor/:vendorId",
+  protect,
+  authorizeRoles("admin"),
+  getVendorSubscriptionHistory
 );
 
 // ─────────────────────────────────────────────

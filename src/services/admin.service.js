@@ -2,11 +2,15 @@ const bcrypt = require("bcryptjs");
 const ApiError = require("../utils/ApiError");
 const { generateToken } = require("../utils/jwt");
 
+const mongoose = require("mongoose");
 const Admin = require("../models/Admin");
 const User = require("../models/User");
 const Turf = require("../models/Turf");
 const Booking = require("../models/Booking");
 const { Subscription } = require("../models/Subscription");
+const Review = require("../models/Review");
+const Report = require("../models/Report");
+const Notification = require("../models/notification");
 
 const MONTH_NAMES = [
   "Jan",
@@ -80,7 +84,7 @@ const getDashboardStats = async (period = "month") => {
     compareYear = currentMonth === 1 ? currentYear - 1 : currentYear;
   }
 
-  const startOfTarget = isYearly 
+  const startOfTarget = isYearly
     ? new Date(Date.UTC(targetYear, 0, 1))
     : new Date(Date.UTC(targetYear, targetMonth - 1, 1));
   const endOfTarget = isYearly
@@ -109,89 +113,89 @@ const getDashboardStats = async (period = "month") => {
     }),
     Turf.countDocuments(),
     Subscription.aggregate([
-        {
-          $match: {
-            paymentStatus: "paid",
-          },
+      {
+        $match: {
+          paymentStatus: "paid",
         },
-        {
-          $facet: {
-            total: [
-              {
-                $group: {
-                  _id: null,
-                  revenue: {
-                    $sum: "$amountPaid",
-                  },
+      },
+      {
+        $facet: {
+          total: [
+            {
+              $group: {
+                _id: null,
+                revenue: {
+                  $sum: "$amountPaid",
                 },
               },
-            ],
-            byMonth: [
-              {
-                $group: {
-                  _id: {
-                    year: {
-                      $year: "$createdAt",
-                    },
-                    month: {
-                      $month: "$createdAt",
-                    },
+            },
+          ],
+          byMonth: [
+            {
+              $group: {
+                _id: {
+                  year: {
+                    $year: "$createdAt",
                   },
-                  revenue: {
-                    $sum: "$amountPaid",
+                  month: {
+                    $month: "$createdAt",
                   },
                 },
-              },
-            ],
-            byDay: [
-              {
-                $match: {
-                  createdAt: { $gte: startOfTarget, $lt: endOfTarget },
+                revenue: {
+                  $sum: "$amountPaid",
                 },
               },
-              {
-                $group: {
-                  _id: {
-                    day: {
-                      $dayOfMonth: "$createdAt",
-                    },
-                  },
-                  revenue: {
-                    $sum: "$amountPaid",
+            },
+          ],
+          byDay: [
+            {
+              $match: {
+                createdAt: { $gte: startOfTarget, $lt: endOfTarget },
+              },
+            },
+            {
+              $group: {
+                _id: {
+                  day: {
+                    $dayOfMonth: "$createdAt",
                   },
                 },
+                revenue: {
+                  $sum: "$amountPaid",
+                },
               },
-            ],
-          },
+            },
+          ],
         },
-      ]),
-      Subscription.countDocuments({
-        status: {
-          $in: ["active", "trial"],
-        },
-        endDate: {
-          $gt: now,
-        },
-      }),
-      User.countDocuments({
-        role: "vendor",
-        createdAt: { $gte: startOfCurrentMonth },
-      }),
-      Subscription.countDocuments({
-        status: { $in: ["active", "trial"] },
-        createdAt: { $gte: startOfCurrentMonth },
-      }),
-      Turf.countDocuments({
-        createdAt: { $gte: startOfCurrentMonth },
-      }),
-      Subscription.find({
-        status: { $in: ["active", "trial"] },
-        endDate: { $gte: now, $lte: thirtyDaysFromNow },
-      })
-        .populate("vendor", "name")
-        .populate("plan", "name")
-        .sort({ endDate: 1 }),
-    ]);
+      },
+    ]),
+    Subscription.countDocuments({
+      status: {
+        $in: ["active", "trial"],
+      },
+      endDate: {
+        $gt: now,
+      },
+    }),
+    User.countDocuments({
+      role: "vendor",
+      createdAt: { $gte: startOfCurrentMonth },
+    }),
+    Subscription.countDocuments({
+      status: { $in: ["active", "trial"] },
+      createdAt: { $gte: startOfCurrentMonth },
+    }),
+    Turf.countDocuments({
+      createdAt: { $gte: startOfCurrentMonth },
+    }),
+    Subscription.find({
+      status: { $in: ["active", "trial"] },
+      endDate: { $gte: now, $lte: thirtyDaysFromNow },
+    })
+      .populate("vendor", "name")
+      .populate("plan", "name")
+      .sort({ endDate: 1 }),
+  ]);
 
   const totalRevenue = revenueData[0]?.total[0]?.revenue || 0;
   const revenueByMonth = new Map(
@@ -233,12 +237,12 @@ const getDashboardStats = async (period = "month") => {
   }
 
   // Chart specific revenue and growth
-  const targetRevenue = isYearly 
-    ? Array.from({length: 12}).reduce((sum, _, i) => sum + (revenueByMonth.get(`${targetYear}-${i+1}`) || 0), 0)
+  const targetRevenue = isYearly
+    ? Array.from({ length: 12 }).reduce((sum, _, i) => sum + (revenueByMonth.get(`${targetYear}-${i + 1}`) || 0), 0)
     : revenueByMonth.get(`${targetYear}-${targetMonth}`) || 0;
 
   const compareRevenue = isYearly
-    ? Array.from({length: 12}).reduce((sum, _, i) => sum + (revenueByMonth.get(`${compareYear}-${i+1}`) || 0), 0)
+    ? Array.from({ length: 12 }).reduce((sum, _, i) => sum + (revenueByMonth.get(`${compareYear}-${i + 1}`) || 0), 0)
     : revenueByMonth.get(`${compareYear}-${compareMonth}`) || 0;
 
   let chartRevenueGrowth;
@@ -318,6 +322,7 @@ const getAllVendors = async () => {
         .lean();
 
       return {
+        _id: vendor._id,
         vendorId: 1001 + index,
         vendorName: vendor.name,
         email: vendor.email,
@@ -355,7 +360,7 @@ const getVendorBookingStats = async (vendorId) => {
     turf: { $in: turfIds },
     bookingStatus: "pending",
   });
-  
+
   const activeBookings = await Booking.countDocuments({
     turf: { $in: turfIds },
     bookingStatus: "confirmed",
@@ -400,17 +405,46 @@ const getVendorRecentBookings = async (vendorId) => {
     .lean();
 
   return bookings.map((booking) => {
-    let bookingDate = booking.bookingDate || booking.createdAt;
-    if (bookingDate) {
-      bookingDate = new Date(bookingDate).toLocaleDateString("en-CA"); // YYYY-MM-DD format
-    } else {
-      bookingDate = "—";
+    let bookingDate = "—";
+    let startTime = "—";
+    let endTime = "—";
+
+    if (booking.startDateTime) {
+      const start = new Date(booking.startDateTime);
+      bookingDate = new Intl.DateTimeFormat("en-GB", {
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+        timeZone: "UTC"
+      }).format(start);
+
+      startTime = new Intl.DateTimeFormat("en-US", {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true,
+        timeZone: "UTC"
+      }).format(start);
+    } else if (booking.bookingDate || booking.createdAt) {
+      const fallbackDate = new Date(booking.bookingDate || booking.createdAt);
+      bookingDate = new Intl.DateTimeFormat("en-GB", {
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+        timeZone: "UTC"
+      }).format(fallbackDate);
     }
 
-    let startTime = booking.startTime || "—";
-    let endTime = booking.endTime || "—";
+    if (booking.endDateTime) {
+      const end = new Date(booking.endDateTime);
+      endTime = new Intl.DateTimeFormat("en-US", {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true,
+        timeZone: "UTC"
+      }).format(end);
+    }
 
-    if (booking.timeSlot) {
+    if (startTime === "—" && endTime === "—" && booking.timeSlot) {
       const parts = booking.timeSlot.split("-");
       if (parts.length === 2) {
         startTime = parts[0].trim();
@@ -432,6 +466,105 @@ const getVendorRecentBookings = async (vendorId) => {
   });
 };
 
+const suspendVendor = async (vendorId) => {
+  const performDelete = async (sessionToUse) => {
+    const opts = sessionToUse ? { session: sessionToUse } : {};
+
+    // 1. Find vendor by vendorId
+    const vendor = await User.findOne({ _id: vendorId, role: "vendor" }, null, opts);
+    if (!vendor) {
+      throw new ApiError(404, "Vendor not found");
+    }
+
+    // 2. Get all turfs owned by vendor
+    const turfs = await Turf.find({ owner: vendorId }, "_id", opts);
+    const turfIds = turfs.map((t) => t._id);
+
+    // 3. Delete related vendor records:
+    console.log("Deleting subscriptions");
+    const subDelete = await Subscription.deleteMany({ vendor: vendorId }, opts);
+
+    console.log("Deleting notifications");
+    const notificationDelete = await Notification.deleteMany({ user: vendorId }, opts);
+
+    console.log("Deleting reports");
+    const reportDelete = await Report.deleteMany({
+      $or: [
+        { vendor: vendorId },
+        { turf: { $in: turfIds } }
+      ]
+    }, opts);
+
+    console.log("Deleting bookings");
+    const bookingDelete = await Booking.deleteMany({ turf: { $in: turfIds } }, opts);
+
+    console.log("Deleting reviews");
+    const reviewDelete = await Review.deleteMany({ turf: { $in: turfIds } }, opts);
+
+    console.log("Deleting turfs");
+    const turfDelete = await Turf.deleteMany({ owner: vendorId }, opts);
+
+    console.log("Deleting vendor");
+    const vendorDelete = await User.deleteOne({ _id: vendorId, role: "vendor" }, opts);
+
+    // Log deleted counts
+    console.log(`[Suspend Vendor] Vendor ${vendorId} suspended.`);
+    console.log(`Deleted user: ${vendorDelete.deletedCount}`);
+    console.log(`Deleted turfs: ${turfDelete.deletedCount}`);
+    console.log(`Deleted subscriptions: ${subDelete.deletedCount}`);
+    console.log(`Deleted bookings: ${bookingDelete.deletedCount}`);
+    console.log(`Deleted reviews: ${reviewDelete.deletedCount}`);
+    console.log(`Deleted notifications: ${notificationDelete.deletedCount}`);
+    console.log(`Deleted reports: ${reportDelete.deletedCount}`);
+
+    return vendor;
+  };
+
+  let session = null;
+  let useTransaction = true;
+  try {
+    session = await mongoose.startSession();
+    session.startTransaction();
+    console.log("Transactions Enabled: true");
+    const vendor = await performDelete(session);
+    await session.commitTransaction();
+    session.endSession();
+    return {
+      success: true,
+      message: "Vendor suspended successfully"
+    };
+  } catch (error) {
+    if (session) {
+      try {
+        await session.abortTransaction();
+      } catch (abortErr) {
+        // ignore abort error if transaction never started
+      }
+      session.endSession();
+    }
+
+    const isTransactionError = error.message?.includes("Transaction numbers are only allowed") ||
+                               error.codeName === "TransactionSystemFailed" ||
+                               error.message?.includes("replica set");
+
+    if (isTransactionError) {
+      useTransaction = false;
+      console.log("Transactions Enabled:", useTransaction);
+      try {
+        await performDelete(null);
+        return {
+          success: true,
+          message: "Vendor suspended successfully"
+        };
+      } catch (fallbackError) {
+        throw fallbackError;
+      }
+    } else {
+      throw error;
+    }
+  }
+};
+
 module.exports = {
   loginAdmin,
   getDashboardStats,
@@ -439,4 +572,5 @@ module.exports = {
   getVendorBookingStats,
   getAllBookings,
   getVendorRecentBookings,
+  suspendVendor,
 };
