@@ -95,8 +95,16 @@ function normalizeTurf(t) {
     t.sports?.map((s) => s.toLowerCase()) ??
     (t.sportType ? [t.sportType] : []);
 
-  // documents — from DB if present, else empty (admin verifies locally)
-  const rawDocs = t.documents ?? t.docs ?? [];
+  // documents — from DB if present, else default documents
+  let rawDocs = t.documents ?? t.docs ?? [];
+  if (rawDocs.length === 0) {
+    rawDocs = [
+      { title: "Aadhar card", sub: "ID Proof", status: "pending", icon: "bi-fingerprint" },
+      { title: "Pan card", sub: "Tax ID", status: "pending", icon: "bi-person-vcard" },
+      { title: "GST certificated", sub: "Business Proof", status: "pending", icon: "bi-file-earmark-ruled" },
+      { title: "EB bill", sub: "Address Proof", status: "pending", icon: "bi-lightning-charge" }
+    ];
+  }
   const documents = rawDocs.map((d) => {
     const raw    = (d.status ?? d.docStatus ?? "pending").toLowerCase();
     const status = raw === "verified" ? "verified"
@@ -147,9 +155,7 @@ function normalizeTurf(t) {
     amenities:  t.amenities  ?? t.facilities ?? [],
     sportTypes,
     photos: [
-      ...(t.mainImage ? [t.mainImage] : []),
       ...(Array.isArray(t.secondaryImages) ? t.secondaryImages : []),
-      ...(Array.isArray(t.photos)          ? t.photos          : []),
     ].filter(Boolean),
     verifications,
     documents,
@@ -326,6 +332,7 @@ export default function TurfDetails() {
   const [modal,      setModal]      = useState(null); // null | "approve-confirm" | "reject-confirm" | "approved" | "rejected"
   const [checks,     setChecks]     = useState([]);
   const [docStatuses, setDocStatuses] = useState([]);
+  const [previewImage, setPreviewImage] = useState(null);
 
   const infoColRef   = useRef(null);
   const photoCardRef = useRef(null);
@@ -393,6 +400,28 @@ export default function TurfDetails() {
   function toggleCheck(i) {
     setChecks((prev) => {
       const next = prev.map((v, idx) => (idx === i ? !v : v));
+      const label = turf.verifications[i]?.label;
+      
+      if (label === "Identity Verified") {
+        setDocStatuses((ds) => ds.map((s, dIdx) => {
+          const title = turf.documents[dIdx]?.title?.toLowerCase() || "";
+          if (title.includes("aadhar") || title.includes("pan")) {
+            return next[i] ? "verified" : "pending";
+          }
+          return s;
+        }));
+      }
+
+      if (label === "Business Verified") {
+        setDocStatuses((ds) => ds.map((s, dIdx) => {
+          const title = turf.documents[dIdx]?.title?.toLowerCase() || "";
+          if (title.includes("gst") || title.includes("eb bill")) {
+            return next[i] ? "verified" : "pending";
+          }
+          return s;
+        }));
+      }
+
       if (next.every(Boolean)) {
         // All checked → auto-verify all pending docs
         setDocStatuses((ds) => ds.map((s) => (s === "pending" ? "verified" : s)));
@@ -648,7 +677,14 @@ export default function TurfDetails() {
           <div className="td-photos-grid" style={{flex:1}}>
             {turf.photos.length > 0
               ? turf.photos.slice(0, 4).map((src, i) => (
-                  <img key={i} src={src} alt={`Turf photo ${i + 1}`} className="td-photo" />
+                  <img 
+                    key={i} 
+                    src={src} 
+                    alt={`Turf photo ${i + 1}`} 
+                    className="td-photo" 
+                    onClick={() => setPreviewImage(src)}
+                    style={{ cursor: "pointer" }}
+                  />
                 ))
               : Array.from({ length: 4 }).map((_, i) => (
                   <div key={i} className="td-photo td-photo--empty">
@@ -766,7 +802,7 @@ export default function TurfDetails() {
                 <div className="td-doc-right">
                   <DocBadge status={status} />
 
-                  {showActions && !isVerified && (
+                  {showActions && status === "pending" && (
                     <button
                       className="td-doc-action-btn td-doc-action-btn--verify"
                       onClick={() => setDocStatus(i, "verified")}
@@ -774,7 +810,7 @@ export default function TurfDetails() {
                       <i className="bi bi-check" /> Verify
                     </button>
                   )}
-                  {showActions && !isRejected && (
+                  {showActions && status === "pending" && (
                     <button
                       className="td-doc-action-btn td-doc-action-btn--reject"
                       onClick={() => setDocStatus(i, "rejected")}
@@ -783,16 +819,14 @@ export default function TurfDetails() {
                     </button>
                   )}
 
-                  {(isVerified || isRejected) && (
-                    <a
-                      href="#preview"
-                      className="td-preview-link"
-                      onClick={(e) => e.preventDefault()}
-                      aria-label={`Preview ${doc.title}`}
-                    >
-                      Preview <i className="bi bi-eye" />
-                    </a>
-                  )}
+                  <a
+                    href="#preview"
+                    className="td-preview-link"
+                    onClick={(e) => e.preventDefault()}
+                    aria-label={`Preview ${doc.title}`}
+                  >
+                    Preview <i className="bi bi-eye" />
+                  </a>
                 </div>
               </div>
             );
@@ -800,6 +834,24 @@ export default function TurfDetails() {
         </div>
       </div>
 
+      {/* Full-screen Image Preview Modal */}
+      {previewImage && (
+        <div 
+          style={{
+            position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+            background: 'rgba(0,0,0,0.85)', zIndex: 9999,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            cursor: 'pointer'
+          }}
+          onClick={() => setPreviewImage(null)}
+        >
+          <img 
+            src={previewImage} 
+            alt="Preview" 
+            style={{ maxWidth: '90vw', maxHeight: '90vh', objectFit: 'contain', borderRadius: '8px' }} 
+          />
+        </div>
+      )}
     </div>
   );
 }
