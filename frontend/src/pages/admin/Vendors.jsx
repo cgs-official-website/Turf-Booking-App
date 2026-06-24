@@ -42,20 +42,23 @@ export default function Vendors() {
         const response = await getAllVendors();
 
         // Transform backend data to match frontend format
-        const transformedVendors = response.data.map((vendor, index) => ({
-          id: index + 1,
-          vendorId: `VND ID: ERD-${vendor.vendorId}`,
-          name: vendor.vendorName,
-          email: vendor.email,
-          phone: vendor.phone,
-          location: vendor.location,
-          image:
-            "https://images.unsplash.com/photo-1516399653135-68efc5e5cf13?w=600&h=400&fit=crop",
-          // Store additional vendor data for detail view
-          _id: vendor._id,
-          turfCount: vendor.turfCount,
-          turfs: vendor.turfs || [],
-        }));
+        const transformedVendors = response.data.map((vendor, index) => {
+          console.log("Vendor from API:", vendor);
+          return {
+            id: index + 1,
+            vendorId: `VND ID: ERD-${vendor.vendorId}`,
+            name: vendor.vendorName,
+            email: vendor.email,
+            phone: vendor.phone,
+            location: vendor.location,
+            image:
+              "https://images.unsplash.com/photo-1516399653135-68efc5e5cf13?w=600&h=400&fit=crop",
+            // Store additional vendor data for detail view
+            _id: vendor._id,
+            turfCount: vendor.turfCount,
+            turfs: vendor.turfs || [],
+          };
+        });
 
         setVendors(transformedVendors);
         setFilteredVendors(transformedVendors);
@@ -91,12 +94,20 @@ export default function Vendors() {
 
   // ── Handle Card Click ──
   const handleCardClick = (vendor) => {
+    console.log("Selected Vendor:", vendor);
     setSelectedVendor(vendor);
     setShowDetailPage(true);
   };
 
   // ── Handle Back from Detail Page ──
   const handleBackFromDetail = () => {
+    setShowDetailPage(false);
+    setSelectedVendor(null);
+  };
+
+  const handleVendorSuspended = (suspendedVendorId) => {
+    setVendors(prev => prev.filter(v => v._id !== suspendedVendorId));
+    setFilteredVendors(prev => prev.filter(v => v._id !== suspendedVendorId));
     setShowDetailPage(false);
     setSelectedVendor(null);
   };
@@ -127,7 +138,7 @@ export default function Vendors() {
   // ── Show Detail Page if Selected ──
   if (showDetailPage && selectedVendor) {
     return (
-      <VendorDetail vendor={selectedVendor} onBack={handleBackFromDetail} />
+      <VendorDetail vendor={selectedVendor} onBack={handleBackFromDetail} onVendorSuspended={handleVendorSuspended} />
     );
   }
 
@@ -186,13 +197,16 @@ export default function Vendors() {
           ) : error ? (
             <p style={{ color: "orange" }}>{error}</p>
           ) : paginated.length > 0 ? (
-            paginated.map((vendor) => (
-              <Card
-                key={vendor.id}
-                vendor={vendor}
-                onClick={() => handleCardClick(vendor)}
-              />
-            ))
+            paginated.map((vendor) => {
+              console.log("Vendor passed to Card:", vendor);
+              return (
+                <Card
+                  key={vendor.id}
+                  vendor={vendor}
+                  onClick={() => handleCardClick(vendor)}
+                />
+              );
+            })
           ) : (
             <p>No vendors match your filters.</p>
           )}

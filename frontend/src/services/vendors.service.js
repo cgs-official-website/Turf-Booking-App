@@ -38,8 +38,8 @@ export const updateVendorStatus = async (vendorId, status) => {
 };
 
 // SUSPEND vendor account (admin)
-export const suspendVendor = async (vendorId, reason = '') => {
-  const response = await axiosInstance.post(`/admin/vendors/${vendorId}/suspend`, { reason });
+export const suspendVendor = async (vendorId) => {
+  const response = await axiosInstance.delete(`/admin/vendors/${vendorId}`);
   return response.data;
 };
 
