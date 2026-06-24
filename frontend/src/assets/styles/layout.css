@@ -97,3 +97,32 @@
     padding: 16px;
   } */
 }
+
+/* ===========================
+   CUSTOM PAGE-CONTENT WIDTHS
+   =========================== */
+@media (max-width: 1024px) and (min-width: 769px) {
+  .page-content {
+    max-width: 1024px;
+    min-width: 769px;
+    width: 100%;
+    margin: 0;
+  }
+}
+
+@media (max-width: 768px) and (min-width: 426px) {
+  .page-content {
+    max-width: 768px;
+    min-width: 426px;
+    width: 100%;
+    margin: 0;
+  }
+}
+
+@media (max-width: 425px) {
+  .page-content {
+    max-width: 425px;
+    width: 100%;
+    margin: 0;
+  }
+}

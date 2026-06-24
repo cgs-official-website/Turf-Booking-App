@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../services/axiosInstance";
 import "../../assets/styles/payment.css";
+import { FiUser } from "react-icons/fi";
 
 const PAGE_SIZE = 8;
 
@@ -97,7 +98,7 @@ function StatCard({ icon, iconVariant, label, value, growthPct, invertGrowthColo
         <GrowthTag pct={growthPct} invertColor={invertGrowthColor} />
       </div>
       <div className={`pay-stat-card__icon pay-stat-card__icon--${iconVariant}`}>
-        <i className={`bi ${icon}`} />
+        {typeof icon === "string" ? <i className={`bi ${icon}`} /> : icon}
       </div>
     </div>
   );
@@ -295,7 +296,7 @@ export default function Payment() {
           invertGrowthColor={true}
         />
         <StatCard
-          icon="bi-person" iconVariant="vendors"
+          icon={<FiUser />} iconVariant="vendors"
           label="Total Vendors"
           value={loading ? "…" : c.totalVendors}
           growthPct={loading ? null : c.vendorGrowth}

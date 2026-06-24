@@ -613,6 +613,36 @@
   cursor: not-allowed;
 }
 
+/* ===========================
+   CUSTOM PAGINATION WIDTHS
+   =========================== */
+@media (max-width: 1024px) and (min-width: 769px) {
+  .rp-table-footer {
+    max-width: 1024px;
+    min-width: 769px;
+    width: 100%;
+    margin: 0;
+  }
+}
+
+@media (max-width: 768px) and (min-width: 426px) {
+  .rp-table-footer {
+    max-width: 768px;
+    min-width: 426px;
+    width: 100%;
+    margin: 0;
+  }
+}
+
+@media (max-width: 425px) and (min-width: 375px) {
+  .rp-table-footer {
+    max-width: 425px;
+    min-width: 375px;
+    width: 100%;
+    margin: 0;
+  }
+}
+
 /* ── State rows ───────────────────────── */
 .rp-state-row td {
   padding: 48px 16px;
@@ -665,6 +695,11 @@
   margin-bottom: 18px;
 }
 
+@media (max-width: 992px) {
+  .rp-stat-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
 @media (max-width: 900px) {
   .rp-stat-grid {
     grid-template-columns: repeat(2, 1fr);
@@ -685,5 +720,11 @@
     white-space: nowrap; 
     overflow: hidden; 
     text-overflow: ellipsis; 
+  }
+}
+
+@media (max-width: 425px) {
+  .rp-stat-grid {
+    grid-template-columns: repeat(2, 1fr);
   }
 }

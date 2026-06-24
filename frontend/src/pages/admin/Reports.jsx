@@ -227,6 +227,44 @@ function ReportDetailModal({ report, onClose, onResolved }) {
 
 
 
+/* ── Delete Confirm & Error Modals ─────────────────────────────────────────────────── */
+function DeleteConfirmModal({ onConfirm, onClose }) {
+  return (
+    <div className="rp-modal-overlay">
+      <div className="rp-modal" style={{maxWidth: '400px', textAlign: 'center', borderRadius: '16px', padding: '32px 28px 24px', boxShadow: '0 10px 40px rgba(0,0,0,0.1)', border: 'none'}}>
+        <div style={{width: '64px', height: '64px', borderRadius: '50%', background: '#fee2e2', color: '#ef4444', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '28px', margin: '0 auto 20px'}}>
+          <i className="bi bi-trash3-fill"></i>
+        </div>
+        <h2 style={{fontSize: '22px', fontWeight: '700', color: '#111', margin: '0 0 10px'}}>Delete Report?</h2>
+        <p style={{fontSize: '14.5px', color: '#555', lineHeight: '1.5', margin: '0 0 28px'}}>
+          You're about to permanently delete this report. This action cannot be undone. Are you sure you want to proceed?
+        </p>
+        <div style={{display: 'flex', gap: '12px'}}>
+          <button onClick={onClose} style={{flex: 1, height: '44px', borderRadius: '10px', border: '1px solid #e5e7eb', background: '#fff', color: '#374151', fontSize: '14px', fontWeight: '600', cursor: 'pointer', transition: 'background 0.15s'}} onMouseOver={e=>e.target.style.background='#f9fafb'} onMouseOut={e=>e.target.style.background='#fff'}>Cancel</button>
+          <button onClick={onConfirm} style={{flex: 1, height: '44px', borderRadius: '10px', border: 'none', background: '#ef4444', color: '#fff', fontSize: '14px', fontWeight: '600', cursor: 'pointer', boxShadow: '0 4px 12px rgba(239, 68, 68, 0.25)', transition: 'background 0.15s'}} onMouseOver={e=>e.target.style.background='#dc2626'} onMouseOut={e=>e.target.style.background='#ef4444'}>Yes, Delete</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ErrorModal({ onClose }) {
+  return (
+    <div className="rp-modal-overlay">
+      <div className="rp-modal" style={{maxWidth: '400px', textAlign: 'center', borderRadius: '16px', padding: '32px 28px 24px', boxShadow: '0 10px 40px rgba(0,0,0,0.1)', border: 'none'}}>
+        <div style={{width: '64px', height: '64px', borderRadius: '50%', background: '#fef3c7', color: '#d97706', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '28px', margin: '0 auto 20px'}}>
+          <i className="bi bi-exclamation-circle-fill"></i>
+        </div>
+        <h2 style={{fontSize: '22px', fontWeight: '700', color: '#111', margin: '0 0 10px'}}>Action Not Allowed</h2>
+        <p style={{fontSize: '14.5px', color: '#555', lineHeight: '1.5', margin: '0 0 28px'}}>
+          Only reports with a <b>solved</b> status can be deleted. Please resolve this report first before attempting to delete it.
+        </p>
+        <button onClick={onClose} style={{width: '100%', height: '44px', borderRadius: '10px', border: 'none', background: '#f59e0b', color: '#fff', fontSize: '14px', fontWeight: '600', cursor: 'pointer', boxShadow: '0 4px 12px rgba(245, 158, 11, 0.25)', transition: 'background 0.15s'}} onMouseOver={e=>e.target.style.background='#d97706'} onMouseOut={e=>e.target.style.background='#f59e0b'}>Got it</button>
+      </div>
+    </div>
+  );
+}
+
 /* ── Main component ───────────────────────────────────────────────────────── */
 export default function Reports() {
   const navigate = useNavigate();
@@ -242,6 +280,16 @@ export default function Reports() {
   const [page, setPage] = useState(1);
 
   const [selectedReport, setSelectedReport] = useState(null);
+  const [reportToDelete, setReportToDelete] = useState(null);
+  const [errorPopupOpen, setErrorPopupOpen] = useState(false);
+
+  function handleDeleteClick(rpt) {
+    if (rpt.status !== 'solved') {
+      setErrorPopupOpen(true);
+    } else {
+      setReportToDelete(rpt);
+    }
+  }
 
 
   /* ── Fetch ── */
@@ -282,18 +330,15 @@ export default function Reports() {
   }
 
   /* ── After delete ── */
-  async function handleDelete(rpt) {
-    if (rpt.status !== "solved") {
-      alert("Only solved reports can be deleted.");
-      return;
-    }
-    if (!window.confirm("Delete this report?")) return;
+  async function confirmDelete() {
+    if (!reportToDelete) return;
     try {
-      await axiosInstance.delete(`/reports/admin/${rpt._id}`);
+      await axiosInstance.delete(`/reports/admin/${reportToDelete._id}`);
     } catch {
       /* optimistic */
     }
-    setReports((prev) => prev.filter((r) => r._id !== rpt._id));
+    setReports((prev) => prev.filter((r) => r._id !== reportToDelete._id));
+    setReportToDelete(null);
   }
 
   /* ── View report — if pending, bump to under-review first ── */
@@ -365,6 +410,7 @@ export default function Reports() {
   /* ── Render ── */
   return (
     <div className="rp-page">
+      {/* ── Modals ── */}
       {selectedReport && (
         <ReportDetailModal
           report={selectedReport}
@@ -373,7 +419,16 @@ export default function Reports() {
         />
       )}
 
+      {reportToDelete && (
+        <DeleteConfirmModal 
+          onConfirm={confirmDelete}
+          onClose={() => setReportToDelete(null)}
+        />
+      )}
 
+      {errorPopupOpen && (
+        <ErrorModal onClose={() => setErrorPopupOpen(false)} />
+      )}
 
       <h1 className="rp-page-title">Reports</h1>
 
@@ -557,10 +612,10 @@ export default function Reports() {
                         <button
                           className="rp-action-btn rp-action-btn--delete"
                           title={rpt.status === "solved" ? "Delete report" : "Only solved reports can be deleted"}
-                          onClick={() => handleDelete(rpt)}
+                          onClick={() => handleDeleteClick(rpt)}
                           disabled={rpt.status !== "solved"}
                           style={{
-                            opacity: rpt.status !== "solved" ? 0.3 : 1,
+                            opacity: rpt.status !== "solved" ? 0.35 : 1,
                             cursor: rpt.status !== "solved" ? "not-allowed" : "pointer"
                           }}
                         >
