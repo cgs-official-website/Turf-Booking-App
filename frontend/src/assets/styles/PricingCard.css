@@ -25,11 +25,11 @@
 /* Badge */
 .pricing-card-badge {
   position: absolute;
-  top: 18px;
-  right: 18px;
+  top: 7px;
+  right: 7px;
   background: #d6f5e3;
   color: #16a34a;
-  font-size: 12px;
+  font-size: 15px;
   font-weight: 600;
   padding: 5px 14px;
   border-radius: 999px;
@@ -38,9 +38,9 @@
 /* Title */
 .pricing-card-title {
   font-size: 20px;
-  font-weight: 700;
+  font-weight: 600;
   color: #111827;
-  margin: 0 0 4px;
+  margin: 10px 0 4px;
 }
 
 .pricing-card-title--popular {
@@ -69,8 +69,8 @@
 }
 
 .pricing-card-amount {
-  font-size: 44px;
-  font-weight: 800;
+  font-size: 30px;
+  font-weight: 500;
   color: #111827;
   line-height: 1;
 }
@@ -135,4 +135,29 @@
 
 .pricing-card-toggle-btn--remove:hover {
   background: #fee2e2;
+}
+@media (min-width: 641px) and (max-width: 1024px){
+  .pricing-card-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #111827;
+  margin: 15px 0 4px;
+}
+.pricing-card-badge {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background: #d6f5e3;
+  color: #16a34a;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 5px 14px;
+  border-radius: 999px;
+}
+.pricing-card-amount {
+  font-size: 20px;
+  font-weight: 500;
+  color: #111827;
+  line-height: 1;
+}
 }

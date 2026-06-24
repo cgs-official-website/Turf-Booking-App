@@ -5,12 +5,11 @@
   padding: 28px 28px 40px;
   background: #f4f6f8;
   font-family: "Poppins", system-ui, sans-serif;
-
 }
 
 /* ── Title ── */
 .sub-page__title {
-   font-size: 2rem;
+  font-size: 2rem;
   font-weight: 600;
   color: #111111;
   letter-spacing: -0.3px;
@@ -205,7 +204,7 @@
   border-color: #86efac;
 }
 
-/* ── Grid ── */
+/* ── Turf Grid ── */
 .sub-page__grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -228,7 +227,7 @@
   padding: 3rem 0;
 }
 
-/* ── Pagination (turf grid) ── */
+/* ── Turf Pagination ── */
 .sub-page__pagination {
   display: flex;
   align-items: center;
@@ -236,9 +235,6 @@
   flex-wrap: wrap;
   gap: 12px;
   padding-top: 8px;
-  margin-left: 80px;
-  margin-right: 180px;
-  background: #fff;
 }
 
 .sub-page__showing {
@@ -292,10 +288,12 @@
   border-color: #16a34a;
 }
 
+/* Previous / Next labeled text buttons */
 .sub-pager-btn--arrow {
-  font-size: 18px;
-  font-weight: 300;
-  line-height: 1;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 0 18px;
+  min-width: 90px;
 }
 
 /* ── Plan Management ── */
@@ -331,72 +329,124 @@
   background: #f0fdf4;
 }
 
+/* Hidden on desktop — only shown on tablet via tab bar (currently unused on desktop) */
 .sub-edit-plans-btn--tab-inline {
   display: none;
   margin-left: auto;
 }
 
-/* ── Scrollable cards ── */
-.sub-plan-management__scroll-wrapper {
+/* Mobile-only edit plans row — hidden by default, shown on mobile */
+.sub-plan-management__mobile-edit {
+  display: none;
+}
+
+/* ══════════════════════════════════════════════
+   PLAN WINDOWED LAYOUT (DESKTOP)
+   arrow | 3-card grid | arrow
+   ══════════════════════════════════════════════ */
+
+.sub-plan-management__windowed {
+  display: flex;
+  align-items: center;
+  gap: 16px;
   width: 100%;
-  overflow-x: auto;
-  overflow-y: visible;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: thin;
-  scrollbar-color: #22c55e #f0f0f0;
-  padding: 4px 0 12px 0;
+  /* Prevent the card grid from spilling outside the page */
+  overflow: hidden;
+  box-sizing: border-box;
 }
 
-.sub-plan-management__scroll-wrapper::-webkit-scrollbar {
-  height: 6px;
-}
-
-.sub-plan-management__scroll-wrapper::-webkit-scrollbar-track {
-  background: #f0f0f0;
-  border-radius: 10px;
-}
-
-.sub-plan-management__scroll-wrapper::-webkit-scrollbar-thumb {
-  background: #22c55e;
-  border-radius: 10px;
-}
-
-.sub-plan-management__scroll-wrapper::-webkit-scrollbar-thumb:hover {
-  background: #16a34a;
-}
-
-.sub-plan-management__cards {
+/* Prev / Next circle arrow buttons */
+.sub-plan-nav-btn {
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1.5px solid #e8e8e8;
+  background: #fff;
+  font-size: 26px;
+  line-height: 1;
+  color: #555;
+  cursor: pointer;
   display: flex;
-  gap: 24px;
-  padding: 8px 4px 32px 4px;
-  min-width: min-content;
-  align-items: stretch;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+  user-select: none;
 }
 
-.sub-plan-management__cards>.plan-card-wrapper {
-  flex: 0 0 300px;
-  min-width: 280px;
-  max-width: 340px;
-  display: flex;
-  flex-direction: column;
+.sub-plan-nav-btn:hover:not(:disabled) {
+  background: #f0fdf4;
+  border-color: #22c55e;
+  color: #16a34a;
 }
 
-.sub-plan-management__cards .pricing-card {
+.sub-plan-nav-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+/* 3-column equal grid between the arrows */
+.sub-plan-management__cards-grid {
   flex: 1;
-  height: 100%;
-  min-height: 400px;
+  min-width: 0; /* prevents grid from overflowing its flex container */
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  align-items: start;
+  padding: 24px 0 32px;
+}
+
+.sub-plan-management__cards-grid .plan-card-wrapper {
   display: flex;
   flex-direction: column;
 }
 
-.plan-card--popular-wrapper {
+/* Most-popular card — subtle scale */
+.sub-plan-management__cards-grid .plan-card--popular-wrapper {
   transform: scale(1.05);
   transform-origin: center top;
   z-index: 1;
   position: relative;
 }
 
-/* ── Mobile Plan Selector ── */
+.sub-plan-management__cards-grid .pricing-card {
+  flex: 1;
+  min-height: 400px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Mobile-only full plan list (all plans rendered, active one shown) ── */
+.sub-plan-management__mobile-cards {
+  display: none; /* hidden on desktop/tablet — windowed view handles those */
+}
+
+/* ── Page dots ── */
+.sub-plan-page-dots {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 4px;
+  padding-bottom: 8px;
+}
+
+.sub-plan-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: none;
+  background: #d1d5db;
+  cursor: pointer;
+  padding: 0;
+  transition: background 0.2s, transform 0.2s;
+}
+
+.sub-plan-dot--active {
+  background: #22c55e;
+  transform: scale(1.3);
+}
+
+/* ── Mobile Plan Selector Tabs ── */
 .sub-plan-tabs {
   display: none;
 }
@@ -406,7 +456,7 @@
    ════════════════════════════════════════════ */
 @media (min-width: 641px) and (max-width: 1024px) {
   .sub-page {
-    padding: 4px 8px;
+    padding: 16px 20px 32px;
   }
 
   .sub-page__stats {
@@ -428,15 +478,51 @@
     padding: 2rem;
   }
 
-  .sub-plan-management__cards>.plan-card-wrapper {
-    flex: 0 0 260px;
-    min-width: 240px;
-    max-width: 290px;
+  /* On tablet, hide the tab-inline button and show the header button below tabs
+     (same position as desktop — right-aligned row below the tab bar) */
+  .sub-edit-plans-btn--tab-inline {
+    display: none;
   }
 
-  .sub-plan-management__cards {
-    gap: 18px;
-    padding: 8px 4px 24px 4px;
+  .sub-plan-management__header {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 1.25rem;
+  }
+
+  .sub-plan-management__mobile-edit {
+    display: none;
+  }
+
+  /* Smaller arrow buttons to save space */
+  .sub-plan-nav-btn {
+    width: 32px;
+    height: 32px;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+
+  /* Tighter gap between cards on tablet, cards respect container width */
+  .sub-plan-management__windowed {
+    gap: 8px;
+    overflow: hidden;
+  }
+
+  .sub-plan-management__cards-grid {
+    gap: 10px;
+    padding: 16px 0 24px;
+    min-width: 0;
+  }
+
+  /* Smaller min-height so cards don't overflow on tablet */
+  .sub-plan-management__cards-grid .pricing-card {
+    min-height: 320px;
+    font-size: 13px;
+  }
+
+  /* Remove the popular-card scale on tablet — not enough room */
+  .sub-plan-management__cards-grid .plan-card--popular-wrapper {
+    transform: none;
   }
 }
 
@@ -512,6 +598,19 @@
     padding-bottom: 10px;
   }
 
+  /* On mobile the tab-inline button is hidden — the tab bar has no room.
+     Instead the dedicated mobile-edit row (below) shows the button. */
+  .sub-edit-plans-btn--tab-inline {
+    display: none;
+  }
+
+  /* Show the dedicated mobile edit row above plan pills */
+  .sub-plan-management__mobile-edit {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 0.75rem;
+  }
+
   .sub-page__grid {
     grid-template-columns: 1fr !important;
     gap: 16px;
@@ -540,7 +639,50 @@
     height: 34px;
   }
 
-  /* Mobile Plan Management */
+  /* ── Mobile Plan Management ── */
+
+  /* Force hide the desktop windowed layout completely */
+  .sub-plan-management__windowed {
+    display: none !important;
+  }
+
+  /* Show the mobile-only card container, full width */
+  .sub-plan-management__mobile-cards {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  /* Hide every card by default */
+  .sub-plan-management__mobile-cards .plan-card-wrapper {
+    display: none;
+  }
+
+  /* Show only the active card — full width, column direction */
+  .sub-plan-management__mobile-cards .plan-card-wrapper.plan-card--visible {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  /* Remove popular-card scale and position on mobile */
+  .sub-plan-management__mobile-cards .plan-card--popular-wrapper {
+    transform: none !important;
+    position: static;
+  }
+
+  /* Force pricing card to fill full width on mobile — overrides max-width: 320px in PricingCard.css */
+  .sub-plan-management__mobile-cards .pricing-card {
+    width: 100%;
+    max-width: 100% !important;
+    min-height: 300px;
+    padding: 24px 20px;
+    box-sizing: border-box;
+    flex: 1;
+  }
+
+  /* Show the mobile plan selector tabs */
   .sub-plan-tabs {
     display: flex !important;
     gap: 8px;
@@ -608,7 +750,7 @@
   }
 
   .sub-plan-management__header {
-    margin-bottom: 1rem;
+    display: none;
   }
 
   .sub-edit-plans-btn {
@@ -617,41 +759,9 @@
     padding: 0 14px;
   }
 
-  .sub-plan-management__scroll-wrapper {
-    overflow-x: auto;
-    padding: 4px 0 12px 0;
-  }
-
-  .sub-plan-management__cards {
-    display: flex !important;
-    gap: 16px !important;
-    padding: 0 4px 16px 4px !important;
-    min-width: min-content;
-  }
-
-  .sub-plan-management__cards>.plan-card-wrapper {
-    flex: 0 0 280px !important;
-    min-width: 260px !important;
-    max-width: 300px !important;
-    display: flex;
-    flex-direction: column;
-  }
-
-  .sub-plan-management__cards>.plan-card-wrapper {
-    display: none !important;
-  }
-
-  .sub-plan-management__cards>.plan-card-wrapper.plan-card--visible {
-    display: flex !important;
-  }
-
-  .plan-card--popular-wrapper {
-    transform: none;
-  }
-
-  .sub-plan-management__cards .pricing-card {
-    min-height: 300px;
-    padding: 24px 20px;
+  /* Hide page dots on mobile — tabs serve the same purpose */
+  .sub-plan-page-dots {
+    display: none;
   }
 }
 
