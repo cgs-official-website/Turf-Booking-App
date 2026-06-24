@@ -2,6 +2,7 @@ import React from 'react';
 import '../assets/styles/Card.css';
 
 export default function Card({ vendor, onClick }) {
+  console.log("Card Vendor:", vendor);
   const handleButtonClick = (e) => {
     e.stopPropagation();
     if (onClick) {
