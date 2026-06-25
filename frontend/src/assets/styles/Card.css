@@ -16,9 +16,9 @@
 /* ── Image wrapper ── */
 .vendor-image-wrapper {
   position: relative;
-  width: 100%;
-  height: 200px;
-  overflow: hidden;
+  width: auto;
+  margin: 12px 12px 0 12px;
+  height: 180px;
 }
 
 .vendor-image {
@@ -26,25 +26,28 @@
   height: 100%;
   object-fit: cover;
   display: block;
+  border-radius: 12px;
 }
 
 .vendor-logo-overlay {
   position: absolute;
-  bottom: -20px;
-  right: 16px;
-  width: 56px;
-  height: 56px;
+  bottom: -28px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 64px;
+  height: 64px;
   border-radius: 50%;
   border: 3px solid #fff;
   object-fit: cover;
   background: #fff;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  z-index: 2;
 }
 
 /* ── Content ── */
 .vendor-content {
-  padding: 20px;
-  padding-top: 10px;
+  padding: 24px 20px 20px 20px;
+  margin-top: 10px;
 }
 
 .vendor-id-row {
@@ -52,10 +55,13 @@
 }
 
 .vendor-id {
-  font-size: 12px;
-  color: #1db854;
+  font-size: 11px;
+  color: #22c55e;
+  background-color: #f0fdf4;
+  padding: 3px 8px;
+  border-radius: 6px;
   font-weight: 600;
-  letter-spacing: 0.5px;
+  display: inline-block;
 }
 
 /* ── Name + badge row ── */
@@ -123,10 +129,10 @@
 .view-details-btn {
   width: 100%;
   padding: 12px 16px;
-  background-color: #1db854;
+  background-color: #0c9f45; /* Darker green for matching design */
   color: #ffffff;
   border: none;
-  border-radius: 8px;
+  border-radius: 24px;
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
@@ -135,9 +141,9 @@
 }
 
 .view-details-btn:hover {
-  background-color: #16a34a;
+  background-color: #0a873a;
 }
 
 .view-details-btn:active {
-  background-color: #138a40;
+  background-color: #087532;
 }
