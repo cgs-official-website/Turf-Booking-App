@@ -31,7 +31,7 @@
   color: #10B981;
   text-decoration: none;
 }
-.rb-view-all:hover { text-decoration: underline; }
+.rb-view-all:hover { text-decoration: none; }
 
 /* ── Loading ── */
 .rb-loading {
