@@ -39,7 +39,14 @@ export default function VenueCard({
       <div className="vc-location">
         <span>📍</span>
         <span>{location}</span>
-        <a href="#" className="vc-map-link">View on map ›</a>
+        <a 
+          href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${name} ${location}`)}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="vc-map-link"
+        >
+          View on map ›
+        </a>
       </div>
 
       <div className="vc-meta">
@@ -74,28 +81,27 @@ export default function VenueCard({
         ))}
       </div>
 
-      {photos && photos.length > 0 && (
-        <>
-          <div className="vc-divider" />
-          <div className="vc-photos-header">
-            <div className="vc-photos-label">🖼 Uploaded Photos</div>
-            <div className="vc-photos-count">{photos.length} Images Provided</div>
-          </div>
-          <div className="vc-photos-grid">
-            {Array.from({ length: 4 }).map((_, i) => (
-              <div key={i} className={`vc-photo-cell ${!photos[i] ? `vc-bg${(i % 4) + 1}` : ''}`}>
-                {photos[i] ? (
-                  <img src={photos[i]} alt={`Venue photo ${i+1}`} />
-                ) : (
-                  <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'rgba(255,255,255,0.3)' }}>
-                    <span style={{ fontSize: '24px' }}>📷</span>
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        </>
-      )}
+      <div className="vc-divider" />
+      <div className="vc-photos-header">
+        <div className="vc-photos-label">🖼 Uploaded Photos</div>
+        <div className="vc-photos-count">{(photos || []).length} Images Provided</div>
+      </div>
+      <div className="vc-photos-grid">
+        {Array.from({ length: 4 }).map((_, i) => {
+          const photoArray = photos || [];
+          return (
+            <div key={i} className={`vc-photo-cell ${!photoArray[i] ? `vc-bg${(i % 4) + 1}` : ''}`}>
+              {photoArray[i] ? (
+                <img src={photoArray[i]} alt={`Venue photo ${i+1}`} />
+              ) : (
+                <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'rgba(255,255,255,0.3)' }}>
+                  <span style={{ fontSize: '24px' }}>📷</span>
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 }

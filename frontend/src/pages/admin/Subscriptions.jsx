@@ -10,18 +10,14 @@ import PricingCard from "../../components/PricingCard";
 import EditPlans from '../../components/EditPlans';
 import * as subscriptionApi from '../../services/subscription.service';
 import * as turfApi from '../../services/turf.service';
+import "../../assets/styles/dashboard.css";
 import "../../assets/styles/Subscription.css";
 
 // ─────────────────────────────────────────────
 // STATIC DATA
 // ─────────────────────────────────────────────
 
-const STAT_CARDS = [
-  { label: "Total Subscription", value: 0, delta: "+0 this month", icon: HiOutlineBuildingOffice2 },
-  { label: "Active Subscription", value: 0, delta: "+0 this month", icon: PiWalletDuotone },
-  { label: "Expiring soon", value: 0, delta: "+0 this month", icon: HiOutlineLocationMarker },
-  { label: "Expired", value: 0, delta: "+0 this month", icon: HiOutlineBadgeCheck },
-];
+
 
 const FALLBACK_TURFS = [
   { turfId: "Erd-456", status: "Active", title: "Enjoy Turf Game", price: 585, startDate: "12 / 12 / 2026", endDate: "01 / 01 / 2027", location: "Erode", planDuration: "1 Year", turfImage: null, logoImage: null },
@@ -74,7 +70,6 @@ const toDisplayPlanShape = (p) => ({
 // ─────────────────────────────────────────────
 
 export default function Subscriptions() {
-  const [activeTab, setActiveTab] = useState("subscription");
   const [search, setSearch] = useState("");
   const [plan, setPlan] = useState("All plans");
   const [status, setStatus] = useState("Status");
@@ -283,50 +278,9 @@ export default function Subscriptions() {
     setPage(1);
   };
 
-  // ── Pagination (turf grid) ──
-  const PER_PAGE = 4;
-  const totalPages = Math.max(1, Math.ceil(filteredTurfs.length / PER_PAGE));
-  const safePage = Math.min(page, totalPages);
-  const paginated = filteredTurfs.slice((safePage - 1) * PER_PAGE, safePage * PER_PAGE);
 
-  // ── Plan Management slider — always shows exactly 3 cards, sliding by
-  //    1 card at a time. Window: [planStartIndex, planStartIndex + 3) ──
-  const PLANS_VISIBLE = 3;
-  const maxStartIndex = Math.max(0, plans.length - PLANS_VISIBLE);
-  const safeStartIndex = Math.min(planStartIndex, maxStartIndex);
-  const visiblePlans = plans.slice(safeStartIndex, safeStartIndex + PLANS_VISIBLE);
 
-  // Right arrow / Space → slide forward by 1 card. Left arrow / Backspace → slide back by 1 card.
-  // Only active on the "plan" tab, and only when not typing in an input,
-  // so it never hijacks the search box on the Subscription tab.
-  useEffect(() => {
-    if (activeTab !== "plan") return;
 
-    const handleKeyDown = (e) => {
-      const tag = e.target.tagName;
-      if (tag === "INPUT" || tag === "TEXTAREA" || e.target.isContentEditable) return;
-
-      if (e.key === "ArrowRight" || e.key === " ") {
-        e.preventDefault();
-        setPlanStartIndex((i) => Math.min(maxStartIndex, i + 1));
-      } else if (e.key === "ArrowLeft" || e.key === "Backspace") {
-        e.preventDefault();
-        setPlanStartIndex((i) => Math.max(0, i - 1));
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [activeTab, maxStartIndex]);
-
-  // ── Stats Cards ──
-  const statCards = STAT_CARDS.map((card, index) => {
-    const keys = ['total', 'active', 'expiringSoon', 'expired'];
-    return {
-      ...card,
-      value: stats[keys[index]] || 0
-    };
-  });
 
   // ── Show EditPlans if active ──
   if (showEditPlans) {
@@ -341,202 +295,41 @@ export default function Subscriptions() {
   // ── Render ──
   return (
     <>
-      <div className="sub-page">
-
-        {/* Page Title */}
-        {activeTab === "subscription" && (
-          <h1 className="sub-page__title">Subscriptions</h1>
-        )}
-
-        {/* Stat Cards */}
-        {activeTab === "subscription" && (
-          <div className="sub-page__stats">
-            {statCards.map((s) => (
-              <div key={s.label} className="sub-stat-card">
-                <div className="sub-stat-card__left">
-                  <span className="sub-stat-card__label">{s.label}</span>
-                  <span className="sub-stat-card__value">{s.value}</span>
-                  <span className="sub-stat-card__delta">{s.delta}</span>
-                </div>
-                <div className="sub-stat-card__icon">
-                  <s.icon />
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* Tabs */}
-        <div className="sub-page__tabs">
-          <button
-            className={`sub-tab ${activeTab === "subscription" ? "sub-tab--active" : ""}`}
-            onClick={() => setActiveTab("subscription")}
-          >
-            SUBSCRIPTION
-          </button>
-          <button
-            className={`sub-tab ${activeTab === "plan" ? "sub-tab--active" : ""}`}
-            onClick={() => setActiveTab("plan")}
-          >
-            PLAN MANAGEMENT
-          </button>
-          {activeTab === "plan" && (
+      <div className="dashboard-wrapper">
+        <div className="dashboard-content">
+          <div className="sub-plan-management">
+            <div className="sub-plan-management__header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <h1 className="dashboard-title" style={{ margin: 0 }}>Plan Management</h1>
             <button
-              className="sub-edit-plans-btn sub-edit-plans-btn--tab-inline"
+              className="sub-edit-plans-btn"
               onClick={() => setShowEditPlans(true)}
             >
               ✎ Edit plans
             </button>
-          )}
-        </div>
+          </div>
 
-        {/* SUBSCRIPTION TAB */}
-        {activeTab === "subscription" && (
-          <>
-            <div className="sub-page__filters">
-              <div className="sub-search">
-                <HiOutlineSearch className="sub-search__icon" />
-                <input
-                  type="text"
-                  placeholder="Search turf by name"
-                  value={search}
-                  onChange={handleSearchChange}
-                  className="sub-search__input"
-                />
-              </div>
-              <select
-                value={plan}
-                onChange={(e) => { setPlan(e.target.value); setPage(1); }}
-                className="sub-select"
-              >
-                {PLAN_OPTIONS.map((o) => (
-                  <option key={o}>{o}</option>
-                ))}
-              </select>
-              <select
-                value={status}
-                onChange={(e) => { setStatus(e.target.value); setPage(1); }}
-                className="sub-select"
-              >
-                {STATUS_OPTIONS.map((o) => (
-                  <option key={o}>{o}</option>
-                ))}
-              </select>
-              <select
-                value={location}
-                onChange={(e) => { setLocation(e.target.value); setPage(1); }}
-                className="sub-select"
-              >
-                {["Location", ...new Set(turfs.map(t => t.location).filter(loc => loc && loc !== 'N/A'))].map((o) => (
-                  <option key={o}>{o}</option>
-                ))}
-              </select>
-              <button className="sub-reset-btn" onClick={resetFilters}>
-                ↺ Reset Filter
-              </button>
-            </div>
-
-            <div className="sub-page__grid">
-              {loading ? (
-                <div className="sub-page__empty">Loading turfs...</div>
-              ) : error ? (
-                <div className="sub-page__empty" style={{ color: 'orange' }}>{error}</div>
-              ) : paginated.length > 0 ? (
-                paginated.map((turf) => (
-                  <TurfCard key={turf.turfId} {...turf} />
+          {/* Scrollable plan cards */}
+          <div className="sub-plan-management__scroll-wrapper">
+            <div className="sub-plan-management__cards">
+              {plansLoading ? (
+                <p>Loading plans...</p>
+              ) : plans.length > 0 ? (
+                plans.map((p, i) => (
+                  <div key={p.id} className="plan-card-wrapper">
+                    <PricingCard
+                      plan={p}
+                      showAdminControls={false}
+                    />
+                  </div>
                 ))
               ) : (
-                <div className="sub-page__empty">No turfs match your filters.</div>
+                <p>No plans available. Click "Edit plans" to create one.</p>
               )}
             </div>
-
-            <div className="sub-page__pagination">
-              <span className="sub-page__showing">
-                Showing {paginated.length} of {filteredTurfs.length} turfs
-              </span>
-              <div className="sub-page__pager">
-                <button
-                  className="sub-pager-btn"
-                  disabled={safePage === 1}
-                  onClick={() => setPage((p) => Math.max(1, p - 1))}
-                >
-                  &#8249;
-                </button>
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map((n) => (
-                  <button
-                    key={n}
-                    className={`sub-pager-btn sub-pager-btn--num ${safePage === n ? "sub-pager-btn--active" : ""}`}
-                    onClick={() => setPage(n)}
-                  >
-                    {n}
-                  </button>
-                ))}
-                <button
-                  className="sub-pager-btn"
-                  disabled={safePage === totalPages}
-                  onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                >
-                  &#8250;
-                </button>
-              </div>
-            </div >
-          </>
-        )}
-
-{/* PLAN MANAGEMENT TAB */ }
-{
-  activeTab === "plan" && (
-    <div className="sub-plan-management">
-      <div className="sub-plan-management__header">
-        <button
-          className="sub-edit-plans-btn"
-          onClick={() => setShowEditPlans(true)}
-        >
-          ✎ Edit plans
-        </button>
-      </div>
-
-      {/* Mobile plan selector */}
-      <div className="sub-plan-tabs">
-        {plans.map((p, i) => (
-          <button
-            key={p.id}
-            className={`sub-plan-tab-btn ${planTabIndex === i ? "sub-plan-tab-btn--active" : ""}`}
-            onClick={() => setPlanTabIndex(i)}
-          >
-            <span className="sub-plan-tab-btn__dot" />
-            {p.title.replace(/\s*plan\s*/i, "").trim() || p.title}
-          </button>
-        ))}
-      </div>
-
-      {/* Scrollable plan cards */}
-      <div className="sub-plan-management__scroll-wrapper">
-        <div className="sub-plan-management__cards">
-          {plansLoading ? (
-            <p>Loading plans...</p>
-          ) : plans.length > 0 ? (
-            plans.map((p, i) => (
-              <div
-                key={p.id}
-                className={`plan-card-wrapper ${i === planTabIndex ? "plan-card--visible" : ""}`}
-              >
-                <PricingCard
-                  plan={p}
-                  showAdminControls={false}
-                />
-              </div>
-            ))
-          ) : (
-            <p>No plans available. Click "Edit plans" to create one.</p>
-          )}
+          </div>
         </div>
       </div>
     </div>
-  )
-}
-
-      </div >
     </>
   );
 }

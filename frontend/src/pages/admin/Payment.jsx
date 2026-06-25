@@ -16,7 +16,7 @@ function normalizeRow(sub) {
   const shortId = baseId.slice(-4).toUpperCase() || "????";
   return {
     _id:         sub._id,
-    vndId:       "VND-" + shortId,
+    vndId:       `VRN-${shortId}`,
     vendorName:  sub.vendor?.name  ?? "—",
     email:       sub.vendor?.email ?? "",
     phone:       sub.vendor?.phone ?? "",

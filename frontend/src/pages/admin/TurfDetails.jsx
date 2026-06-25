@@ -197,11 +197,14 @@ function RejectModal({ onConfirm, onCancel, acting }) {
         <div className="td-modal-icon td-modal-icon--reject">
           <i className="bi bi-x-circle-fill" />
         </div>
-        <h2 className="td-modal-title">Reject this turf?</h2>
-        <p className="td-modal-body">Provide a reason for rejection. This will be sent to the vendor.</p>
+        <h2 className="td-modal-title">Reject Turf</h2>
+        <p className="td-modal-body" style={{ marginBottom: '12px' }}>
+          Please provide a reason. This will be sent to the vendor.
+        </p>
         <textarea
           className="td-modal-textarea"
-          placeholder="Enter reason for rejection..."
+          style={{ marginBottom: '20px' }}
+          placeholder="Reason for rejection..."
           value={reason}
           onChange={(e) => setReason(e.target.value)}
           rows={3}
@@ -213,10 +216,10 @@ function RejectModal({ onConfirm, onCancel, acting }) {
           <button
             className="td-modal-btn td-modal-btn--reject"
             onClick={() => onConfirm(reason)}
-            disabled={acting}
+            disabled={acting || !reason.trim()}
           >
             {acting ? <span className="td-spinner-sm" /> : <i className="bi bi-x-circle" />}
-            Confirm reject
+            Reject
           </button>
         </div>
       </div>

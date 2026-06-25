@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { getDashboardStats } from "../../services/dashboard.js";
 import "../../assets/styles/dashboard.css";
 import {
@@ -32,7 +33,7 @@ const ExpiringSubscriptionCard = ({ subscriptions = [] }) => {
     <div className="rb-card" style={{ height: '100%', boxSizing: 'border-box' }}>
       <div className="rb-card-header">
         <h2 className="rb-card-title">Expiring Subscriptions</h2>
-        <a href="#" className="rb-view-all" onClick={(e) => e.preventDefault()}>View All &rarr;</a>
+        <Link to="/admin/vendors" className="rb-view-all">View All &rarr;</Link>
       </div>
       <div>
         {subscriptions.length === 0 ? (

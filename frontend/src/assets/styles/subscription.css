@@ -428,16 +428,6 @@
     padding: 2rem;
   }
 
-  .sub-plan-management__cards>.plan-card-wrapper {
-    flex: 0 0 260px;
-    min-width: 240px;
-    max-width: 290px;
-  }
-
-  .sub-plan-management__cards {
-    gap: 18px;
-    padding: 8px 4px 24px 4px;
-  }
 }
 
 /* ════════════════════════════════════════════
@@ -449,7 +439,8 @@
   }
 
   .sub-page__title {
-    display: none;
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
   }
 
   .sub-page__stats {
@@ -540,119 +531,6 @@
     height: 34px;
   }
 
-  /* Mobile Plan Management */
-  .sub-plan-tabs {
-    display: flex !important;
-    gap: 8px;
-    margin-bottom: 1rem;
-    overflow-x: auto;
-    overflow-y: hidden;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-    padding: 4px 2px 8px 2px;
-    width: 100%;
-  }
-
-  .sub-plan-tabs::-webkit-scrollbar {
-    display: none;
-  }
-
-  .sub-plan-tab-btn {
-    flex: 0 0 auto;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    height: 40px;
-    border: 1.5px solid #e8e8e8;
-    border-radius: 10px;
-    background: #fff;
-    font-size: 12px;
-    font-weight: 500;
-    color: #555;
-    cursor: pointer;
-    padding: 0 16px;
-    white-space: nowrap;
-    min-width: 80px;
-    transition: all 0.2s ease;
-  }
-
-  .sub-plan-tab-btn--active {
-    background: #1a5c2e;
-    border-color: #1a5c2e;
-    color: #fff;
-  }
-
-  .sub-plan-tab-btn__dot {
-    width: 14px;
-    height: 14px;
-    border-radius: 50%;
-    border: 2px solid currentColor;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-  }
-
-  .sub-plan-tab-btn__dot::after {
-    content: "";
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: currentColor;
-    display: none;
-  }
-
-  .sub-plan-tab-btn--active .sub-plan-tab-btn__dot::after {
-    display: block;
-  }
-
-  .sub-plan-management__header {
-    margin-bottom: 1rem;
-  }
-
-  .sub-edit-plans-btn {
-    font-size: 12px;
-    height: 36px;
-    padding: 0 14px;
-  }
-
-  .sub-plan-management__scroll-wrapper {
-    overflow-x: auto;
-    padding: 4px 0 12px 0;
-  }
-
-  .sub-plan-management__cards {
-    display: flex !important;
-    gap: 16px !important;
-    padding: 0 4px 16px 4px !important;
-    min-width: min-content;
-  }
-
-  .sub-plan-management__cards>.plan-card-wrapper {
-    flex: 0 0 280px !important;
-    min-width: 260px !important;
-    max-width: 300px !important;
-    display: flex;
-    flex-direction: column;
-  }
-
-  .sub-plan-management__cards>.plan-card-wrapper {
-    display: none !important;
-  }
-
-  .sub-plan-management__cards>.plan-card-wrapper.plan-card--visible {
-    display: flex !important;
-  }
-
-  .plan-card--popular-wrapper {
-    transform: none;
-  }
-
-  .sub-plan-management__cards .pricing-card {
-    min-height: 300px;
-    padding: 24px 20px;
-  }
 }
 
 @media (max-width: 480px) {
@@ -676,3 +554,61 @@
     font-size: 12px;
   }
 }
+
+/* ════════════════════════════════════════════
+   GLOBAL PLAN MANAGEMENT STYLES
+   ════════════════════════════════════════════ */
+
+.sub-plan-management {
+  width: 100%;
+}
+
+.sub-plan-management__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.sub-edit-plans-btn {
+  font-size: 14px;
+  height: 40px;
+  padding: 0 18px;
+  background: #fff;
+  color: #22c55e;
+  border: 1.5px solid #22c55e;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.sub-edit-plans-btn:hover {
+  background: #f0fdf4;
+}
+
+.sub-plan-management__scroll-wrapper {
+  overflow: visible;
+  padding: 10px 0 40px;
+}
+
+.sub-plan-management__cards {
+  display: flex !important;
+  gap: 30px !important;
+  justify-content: center;
+  align-items: stretch;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.sub-plan-management__cards > .plan-card-wrapper {
+  flex: 1 1 300px !important;
+  max-width: 340px !important;
+  display: flex !important; /* Override any JS display none */
+  flex-direction: column;
+}
+
+.sub-plan-management__cards .pricing-card {
+  height: 100%;
+}

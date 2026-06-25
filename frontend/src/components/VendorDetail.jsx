@@ -46,6 +46,19 @@ export default function VendorDetail({ vendor, onBack, onVendorSuspended }) {
   const [suspendLoading, setSuspendLoading] = useState(false);
   const [suspendError, setSuspendError] = useState(null);
 
+  // Freeze background scrolling when any popup is open
+  useEffect(() => {
+    if (selectedTurf || previewDoc || showSuspendModal) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'auto';
+    }
+    
+    // Cleanup on unmount
+    return () => {
+      document.body.style.overflow = 'auto';
+    };
+  }, [selectedTurf, previewDoc, showSuspendModal]);
   // Transform vendor prop data into the format needed for display
   useEffect(() => {
     if (vendor) {
@@ -86,7 +99,7 @@ export default function VendorDetail({ vendor, onBack, onVendorSuspended }) {
               pricePerHour: turf.pricePerHour?.basePrice || turf.pricePerHour || turf.price || 0,
               facilities: turf.facilities || turf.amenities || [],
               sports: turf.sports || turf.sportTypes || (turf.sportType ? [turf.sportType] : []),
-              photos: turf.images || turf.photos || [turf.mainImage].filter(Boolean) || [],
+              photos: turf.secondaryImages || turf.images || turf.photos || [turf.mainImage].filter(Boolean) || [],
               verified: (turf.approvalStatus || turf.status || '').toLowerCase() === 'approved',
             },
           };
@@ -434,7 +447,10 @@ export default function VendorDetail({ vendor, onBack, onVendorSuspended }) {
               </div>
               <button
                 className="preview-btn"
-                onClick={() => setPreviewDoc({ title: 'PAN Card', src: DOC_IMAGES.pan })}
+                onClick={() => setPreviewDoc({ 
+                  title: 'PAN Card', 
+                  src: vendor.panCard || vendor.panImage || vendor.kycDocuments?.pan || vendor.documents?.pan || DOC_IMAGES.pan 
+                })}
               >
                 Preview <MdRemoveRedEye size={16} />
               </button>
@@ -446,7 +462,10 @@ export default function VendorDetail({ vendor, onBack, onVendorSuspended }) {
               </div>
               <button
                 className="preview-btn"
-                onClick={() => setPreviewDoc({ title: 'Aadhar Card', src: DOC_IMAGES.aadhar })}
+                onClick={() => setPreviewDoc({ 
+                  title: 'Aadhar Card', 
+                  src: vendor.aadharCard || vendor.aadharImage || vendor.kycDocuments?.aadhar || vendor.documents?.aadhar || DOC_IMAGES.aadhar 
+                })}
               >
                 Preview <MdRemoveRedEye size={16} />
               </button>
@@ -515,7 +534,7 @@ export default function VendorDetail({ vendor, onBack, onVendorSuspended }) {
                 Loading recent bookings...
               </div>
             ) : recentBookings && recentBookings.length > 0 ? (
-              recentBookings.map((booking, index) => {
+              recentBookings.slice(0, 3).map((booking, index) => {
                 const date = new Date(booking.bookingDate).toLocaleDateString('en-IN', {
                   month: 'short',
                   day: 'numeric'

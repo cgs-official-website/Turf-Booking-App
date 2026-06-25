@@ -1,45 +1,111 @@
 .vendor-card {
   background-color: #ffffff;
   border-radius: 12px;
-  /* overflow: hidden; */
   border: 1px solid #e5e5e5;
   transition: all 0.3s ease;
   cursor: pointer;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
 }
 
 .vendor-card:hover {
-  
   transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+/* ── Image wrapper ── */
+.vendor-image-wrapper {
+  position: relative;
+  width: 100%;
+  height: 200px;
+  overflow: hidden;
 }
 
 .vendor-image {
   width: 100%;
-  height: 200px;
+  height: 100%;
   object-fit: cover;
   display: block;
 }
 
+.vendor-logo-overlay {
+  position: absolute;
+  bottom: -20px;
+  right: 16px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: 3px solid #fff;
+  object-fit: cover;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* ── Content ── */
 .vendor-content {
   padding: 20px;
+  padding-top: 10px;
+}
+
+.vendor-id-row {
+  margin-bottom: 4px;
 }
 
 .vendor-id {
   font-size: 12px;
   color: #1db854;
-  font-weight: 500;
-  margin-bottom: 8px;
+  font-weight: 600;
   letter-spacing: 0.5px;
+}
+
+/* ── Name + badge row ── */
+.vendor-name-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 10px;
 }
 
 .vendor-name {
   font-size: 18px;
   font-weight: 600;
   color: #333333;
-  margin: 0 0 12px 0;
+  margin: 0;
   line-height: 1.3;
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
+/* ── Subscription badge ── */
+.subscription-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+  flex-shrink: 0;
+  letter-spacing: 0.2px;
+}
+
+.subscription-badge--active {
+  background: #dcfce7;
+  color: #15803d;
+  border: 1px solid #bbf7d0;
+}
+
+.subscription-badge--expired {
+  background: #f3f4f6;
+  color: #6b7280;
+  border: 1px solid #e5e7eb;
+}
+
+/* ── Email ── */
 .vendor-email {
   font-size: 14px;
   color: #666666;
@@ -53,6 +119,7 @@
   color: #999999;
 }
 
+/* ── Button ── */
 .view-details-btn {
   width: 100%;
   padding: 12px 16px;
