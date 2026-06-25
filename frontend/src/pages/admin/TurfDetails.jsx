@@ -387,7 +387,11 @@ export default function TurfDetails() {
       const ic = infoColRef.current;
       const pc = photoCardRef.current;
       if (!ic || !pc) return;
-      pc.style.height = ic.offsetHeight + "px";
+      if (window.innerWidth <= 768) {
+        pc.style.height = "auto";
+      } else {
+        pc.style.height = ic.offsetHeight + "px";
+      }
     }
     sync();
     const ro = new ResizeObserver(sync);
@@ -395,6 +399,18 @@ export default function TurfDetails() {
     if (photoCardRef.current) ro.observe(photoCardRef.current);
     return () => ro.disconnect();
   }, [turf]);
+
+  // ── Body Scroll Lock for Preview Modal ────────────────────────────────────
+  useEffect(() => {
+    if (previewImage) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [previewImage]);
 
   // ── Checklist ─────────────────────────────────────────────────────────────
   function toggleCheck(i) {
@@ -684,6 +700,8 @@ export default function TurfDetails() {
                     className="td-photo" 
                     onClick={() => setPreviewImage(src)}
                     style={{ cursor: "pointer" }}
+                    role="button"
+                    tabIndex={0}
                   />
                 ))
               : Array.from({ length: 4 }).map((_, i) => (
@@ -839,17 +857,19 @@ export default function TurfDetails() {
         <div 
           style={{
             position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
-            background: 'rgba(0,0,0,0.85)', zIndex: 9999,
+            background: 'rgba(0,0,0,0.3)', backdropFilter: 'blur(8px)', zIndex: 9999,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             cursor: 'pointer'
           }}
           onClick={() => setPreviewImage(null)}
         >
-          <img 
-            src={previewImage} 
-            alt="Preview" 
-            style={{ maxWidth: '90vw', maxHeight: '90vh', objectFit: 'contain', borderRadius: '8px' }} 
-          />
+          <div style={{ width: '90vw', height: 'auto', aspectRatio: '4/3', maxWidth: '800px', maxHeight: '80vh', position: 'relative' }}>
+            <img 
+              src={previewImage} 
+              alt="Preview" 
+              style={{ width: '100%', height: '100%', objectFit: 'contain', borderRadius: '8px' }} 
+            />
+          </div>
         </div>
       )}
     </div>

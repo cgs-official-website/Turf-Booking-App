@@ -603,6 +603,22 @@
   .td-main-grid      { grid-template-columns: 1fr; }
   .td-info-grid      { grid-template-columns: 1fr; }
   .td-category-grid  { grid-template-columns: 1fr; }
+  
+  .td-photos-grid {
+    grid-template-rows: auto auto !important;
+    min-height: auto !important;
+  }
+  .td-photos-grid > * {
+    height: auto !important;
+    min-height: auto !important;
+  }
+  .td-photo, .td-photo--empty {
+    aspect-ratio: 4/3 !important;
+    height: auto !important;
+    object-fit: cover !important;
+    pointer-events: auto !important;
+  }
+  
   .td-hero-card      { flex-direction: column; align-items: flex-start; }
   
   .td-hero-actions {

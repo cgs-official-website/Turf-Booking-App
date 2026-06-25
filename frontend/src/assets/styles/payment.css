@@ -359,50 +359,81 @@
 }
 
 /* ── Responsive ── */
-@media (max-width: 1024px) {
-  .pay-stat-grid { grid-template-columns: repeat(2, 1fr); }
-}
-@media (max-width: 992px) {
-  .pay-stat-grid { grid-template-columns: repeat(2, 1fr); }
-}
-@media (max-width: 600px) {
-  .pay-stat-grid { grid-template-columns: repeat(2, 1fr); }
-  .pay-page { padding: 16px 16px 32px; }
-  .pay-page-title { font-size: 1.5rem; }
-}
-@media (max-width: 768px) { 
-  .pay-stat-card__value {
-    font-size: 20px;
+@media screen and (max-width: 1024px) {
+  .pay-stat-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+  }
+  .pay-stat-card {
+    padding: 16px;
   }
   .pay-stat-card__label {
     font-size: 11px;
-  }
-  .pay-stat-card__icon {
-    width: 42px;
-    height: 42px;
-    font-size: 20px;
-  }
-}
-
-/* -- Mobile Table Optimizations -- */
-.pay-table td, .pay-table th { white-space: nowrap; }
-@media (max-width: 768px) {
-  .pay-table td { font-size: 11.5px; padding: 10px 12px; }
-  .pay-table th { font-size: 10px; padding: 10px 12px; }
-  .pay-table, .pay-toolbar { min-width: 800px; }
-  .pay-search-box { flex: none; width: 180px; }
-}
-
-/* -- 1024px Card 2x2 Grid + Text Fixes -- */
-@media (max-width: 1024px) {
-  .pay-stat-grid { grid-template-columns: repeat(2, 1fr); }
-  .pay-stat-card__label, .pay-stat-card__value { 
+    margin-bottom: 6px;
     white-space: nowrap; 
     overflow: hidden; 
     text-overflow: ellipsis; 
   }
+  .pay-stat-card__value {
+    font-size: 24px;
+    line-height: 1;
+    white-space: nowrap; 
+    overflow: hidden; 
+    text-overflow: ellipsis; 
+  }
+  .pay-stat-card__growth {
+    font-size: 11px;
+    margin-top: 6px;
+  }
+  .pay-stat-card__icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    font-size: 20px;
+  }
 }
 
-@media (max-width: 425px) {
-  .pay-stat-grid { grid-template-columns: repeat(2, 1fr); }
+@media screen and (max-width: 768px) {
+  .pay-stat-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+  }
+  .pay-stat-card {
+    padding: 14px;
+  }
+  .pay-stat-card__label {
+    font-size: 10px;
+    margin-bottom: 6px;
+  }
+  .pay-stat-card__value {
+    font-size: 20px;
+    line-height: 1;
+  }
+  .pay-stat-card__growth {
+    font-size: 10px;
+    margin-top: 6px;
+  }
+  .pay-stat-card__icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    font-size: 18px;
+  }
+
+  /* -- Mobile Table Optimizations -- */
+  .pay-table td { font-size: 11.5px; padding: 10px 12px; }
+  .pay-table th { font-size: 10px; padding: 10px 12px; }
+  .pay-table, .pay-toolbar { min-width: 800px; }
 }
+
+@media screen and (max-width: 600px) {
+  .pay-page { padding: 16px 16px 32px; }
+  .pay-page-title { font-size: 1.5rem; }
+}
+
+@media screen and (max-width: 425px) {
+  .pay-stat-grid { grid-template-columns: repeat(2, 1fr); }
+  .pay-stat-card { height: auto; min-height: 80px; }
+}
+
+.pay-table td, .pay-table th { white-space: nowrap; }

@@ -113,9 +113,9 @@
   color: #16a34a;
 }
 
-.turf-card__status--inactive {
-  background: #f5e1e1;
-  color: #8b1a1a;
+.turf-card__status--expired {
+  background: #f1f5f9;
+  color: #64748b;
 }
 
 /* Title */

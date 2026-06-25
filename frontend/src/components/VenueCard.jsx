@@ -1,5 +1,5 @@
 import { useState } from "react";
-import '../assets/styles/Card.css';
+import '../assets/styles/VenueCard.css';
 
 export default function VenueCard({
   name = "Qube Sportz Arena",
@@ -11,6 +11,7 @@ export default function VenueCard({
   sports = ["Football", "Cricket", "Badminton", "Volleyball"],
   photoCount = 4,
   verified = true,
+  photos = [],
 }) {
   const facilityIcons = {
     Floodlights: "💡",
@@ -26,8 +27,6 @@ export default function VenueCard({
     Badminton: "🏸",
     Volleyball: "🏐",
   };
-
-  const photoBgs = ["vc-bg1", "vc-bg2", "vc-bg3", "vc-bg4"];
 
   return (
     <div className="vc-card">
@@ -68,24 +67,35 @@ export default function VenueCard({
 
       <div className="vc-section-title">Sports</div>
       <div className="vc-tags-row">
-        {sports.map((s) => (
-          <span key={s} className="vc-tag vc-tag-outline">
+        {sports.map((s, idx) => (
+          <span key={`${s}-${idx}`} className="vc-tag vc-tag-outline">
             {sportIcons[s] ?? "🎯"} {s}
           </span>
         ))}
       </div>
 
-      <div className="vc-divider" />
-
-      <div className="vc-photos-header">
-        <div className="vc-photos-label">🖼 Uploaded Photos</div>
-        <div className="vc-photos-count">{photoCount} Images Provided</div>
-      </div>
-      <div className="vc-photos-grid">
-        {Array.from({ length: photoCount }).map((_, i) => (
-          <div key={i} className={`vc-photo-cell ${photoBgs[i % photoBgs.length]}`} />
-        ))}
-      </div>
+      {photos && photos.length > 0 && (
+        <>
+          <div className="vc-divider" />
+          <div className="vc-photos-header">
+            <div className="vc-photos-label">🖼 Uploaded Photos</div>
+            <div className="vc-photos-count">{photos.length} Images Provided</div>
+          </div>
+          <div className="vc-photos-grid">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} className={`vc-photo-cell ${!photos[i] ? `vc-bg${(i % 4) + 1}` : ''}`}>
+                {photos[i] ? (
+                  <img src={photos[i]} alt={`Venue photo ${i+1}`} />
+                ) : (
+                  <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'rgba(255,255,255,0.3)' }}>
+                    <span style={{ fontSize: '24px' }}>📷</span>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </>
+      )}
     </div>
   );
 }

@@ -18,42 +18,35 @@ export default function TurfCard({
   totalReviews,
   
   // Display fields
-  turfId = _id || "N/A",
-  status = approvalStatus || "pending",
+  turfId = _id ? `ERD-${_id.slice(-4).toUpperCase()}` : "N/A",
+  status = isAvailable ? "Active" : "Inactive",
   title = name || "Turf",
   price = pricePerHour?.basePrice || 0,
   startDate = "N/A",
   endDate = "N/A",
   locationDisplay = typeof location === 'string' ? location : address?.city || "N/A",
   planDuration = "N/A",
+  daysLeft = null,
   turfImage = mainImage || null,
   logoImage = null,
 }) {
   const displayStatus = status.charAt(0).toUpperCase() + status.slice(1);
+  const statusLabel = status === 'Active' && daysLeft !== null ? `${displayStatus} (${daysLeft} Days Left)` : displayStatus;
   const formattedPrice = price ? price.toLocaleString("en-IN") : "0";
+
+  const defaultTurf = "https://images.unsplash.com/photo-1589487391730-58f20eb2c308?auto=format&fit=crop&w=800&q=80"; // A nice sports turf
+  const defaultLogo = "https://ui-avatars.com/api/?name=Ace+TURF&background=ffffff&color=10B981&bold=true&size=128";
 
   return (
     <div className="turf-card">
 
       {/* Image Section */}
       <div className="turf-card__image-wrapper">
-        {turfImage ? (
-          <img src={turfImage} alt={title} className="turf-card__image" />
-        ) : (
-          <div className="turf-card__image-placeholder">
-            <HiOutlinePhotograph className="turf-card__image-placeholder-icon" />
-          </div>
-        )}
+        <img src={turfImage || defaultTurf} alt={title} className="turf-card__image" />
 
         {/* Logo Circle */}
         <div className="turf-card__logo-circle">
-          {logoImage ? (
-            <img src={logoImage} alt={`${title} logo`} className="turf-card__logo-img" />
-          ) : (
-            <div className="turf-card__logo-placeholder">
-              <HiOutlineOfficeBuilding className="turf-card__logo-placeholder-icon" />
-            </div>
-          )}
+          <img src={logoImage || defaultLogo} alt={`${title} logo`} className="turf-card__logo-img" />
         </div>
       </div>
 
@@ -62,7 +55,7 @@ export default function TurfCard({
         <div className="turf-card__meta-row">
           <span className="turf-card__turf-id">Turf ID : {turfId}</span>
           <span className={`turf-card__status turf-card__status--${status.toLowerCase()}`}>
-            {displayStatus}
+            {statusLabel}
           </span>
         </div>
 
@@ -70,7 +63,7 @@ export default function TurfCard({
 
         <p className="turf-card__price">
           ₹ {formattedPrice}
-          <span className="turf-card__price-unit"> / hr</span>
+          <span className="turf-card__price-unit"> / hrs</span>
         </p>
 
         {averageRating > 0 && (
@@ -80,7 +73,7 @@ export default function TurfCard({
         )}
 
         <p className="turf-card__dates">
-          {startDate !== "N/A" ? `Start: ${startDate} — End: ${endDate}` : 'Available now'}
+          {startDate !== "N/A" ? `Start : ${startDate} — End : ${endDate}` : 'Available now'}
         </p>
 
         <div className="turf-card__footer">
