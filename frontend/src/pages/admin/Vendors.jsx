@@ -10,14 +10,6 @@ import { getSubscriptionStats } from "../../services/subscription.service";
 import "../../assets/styles/Vendors.css";
 import "../../assets/styles/Subscription.css";
 
-const LOCATION_OPTIONS = [
-  "Location",
-  "Erode",
-  "Coimbatore",
-  "Chennai",
-  "Bangalore",
-];
-
 const STATUS_OPTIONS = ["Status", "Active", "Expired"];
 
 // ─────────────────────────────────────────────
@@ -29,7 +21,6 @@ export default function Vendors() {
   const [vendors, setVendors] = useState([]);
   const [filteredVendors, setFilteredVendors] = useState([]);
   const [search, setSearch] = useState("");
-  const [location, setLocation] = useState("Location");
   const [status, setStatus] = useState("Status");
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
@@ -80,7 +71,7 @@ export default function Vendors() {
 
           return {
             id: index + 1,
-            vendorId: `VND ID : ERD-${(vendor._id || "").slice(-4).toUpperCase()}`,
+            vendorId: `VND ID : VND-${(vendor._id || "").slice(-4).toUpperCase()}`,
             name: vendor.vendorName,
             email: vendor.email,
             phone: vendor.phone,
@@ -88,7 +79,7 @@ export default function Vendors() {
             image:
               vendor.turfs?.[0]?.mainImage ||
               "https://images.unsplash.com/photo-1516399653135-68efc5e5cf13?w=600&h=400&fit=crop",
-            logoImage: vendor.turfs?.[0]?.logoImage || null,
+            logoImage: vendor.turfs?.[0]?.logoImage || `https://ui-avatars.com/api/?name=${encodeURIComponent(vendor.vendorName || "Vendor")}&background=dcfce7&color=15803d`,
             subscriptionStatus,
             daysLeft,
             // Store additional vendor data for detail view
@@ -133,16 +124,15 @@ export default function Vendors() {
       const matchSearch = v.name
         .toLowerCase()
         .includes(search.toLowerCase().trim());
-      const matchLocation = location === "Location" || v.location === location;
       const matchStatus =
         status === "Status" ||
         (status === "Active" && v.subscriptionStatus === "active") ||
         (status === "Expired" && v.subscriptionStatus === "expired");
-      return matchSearch && matchLocation && matchStatus;
+      return matchSearch && matchStatus;
     });
     setFilteredVendors(filtered);
     setPage(1);
-  }, [vendors, search, location, status]);
+  }, [vendors, search, status]);
 
   // ── Handle Card Click ──
   const handleCardClick = (vendor) => {
@@ -173,7 +163,6 @@ export default function Vendors() {
   // ── Reset Filters ──
   const resetFilters = () => {
     setSearch("");
-    setLocation("Location");
     setStatus("Status");
     setPage(1);
   };
@@ -242,18 +231,6 @@ export default function Vendors() {
           className="location-filter"
         >
           {STATUS_OPTIONS.map((o) => (
-            <option key={o}>{o}</option>
-          ))}
-        </select>
-        <select
-          value={location}
-          onChange={(e) => {
-            setLocation(e.target.value);
-            setPage(1);
-          }}
-          className="location-filter"
-        >
-          {LOCATION_OPTIONS.map((o) => (
             <option key={o}>{o}</option>
           ))}
         </select>
