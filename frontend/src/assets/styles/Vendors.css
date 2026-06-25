@@ -263,14 +263,16 @@
    =========================== */
 
 @media (max-width: 1024px) {
-  .vendor-management-container {
+  /* .vendor-management-container {
     padding: 20px 24px;
-  }
+  } */
 
-  .page-title {
-    font-size: 24px;
-    margin-bottom: 20px;
-    display: block; /* Keep visible on desktop/tablet up to 1024px */
+  .page-title {    
+   font-size: 2rem;
+    font-weight: 600;
+    color: #111111;
+    letter-spacing: -0.3px;
+    margin: 0 0 24px;
   }
 
   .filters-section {
@@ -332,9 +334,7 @@
    =========================== */
 
 @media (max-width: 900px) {
-  .page-title {
-    display: none !important; /* HIDE title on tablet and mobile */
-  }
+  
 
   .filters-section {
     flex-wrap: wrap;
@@ -374,11 +374,6 @@
   .vendor-management-container {
     padding: 16px;
     /* overflow-x: hidden; */
-  }
-
-  /* Title is hidden from above */
-  .page-title {
-    display: none !important;
   }
 
   .filters-section {
@@ -478,12 +473,12 @@
 
 @media (max-width: 480px) {
   .vendor-management-container {
-    padding: 12px;
+    padding: 28px 28px 40px;
   }
 
-  .page-title {
+  /* .page-title {
     display: none !important;
-  }
+  } */
 
   .search-input {
     font-size: 15px;
