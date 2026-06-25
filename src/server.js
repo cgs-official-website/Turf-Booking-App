@@ -13,7 +13,7 @@ const authRoutes = require("./routes/auth.routes");
 const userRoutes = require("./routes/user.routes");
 const turfRoutes = require("./routes/turf.routes");
 const bookingRoutes = require("./routes/booking.routes");
- const routes = require("./routes");
+const routes = require("./routes");
 const adminRoutes = require("./routes/admin.routes");
 const notificationRoutes = require("./routes/notification.routes");
 const subscriptionRoutes = require("./routes/subscription.routes"); // ← ADD THIS
@@ -56,7 +56,11 @@ app.use((err, req, res, next) => {
 // MongoDB connection
 mongoose
   .connect(process.env.MONGODB_URI || "mongodb://localhost:27017/turf_booking")
-  .then(() => console.log("MongoDB Connected"))
+  .then(() => {
+    console.log("MongoDB Connected");
+    const { startSubscriptionCron } = require("./utils/subscriptionScheduler");
+    startSubscriptionCron();
+  })
   .catch((err) => console.error("MongoDB connection error:", err));
 
 const PORT = process.env.PORT || 5000;

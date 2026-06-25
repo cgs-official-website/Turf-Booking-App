@@ -74,6 +74,18 @@ const createBooking = async ({ userId, turfId, startDateTime, endDateTime }) => 
     paymentStatus: "pending",
   });
 
+  try {
+    const { createNotification } = require("./notification.service");
+    await createNotification({
+      userId: turf.owner,
+      title: "New Booking",
+      message: `You received a new booking for "${turf.name}".`,
+      type: "booking_received",
+    });
+  } catch (err) {
+    console.error("Failed to create booking_received notification:", err);
+  }
+
   return {
     message: "Booking request submitted successfully",
     booking: {

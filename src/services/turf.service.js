@@ -199,7 +199,31 @@ const deleteTurf = async (turfId, requesterId, requesterRole) => {
     throw new ApiError(403, "Not authorised to delete this turf");
   }
 
+  const User = require("../models/User");
+  const Admin = require("../models/Admin");
+  const { createNotification } = require("./notification.service");
+
+  const vendor = await User.findById(turf.owner);
+  const vendorName = vendor ? vendor.name : "Unknown Vendor";
+
   await turf.deleteOne();
+
+  try {
+    const admin = await Admin.findOne({});
+    if (admin) {
+      await createNotification({
+        userId: admin._id,
+        title: "Turf Deleted",
+        message: `Vendor "${vendorName}" deleted turf "${turf.name}".`,
+        type: "turf_deleted",
+        vendorId: turf.owner,
+        turfId: turf._id,
+      });
+    }
+  } catch (notifErr) {
+    console.error("Failed to create Turf Deleted notification:", notifErr);
+  }
+
   return { message: "Turf deleted successfully" };
 };
 

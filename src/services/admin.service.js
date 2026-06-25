@@ -544,8 +544,8 @@ const suspendVendor = async (vendorId) => {
     }
 
     const isTransactionError = error.message?.includes("Transaction numbers are only allowed") ||
-                               error.codeName === "TransactionSystemFailed" ||
-                               error.message?.includes("replica set");
+      error.codeName === "TransactionSystemFailed" ||
+      error.message?.includes("replica set");
 
     if (isTransactionError) {
       useTransaction = false;

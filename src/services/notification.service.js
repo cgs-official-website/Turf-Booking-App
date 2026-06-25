@@ -10,11 +10,6 @@ const createNotification = async ({ userId, title, message, type }) => {
 };
 
 const getMyNotifications = async (userId) => {
-  console.log("Fetching notifications for userId:", userId);
-
-  const all = await Notification.find({});
-  console.log("All notifications in DB:", all);
-
   return await Notification.find({ user: userId }).sort({ createdAt: -1 });
 };
 

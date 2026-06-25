@@ -1,6 +1,6 @@
 // services/report.service.js
-const Report   = require("../models/Report");
-const Turf     = require("../models/Turf");
+const Report = require("../models/Report");
+const Turf = require("../models/Turf");
 const ApiError = require("../utils/ApiError");
 const mongoose = require("mongoose");
 
@@ -26,11 +26,33 @@ const createReport = async ({ vendorId, turfId, category, description }) => {
 
   const report = await Report.create({
     vendor: vendorId,
-    turf:   turfId,
+    turf: turfId,
     category,
     description,
     status: "pending",
   });
+
+  try {
+    const User = require("../models/User");
+    const Admin = require("../models/Admin");
+    const { createNotification } = require("./notification.service");
+    
+    const vendor = await User.findById(vendorId);
+    const vendorName = vendor ? vendor.name : "Unknown Vendor";
+    const admin = await Admin.findOne({});
+    if (admin) {
+      await createNotification({
+        userId: admin._id,
+        title: "New Vendor Report",
+        message: `Vendor "${vendorName}" submitted a report.`,
+        type: "vendor_report",
+        vendorId,
+        reportId: report._id,
+      });
+    }
+  } catch (notifErr) {
+    console.error("Failed to create vendor report notification:", notifErr);
+  }
 
   return { message: "Report submitted successfully", report };
 };
@@ -41,7 +63,7 @@ const createReport = async ({ vendorId, turfId, category, description }) => {
 const getAllReportsAdmin = async () => {
   return await Report.find({})
     .populate("vendor", "name email phone")
-    .populate("turf",   "name location mainImage")
+    .populate("turf", "name location mainImage")
     .select("-__v")
     .sort({ createdAt: -1 });
 };
@@ -54,7 +76,7 @@ const getReportById = async (reportId) => {
 
   const report = await Report.findById(reportId)
     .populate("vendor", "name email phone")
-    .populate("turf",   "name location mainImage");
+    .populate("turf", "name location mainImage");
 
   if (!report) throw new ApiError(404, "Report not found");
   return report;
@@ -83,7 +105,7 @@ const resolveReport = async (reportId, { resolveNote, status = "solved" }) => {
   }
 
   report.resolveNote = resolveNote;
-  report.status      = status;
+  report.status = status;
   if (status === "solved") report.resolvedAt = new Date();
 
   await report.save();
