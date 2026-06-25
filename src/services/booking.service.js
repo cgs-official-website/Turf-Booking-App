@@ -185,7 +185,7 @@ const confirmBooking = async (bookingId, vendorId, userRole) => {
 // ─────────────────────────────────────────────
 // REJECT booking
 // ─────────────────────────────────────────────
-const rejectBooking = async (bookingId, vendorId, userRole) => {
+const rejectBooking = async (bookingId, vendorId, userRole, reason) => {
   const booking = await Booking.findById(bookingId).populate("turf");
   if (!booking) throw new ApiError(404, "Booking not found");
 
@@ -203,7 +203,7 @@ const rejectBooking = async (bookingId, vendorId, userRole) => {
   await Notification.create({
     user:    booking.user,
     title:   "Booking Rejected",
-    message: "Your booking has been rejected by vendor",
+    message: reason ? `Your booking has been rejected by vendor. Reason: ${reason}` : "Your booking has been rejected by vendor",
     type:    "BOOKING_REJECTED",
   });
 

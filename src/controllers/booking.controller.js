@@ -100,6 +100,7 @@ const rejectBooking = async (req, res, next) => {
       req.params.id,
       req.user.id,
       req.user.role,
+      req.body.reason || req.body.rejectionReason,
     );
     return res.status(200).json({ success: true, ...result });
   } catch (err) {

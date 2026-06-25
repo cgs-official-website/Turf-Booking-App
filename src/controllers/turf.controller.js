@@ -80,7 +80,7 @@ const approveTurf = async (req, res, next) => {
 // Reject Turf (Admin)
 const rejectTurf = async (req, res, next) => {
   try {
-    const result = await turfService.rejectTurf(req.params.id);
+    const result = await turfService.rejectTurf(req.params.id, req.body.reason || req.body.rejectionReason);
 
     return res
       .status(200)

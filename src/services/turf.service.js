@@ -35,6 +35,29 @@ const addTurf = async ({
     approvalStatus: "pending",
   });
 
+  try {
+    const User = require("../models/User");
+    const Admin = require("../models/Admin");
+    const { createNotification } = require("./notification.service");
+    
+    const vendor = await User.findById(ownerId);
+    const vendorName = vendor ? vendor.name : "Unknown Vendor";
+    
+    const admin = await Admin.findOne({});
+    if (admin) {
+      await createNotification({
+        userId: admin._id,
+        title: "New Turf Submission",
+        message: `Vendor "${vendorName}" submitted a new turf "${turf.name}" for approval.`,
+        type: "turf_submitted",
+        vendorId: ownerId,
+        turfId: turf._id,
+      });
+    }
+  } catch (notifErr) {
+    console.error("Failed to create turf_submitted notification:", notifErr);
+  }
+
   return { message: "Turf created successfully and waiting for admin approval", turf };
 };
 
@@ -141,7 +164,7 @@ const approveTurf = async (turfId) => {
 // ─────────────────────────────────────────────
 // REJECT turf
 // ─────────────────────────────────────────────
-const rejectTurf = async (turfId) => {
+const rejectTurf = async (turfId, reason) => {
   assertObjectId(turfId, "turf ID");
   const turf = await Turf.findById(turfId);
   if (!turf) throw new ApiError(404, "Turf not found");
@@ -153,7 +176,7 @@ const rejectTurf = async (turfId) => {
   await Notification.create({
     user: turf.owner,
     title: "Turf Rejected",
-    message: `${turf.name} has been rejected by admin`,
+    message: reason ? `${turf.name} has been rejected by admin. Reason: ${reason}` : `${turf.name} has been rejected by admin`,
     type: "TURF_REJECTED",
   });
 

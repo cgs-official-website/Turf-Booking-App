@@ -23,6 +23,7 @@ const notificationSchema = new mongoose.Schema(
         "BOOKING_APPROVED",
         "BOOKING_REJECTED",
         "turf_deleted",
+        "turf_submitted",
         "subscription_expiring",
         "subscription_expired",
         "subscription_upgraded",
