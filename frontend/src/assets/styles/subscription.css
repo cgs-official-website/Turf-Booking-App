@@ -329,20 +329,17 @@
   background: #f0fdf4;
 }
 
-/* Hidden on desktop — only shown on tablet via tab bar (currently unused on desktop) */
 .sub-edit-plans-btn--tab-inline {
   display: none;
   margin-left: auto;
 }
 
-/* Mobile-only edit plans row — hidden by default, shown on mobile */
 .sub-plan-management__mobile-edit {
   display: none;
 }
 
 /* ══════════════════════════════════════════════
    PLAN WINDOWED LAYOUT (DESKTOP)
-   arrow | 3-card grid | arrow
    ══════════════════════════════════════════════ */
 
 .sub-plan-management__windowed {
@@ -350,12 +347,10 @@
   align-items: center;
   gap: 16px;
   width: 100%;
-  /* Prevent the card grid from spilling outside the page */
   overflow: hidden;
   box-sizing: border-box;
 }
 
-/* Prev / Next circle arrow buttons */
 .sub-plan-nav-btn {
   flex-shrink: 0;
   width: 44px;
@@ -385,10 +380,9 @@
   cursor: not-allowed;
 }
 
-/* 3-column equal grid between the arrows */
 .sub-plan-management__cards-grid {
   flex: 1;
-  min-width: 0; /* prevents grid from overflowing its flex container */
+  min-width: 0;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 24px;
@@ -401,7 +395,6 @@
   flex-direction: column;
 }
 
-/* Most-popular card — subtle scale */
 .sub-plan-management__cards-grid .plan-card--popular-wrapper {
   transform: scale(1.05);
   transform-origin: center top;
@@ -416,9 +409,8 @@
   flex-direction: column;
 }
 
-/* ── Mobile-only full plan list (all plans rendered, active one shown) ── */
 .sub-plan-management__mobile-cards {
-  display: none; /* hidden on desktop/tablet — windowed view handles those */
+  display: none;
 }
 
 /* ── Page dots ── */
@@ -455,9 +447,9 @@
    TABLET (641px – 1024px)
    ════════════════════════════════════════════ */
 @media (min-width: 641px) and (max-width: 1024px) {
-  .sub-page {
+  /* .sub-page {
     padding: 16px 20px 32px;
-  }
+  } */
 
   .sub-page__stats {
     grid-template-columns: repeat(4, 1fr);
@@ -478,8 +470,45 @@
     padding: 2rem;
   }
 
-  /* On tablet, hide the tab-inline button and show the header button below tabs
-     (same position as desktop — right-aligned row below the tab bar) */
+  /* ── FIX: tablet filters scroll horizontally like mobile ── */
+  .sub-page__filters {
+    flex-wrap: nowrap;
+    gap: 8px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding: 4px 2px 12px 2px;
+  }
+
+  .sub-page__filters::-webkit-scrollbar {
+    display: none;
+  }
+
+  .sub-search {
+    flex: 0 0 200px;
+    min-width: 160px;
+    max-width: none;
+    height: 40px;
+    padding: 0 12px;
+  }
+
+  .sub-select {
+    flex: 0 0 130px;
+    min-width: 120px;
+    width: auto;
+    height: 40px;
+    font-size: 12px;
+    padding: 0 10px;
+  }
+
+  .sub-reset-btn {
+    height: 40px;
+    font-size: 12px;
+    padding: 0 14px;
+    flex-shrink: 0;
+  }
+
   .sub-edit-plans-btn--tab-inline {
     display: none;
   }
@@ -494,7 +523,6 @@
     display: none;
   }
 
-  /* Smaller arrow buttons to save space */
   .sub-plan-nav-btn {
     width: 32px;
     height: 32px;
@@ -502,7 +530,6 @@
     flex-shrink: 0;
   }
 
-  /* Tighter gap between cards on tablet, cards respect container width */
   .sub-plan-management__windowed {
     gap: 8px;
     overflow: hidden;
@@ -514,13 +541,11 @@
     min-width: 0;
   }
 
-  /* Smaller min-height so cards don't overflow on tablet */
   .sub-plan-management__cards-grid .pricing-card {
     min-height: 320px;
     font-size: 13px;
   }
 
-  /* Remove the popular-card scale on tablet — not enough room */
   .sub-plan-management__cards-grid .plan-card--popular-wrapper {
     transform: none;
   }
@@ -531,12 +556,12 @@
    ════════════════════════════════════════════ */
 @media (max-width: 640px) {
   .sub-page {
-    padding: 0 8px;
+    padding: 30px;
   }
-
+/* 
   .sub-page__title {
     display: none;
-  }
+  } */
 
   .sub-page__stats {
     grid-template-columns: repeat(2, 1fr);
@@ -598,13 +623,10 @@
     padding-bottom: 10px;
   }
 
-  /* On mobile the tab-inline button is hidden — the tab bar has no room.
-     Instead the dedicated mobile-edit row (below) shows the button. */
   .sub-edit-plans-btn--tab-inline {
     display: none;
   }
 
-  /* Show the dedicated mobile edit row above plan pills */
   .sub-plan-management__mobile-edit {
     display: flex;
     justify-content: flex-end;
@@ -641,24 +663,20 @@
 
   /* ── Mobile Plan Management ── */
 
-  /* Force hide the desktop windowed layout completely */
   .sub-plan-management__windowed {
     display: none !important;
   }
 
-  /* Show the mobile-only card container, full width */
   .sub-plan-management__mobile-cards {
     display: block;
     width: 100%;
     box-sizing: border-box;
   }
 
-  /* Hide every card by default */
   .sub-plan-management__mobile-cards .plan-card-wrapper {
     display: none;
   }
 
-  /* Show only the active card — full width, column direction */
   .sub-plan-management__mobile-cards .plan-card-wrapper.plan-card--visible {
     display: flex;
     flex-direction: column;
@@ -666,13 +684,11 @@
     box-sizing: border-box;
   }
 
-  /* Remove popular-card scale and position on mobile */
   .sub-plan-management__mobile-cards .plan-card--popular-wrapper {
     transform: none !important;
     position: static;
   }
 
-  /* Force pricing card to fill full width on mobile — overrides max-width: 320px in PricingCard.css */
   .sub-plan-management__mobile-cards .pricing-card {
     width: 100%;
     max-width: 100% !important;
@@ -682,7 +698,6 @@
     flex: 1;
   }
 
-  /* Show the mobile plan selector tabs */
   .sub-plan-tabs {
     display: flex !important;
     gap: 8px;
@@ -759,7 +774,6 @@
     padding: 0 14px;
   }
 
-  /* Hide page dots on mobile — tabs serve the same purpose */
   .sub-plan-page-dots {
     display: none;
   }

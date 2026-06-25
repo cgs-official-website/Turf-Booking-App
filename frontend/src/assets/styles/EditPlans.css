@@ -1,6 +1,7 @@
 
 /* EditPlans.css */
 
+
 .ep-container {
   padding: 24px 32px;
   background: #f7f8fa;
@@ -813,11 +814,11 @@
 
 /* ── Tablet (≤ 768px) ── */
 
-
-
 /* ════════════════════════════════════════════
    MOBILE (≤ 768px)
    ════════════════════════════════════════════ */
+
+
 
 @media (max-width: 768px) {
   /* Hide desktop elements */

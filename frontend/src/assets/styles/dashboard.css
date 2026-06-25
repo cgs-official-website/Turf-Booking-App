@@ -165,10 +165,14 @@ body,
   border-radius: 14px;
   padding: 32px;
   margin-bottom: 32px;
-  /* overflow: hidden; */
+  overflow-x: auto;
   display: flex;
   flex-direction: column;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+}
+
+.revenue-section > * {
+  min-width: 700px;
 }
 
 .revenue-header {

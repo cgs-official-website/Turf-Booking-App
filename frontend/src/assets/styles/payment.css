@@ -29,8 +29,8 @@
   border-radius: 14px;
   padding: 18px 20px;
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  gap: 16px;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
 }
 
@@ -52,31 +52,35 @@
 .pay-stat-card__info { flex: 1; }
 
 .pay-stat-card__label {
-  font-size: 12px;
-  font-weight: 600;
+  margin: 0 0 6px 0;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: normal;
   color: #6b7280;
-  margin: 0 0 4px;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
 }
 
 .pay-stat-card__value {
-  font-size: 26px;
+  margin: 0;
+  font-size: 30px;
   font-weight: 700;
-  color: #111827;
-  margin: 0 0 4px;
-  line-height: 1.2;
+  line-height: 1;
+  color: #111111;
 }
 
 .pay-stat-card__growth {
-  font-size: 11px;
-  font-weight: 500;
-  color: #9ca3af;
-  margin: 0;
+  margin-top: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.2;
+  color: #10B981;
   display: flex;
   align-items: center;
   gap: 4px;
 }
 .pay-stat-card__growth.up   { color: #10b981; }
-.pay-stat-card__growth.down { color: #ef4444; }
+.pay-stat-card__growth.down { color: #e11d48; }
 
 /* ── List Container ── */
 .pay-list-container {
@@ -88,16 +92,15 @@
   padding-bottom: 20px;
   width: 100%;
   max-width: 100%;
-  overflow-x: hidden;
+  overflow-x: auto;
 }
 
-/* ── Toolbar ── */
 .pay-toolbar {
   display: flex;
   align-items: center;
   gap: 12px;
   margin-bottom: 16px;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   padding: 0 20px;
 }
 
@@ -173,7 +176,6 @@
 /* ── Table ── */
 .pay-table-wrap {
   width: 100%;
-  overflow-x: auto;
 }
 
 .pay-table {
@@ -387,6 +389,8 @@
 @media (max-width: 768px) {
   .pay-table td { font-size: 11.5px; padding: 10px 12px; }
   .pay-table th { font-size: 10px; padding: 10px 12px; }
+  .pay-table, .pay-toolbar { min-width: 800px; }
+  .pay-search-box { flex: none; width: 180px; }
 }
 
 /* -- 1024px Card 2x2 Grid + Text Fixes -- */

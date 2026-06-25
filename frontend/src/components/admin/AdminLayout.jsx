@@ -17,7 +17,7 @@ export default function AdminLayout({ children }) {
 
     const handleScroll = (event) => {
       // Do not close if the user scrolls inside the sidebar itself
-      if (event.target.closest('.sidebar')) {
+      if (event.target && typeof event.target.closest === 'function' && event.target.closest('.sidebar')) {
         return;
       }
       setSidebarOpen(false);
