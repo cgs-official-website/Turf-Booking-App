@@ -72,3 +72,15 @@ export const getSubscriptionStats = async () => {
   const response = await axiosInstance.get('/subscriptions/admin/stats');
   return response.data;
 };
+
+// GET documents for a vendor (admin)
+export const getVendorDocuments = async (vendorId) => {
+  const response = await axiosInstance.get(`/admin/vendors/${vendorId}/documents`);
+  return response.data;
+};
+
+// GET turfs for a vendor (admin)
+export const getTurfsByVendor = async (vendorId) => {
+  const response = await axiosInstance.get(`/admin/vendors/${vendorId}/turfs`);
+  return response.data;
+};
