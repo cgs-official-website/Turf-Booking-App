@@ -1,4 +1,4 @@
-// pages/admin/Subscriptions.jsx - Complete fixed version
+// pages/admin/Subscriptions.jsx - Complete clean version
 
 import { useState, useEffect, useCallback } from "react";
 import { HiOutlineBuildingOffice2 } from "react-icons/hi2";
@@ -15,7 +15,7 @@ import "../../assets/styles/dashboard.css";
 import "../../assets/styles/Subscription.css";
 
 // ─────────────────────────────────────────────
-// STATIC DATA (Only icons and labels that don't come from API)
+// STATIC DATA
 // ─────────────────────────────────────────────
 
 const STAT_CARDS = [
@@ -62,7 +62,7 @@ const FALLBACK_TURFS = [];
 // ─────────────────────────────────────────────
 
 export default function Subscriptions() {
-  // ── Tab State - FIXED: Added activeTab ──
+  // ── Tab State ──
   const [activeTab, setActiveTab] = useState("subscription");
   
   // ── Filter States ──
@@ -289,7 +289,7 @@ export default function Subscriptions() {
   const safePage = Math.min(page, totalPages);
   const paginated = filteredTurfs.slice((safePage - 1) * PER_PAGE, safePage * PER_PAGE);
 
-  // ── Plan windowed pagination: 3 cards per page (desktop/tablet only) ──
+  // ── Plan windowed pagination: 3 cards per page ──
   const PLANS_PER_PAGE = 3;
   const totalPlanPages = Math.max(1, Math.ceil(plans.length / PLANS_PER_PAGE));
   const safePlanPage = Math.min(planPage, totalPlanPages - 1);
@@ -303,7 +303,7 @@ export default function Subscriptions() {
     setPlanPage(Math.floor(i / PLANS_PER_PAGE));
   };
 
-  // ── Keyboard nav for plan tab (desktop) ──
+  // ── Keyboard nav for plan tab ──
   useEffect(() => {
     if (activeTab !== "plan") return;
 
@@ -481,6 +481,12 @@ export default function Subscriptions() {
                   className="sub-edit-plans-btn"
                   onClick={() => setShowEditPlans(true)}
                 >
+                  ✎ Edit plans
+                </button>
+              </div>
+
+              <div className="sub-plan-management__mobile-edit">
+                <button className="sub-edit-plans-btn" onClick={() => setShowEditPlans(true)}>
                   ✎ Edit plans
                 </button>
               </div>

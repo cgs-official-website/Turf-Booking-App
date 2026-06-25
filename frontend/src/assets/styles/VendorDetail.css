@@ -158,7 +158,7 @@
 }
 .stat-icon-circle.white { 
   background: rgba(255,255,255,0.25); 
-  color: #ffffff; 
+  color: #22c55e; 
 }
 .stat-icon-circle.muted {
   background: #dcfce7;
@@ -218,6 +218,13 @@
   color: #64748b; 
 }
 
+.subscription-card .stat-icon-circle.white {
+  color: #ffffff;
+}
+
+.subscription-card .stat-icon-circle.white svg path {
+  fill: currentColor !important;
+}
 
 /* ── Info Sections ── */
 .info-sections {

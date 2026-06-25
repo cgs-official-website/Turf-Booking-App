@@ -93,6 +93,7 @@ export default function VendorDetail({ vendor: initialVendor, onBack, onVendorSu
   const [turfs, setTurfs] = useState([]);
   const [turfsLoading, setTurfsLoading] = useState(true);
 
+
   // Freeze background scrolling when any popup is open
   useEffect(() => {
     if (selectedTurf || previewDoc || showSuspendModal) {
@@ -550,35 +551,24 @@ export default function VendorDetail({ vendor: initialVendor, onBack, onVendorSu
         {/* Subscription - Dynamic based on status */}
         <div className={`subscription-card ${vendorData.isSubscriptionActive ? 'active' : 'expired'}`}>
           <div className="stat-icon-circle white">
-            <MdCalendarToday size={20} />
+            <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <foreignObject x="-12" y="-12" width="64" height="64">
+                <div xmlns="http://www.w3.org/1999/xhtml" style={{ backdropFilter: 'blur(6px)', clipPath: 'url(#bgblur_0_2815_6569_clip_path)', height: '100%', width: '100%' }} />
+              </foreignObject>
+              <g data-figma-bg-blur-radius="12">
+                <rect width="40" height="40" rx="20" fill="white" fillOpacity="0.2" />
+                <path d="M16.6 30.5L14.7 27.3L11.1 26.5L11.45 22.8L9 20L11.45 17.2L11.1 13.5L14.7 12.7L16.6 9.5L20 10.95L23.4 9.5L25.3 12.7L28.9 13.5L28.55 17.2L31 20L28.55 22.8L28.9 26.5L25.3 27.3L23.4 30.5L20 29.05L16.6 30.5ZM18.95 23.55L24.6 17.9L23.2 16.45L18.95 20.7L16.8 18.6L15.4 20L18.95 23.55Z" fill="currentColor" />
+              </g>
+              <defs>
+                <clipPath id="bgblur_0_2815_6569_clip_path" transform="translate(12 12)">
+                  <rect width="40" height="40" rx="20" />
+                </clipPath>
+              </defs>
+            </svg>
           </div>
           <div className="subscription-content">
             <div className="subscription-label">SUBSCRIPTION</div>
             <div className="subscription-value">{vendorData.subscription}</div>
-            {vendorData.isSubscriptionActive && (
-              <>
-                {vendorData.subscriptionPlan && vendorData.subscriptionPlan !== 'Unknown Plan' && (
-                  <div className="subscription-plan" style={{ color: 'rgba(255,255,255,0.9)', fontSize: '12px', marginTop: '2px' }}>
-                    {vendorData.subscriptionPlan}
-                  </div>
-                )}
-                {vendorData.subscriptionDaysRemaining > 0 && (
-                  <div className="subscription-days">
-                    ● {vendorData.subscriptionDaysRemaining} days remaining
-                  </div>
-                )}
-                {vendorData.subscriptionEndDate && vendorData.subscriptionEndDate !== 'N/A' && (
-                  <div className="subscription-end-date" style={{ color: 'rgba(255,255,255,0.7)', fontSize: '10px', marginTop: '2px' }}>
-                    Valid till: {vendorData.subscriptionEndDate}
-                  </div>
-                )}
-                {vendorData.subscriptionAmountPaid > 0 && (
-                  <div className="subscription-amount" style={{ color: 'rgba(255,255,255,0.6)', fontSize: '10px', marginTop: '2px' }}>
-                    Amount: ₹{vendorData.subscriptionAmountPaid.toLocaleString('en-IN')}
-                  </div>
-                )}
-              </>
-            )}
           </div>
         </div>
       </div>
