@@ -28,8 +28,8 @@ const STAT_CARDS = [
 // ─────────────────────────────────────────────
 
 const toTurfCardProps = (turf) => ({
-  turfId: turf._id || turf.turfId || turf.id || 'N/A',
-  status: turf.approvalStatus || turf.status || turf.approval || 'Active',
+  turfId: turf._id ? `ERD-${turf._id.slice(-4).toUpperCase()}` : turf.turfId || turf.id || 'N/A',
+  status: turf.subscriptionStatus || turf.status || (turf.isAvailable ? 'Active' : 'Expired'),
   title: turf.name || turf.title || turf.turfName || 'Turf',
   price: turf.pricePerHour?.basePrice || turf.pricePerHour || turf.price || 0,
   startDate: turf.startDate || turf.subscriptionStartDate || 'N/A',
@@ -117,71 +117,124 @@ export default function Subscriptions() {
       try {
         await loadPlans();
 
-        // ── Load Turfs ──
-        try {
-          const turfsResponse = await turfApi.getAllTurfs();
-          let turfData = [];
-          if (turfsResponse?.data?.turfs) {
-            turfData = turfsResponse.data.turfs;
-          } else if (turfsResponse?.data) {
-            turfData = turfsResponse.data;
-          } else if (Array.isArray(turfsResponse)) {
-            turfData = turfsResponse;
-          }
 
-          if (turfData && turfData.length > 0) {
-            const mappedTurfs = turfData.map(toTurfCardProps);
-            setTurfs(mappedTurfs);
-            setFilteredTurfs(mappedTurfs);
-
-            // ── Dynamically generate filter options from turfs data ──
-            const uniquePlans     = [...new Set(mappedTurfs.map(t => t.planDuration).filter(Boolean))];
-            const uniqueStatuses  = [...new Set(mappedTurfs.map(t => t.status).filter(Boolean))];
-            const uniqueLocations = [...new Set(mappedTurfs.map(t => t.location).filter(Boolean))];
-
-            setPlanOptions(["All plans", ...uniquePlans]);
-            setStatusOptions(["Status", ...uniqueStatuses]);
-            setLocationOptions(["Location", ...uniqueLocations]);
-          } else {
-            setTurfs([]);
-            setFilteredTurfs([]);
-            setPlanOptions(["All plans"]);
-            setStatusOptions(["Status"]);
-            setLocationOptions(["Location"]);
-          }
-        } catch (turfErr) {
-          // ── KEY FIX: set error so grid shows backend message, not filter mismatch ──
-          console.error('Failed to load turfs from backend:', turfErr);
-          setError('Failed to load turfs from backend. Please try again.');
-          setTurfs([]);
-          setFilteredTurfs([]);
-          setPlanOptions(["All plans"]);
-          setStatusOptions(["Status"]);
-          setLocationOptions(["Location"]);
-        }
-
-        // ── Load Subscription Stats ──
+        // 2. Load Turfs and Subscriptions (Admin only)
+        let mappedTurfs = [];
         try {
           const token = localStorage.getItem('token');
-          if (!token) return;
+          if (token) {
+            // Fetch all turfs
+            let turfData = [];
+            try {
+              const turfsResponse = await turfApi.getAllTurfs();
+              if (turfsResponse?.data?.turfs) {
+                turfData = turfsResponse.data.turfs;
+              } else if (turfsResponse?.data) {
+                turfData = turfsResponse.data;
+              } else if (Array.isArray(turfsResponse)) {
+                turfData = turfsResponse;
+              }
+            } catch (turfErr) {
+              console.error('Failed to load turfs:', turfErr);
+            }
 
-          const subsResponse = await subscriptionApi.getAllSubscriptions({ page: 1, limit: 100 });
-          const subsData = subsResponse.data?.subscriptions || [];
+            // Fetch all subscriptions
+            const subsResponse = await subscriptionApi.getAllSubscriptions({ page: 1, limit: 100 });
+            const subsData = subsResponse.data?.subscriptions || [];
 
-          if (subsData.length > 0) {
-            const active = subsData.filter(s => s.status === 'active' || s.status === 'trial').length;
-            const expired = subsData.filter(s => s.status === 'expired').length;
-            const expiringSoon = subsData.filter(s => {
-              if (!s.endDate) return false;
-              const daysRemaining = Math.ceil((new Date(s.endDate) - new Date()) / (1000 * 60 * 60 * 24));
-              return daysRemaining <= 7 && daysRemaining > 0;
-            }).length;
+            if (subsData.length > 0) {
+              const active = subsData.filter(s => s.status === 'active' || s.status === 'trial').length;
+              const expired = subsData.filter(s => s.status === 'expired').length;
+              const expiringSoon = subsData.filter(s => {
+                if (!s.endDate) return false;
+                const daysRemaining = Math.ceil((new Date(s.endDate) - new Date()) / (1000 * 60 * 60 * 24));
+                return daysRemaining <= 7 && daysRemaining > 0;
+              }).length;
 
-            setStats({ total: subsData.length, active, expiringSoon, expired });
+              setStats({
+                total: subsData.length,
+                active,
+                expiringSoon,
+                expired
+              });
+            }
+
+            const subMap = {};
+            subsData.forEach(s => {
+              const turfIdStr = s.turfId?._id || s.turfId || s.turf;
+              if (!turfIdStr) return;
+              const id = typeof turfIdStr === 'object' ? turfIdStr.toString() : turfIdStr;
+              if (!subMap[id] || s.status === 'active' || s.status === 'trial') {
+                  subMap[id] = s;
+              }
+            });
+
+            if (turfData && turfData.length > 0) {
+              mappedTurfs = turfData.map(t => {
+                const s = subMap[t._id];
+                
+                // Only turfs with an active/trial subscription are Active. All others are Expired.
+                const isActive = s && (s.status === 'active' || s.status === 'trial');
+                
+                let daysLeft = null;
+                if (isActive && s.endDate) {
+                  const remaining = Math.ceil((new Date(s.endDate) - new Date()) / (1000 * 60 * 60 * 24));
+                  daysLeft = remaining > 0 ? remaining : 0;
+                }
+
+                return {
+                  turfId: t._id ? `ERD-${t._id.slice(-4).toUpperCase()}` : 'N/A',
+                  status: isActive ? 'Active' : 'Expired',
+                  title: t.name || t.turfName || t.title || 'Turf',
+                  price: t.pricePerHour?.basePrice || t.pricePerHour || s?.price || 0,
+                  startDate: s?.startDate ? new Date(s.startDate).toLocaleDateString() : 'N/A',
+                  endDate: s?.endDate ? new Date(s.endDate).toLocaleDateString() : 'N/A',
+                  daysLeft,
+                  location: t.location || t.address?.city || t.city || 'N/A',
+                  planDuration: s?.planId?.name || s?.planDuration || 'N/A',
+                  turfImage: t.mainImage || t.turfImage || t.image || null,
+                  logoImage: t.logoImage || null,
+                };
+              });
+            } else if (subsData.length > 0) {
+              mappedTurfs = subsData.map(s => {
+                const t = s.turfId || {};
+                const isActive = (s.status === 'active' || s.status === 'trial');
+                
+                let daysLeft = null;
+                if (isActive && s.endDate) {
+                  const remaining = Math.ceil((new Date(s.endDate) - new Date()) / (1000 * 60 * 60 * 24));
+                  daysLeft = remaining > 0 ? remaining : 0;
+                }
+
+                return {
+                  turfId: s._id ? `ERD-${s._id.slice(-4).toUpperCase()}` : t._id ? `ERD-${t._id.slice(-4).toUpperCase()}` : 'N/A',
+                  status: isActive ? 'Active' : 'Expired',
+                  title: t.name || s.turfName || t.title || 'Turf',
+                  price: t.pricePerHour?.basePrice || t.pricePerHour || s.price || 0,
+                  startDate: s.startDate ? new Date(s.startDate).toLocaleDateString() : 'N/A',
+                  endDate: s.endDate ? new Date(s.endDate).toLocaleDateString() : 'N/A',
+                  daysLeft,
+                  location: t.location || t.address?.city || t.city || 'N/A',
+                  planDuration: s.planId?.name || s.planDuration || 'N/A',
+                  turfImage: t.mainImage || t.turfImage || t.image || null,
+                  logoImage: t.logoImage || null,
+                };
+              });
+            }
+
           }
-        } catch (subsErr) {
-          console.error('Could not load subscription stats:', subsErr);
+        } catch (err) {
+          console.error('Could not load subscriptions or turfs:', err);
         }
+        if (mappedTurfs.length > 0) {
+          setTurfs(mappedTurfs);
+          setFilteredTurfs(mappedTurfs);
+        } else {
+          setTurfs(FALLBACK_TURFS);
+          setFilteredTurfs(FALLBACK_TURFS);
+        }
+
 
       } catch (err) {
         console.error('Failed to load data:', err);
@@ -359,8 +412,16 @@ export default function Subscriptions() {
               <select value={status} onChange={(e) => { setStatus(e.target.value); setPage(1); }} className="sub-select">
                 {statusOptions.map((o) => <option key={o}>{o}</option>)}
               </select>
-              <select value={location} onChange={(e) => { setLocation(e.target.value); setPage(1); }} className="sub-select">
-                {locationOptions.map((o) => <option key={o}>{o}</option>)}
+
+              <select
+                value={location}
+                onChange={(e) => { setLocation(e.target.value); setPage(1); }}
+                className="sub-select"
+              >
+                {["Location", ...new Set(turfs.map(t => t.location).filter(loc => loc && loc !== 'N/A'))].map((o) => (
+                  <option key={o}>{o}</option>
+                ))}
+
               </select>
               <button className="sub-reset-btn" onClick={resetFilters}>↺ Reset Filter</button>
             </div>

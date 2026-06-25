@@ -93,9 +93,9 @@
     margin-left: 0;
   }
   
-  /* .layout-content {
-    padding: 16px;
-  }  */
+  .layout-content {
+    padding-bottom: 80px;
+  }
 }
 
 /* ===========================
