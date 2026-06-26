@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { getDashboardStats } from "../../services/dashboard.js";
+import { getAllPlans } from "../../services/subscription.service.js";
 import "../../assets/styles/dashboard.css";
 import {
   FiUser,
@@ -15,9 +16,14 @@ import RecentBookings from "../../components/admin/RecentBookings.jsx";
 
 const CustomTooltip = ({ active, payload, label }) => {
   if (active && payload && payload.length) {
+    let displayLabel = label;
+    const date = new Date(label);
+    if (!isNaN(date.getTime()) && String(label).length >= 8) {
+      displayLabel = date.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
+    }
     return (
       <div className="custom-tooltip">
-        <p className="tooltip-label">{label}</p>
+        <p className="tooltip-label">{displayLabel}</p>
         <p className="tooltip-value">
           <span className="tooltip-dot"></span>₹
           {payload[0].value.toLocaleString("en-IN")}
@@ -102,20 +108,35 @@ export default function Dashboard() {
     monthlyRevenue: [],
     expiringSubscriptions: [],
   });
+  const [plans, setPlans] = useState([]);
+  const [selectedPlan, setSelectedPlan] = useState("");
   const fetchDashboardStats = async () => {
     try {
-      const data = await getDashboardStats(dashboardPeriod);
-
-      console.log(data);
-
+      const data = await getDashboardStats(dashboardPeriod, selectedPlan);
       setStats(data.data);
     } catch (error) {
       console.log("Error fetching dashboard stats:", error);
     }
   };
+
+  const fetchPlans = async () => {
+    try {
+      const response = await getAllPlans(true);
+      if (response?.data?.plans) {
+        setPlans(response.data.plans);
+      }
+    } catch (error) {
+      console.error("Error fetching plans for dashboard:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchPlans();
+  }, []);
+
   useEffect(() => {
     fetchDashboardStats();
-  }, [dashboardPeriod]);
+  }, [dashboardPeriod, selectedPlan]); // Note: you might need to pass selectedPlan to getDashboardStats if backend supports it.
   return (
     <div className="dashboard-wrapper">
       <div className="dashboard-content">
@@ -210,10 +231,84 @@ export default function Dashboard() {
                   onClick={() => setDashboardPeriod('current-year')}
                 >Current Year</button>
               </div>
-              <button className="action-btn">
-                Choose plan <FiChevronDown />
-              </button>
-              <button className="action-btn">
+              <select 
+                className="action-btn" 
+                value={selectedPlan} 
+                onChange={(e) => setSelectedPlan(e.target.value)}
+                style={{ appearance: 'auto', WebkitAppearance: 'auto', backgroundColor: '#fff', border: '1px solid #e2e8f0', paddingRight: '20px' }}
+              >
+                <option value="">Choose plan</option>
+                {plans.map((plan) => (
+                  <option key={plan._id} value={plan._id}>{plan.name}</option>
+                ))}
+              </select>
+              <button className="action-btn" onClick={() => {
+                const now = new Date();
+                let isYear = dashboardPeriod.includes('year');
+                
+                const planName = selectedPlan 
+                  ? plans.find(p => p._id === selectedPlan)?.name || "All Plans"
+                  : "All Plans";
+                
+                const safePlanName = planName.toLowerCase().replace(/\s+/g, '_');
+                
+                let monthName = "";
+                let yearString = "";
+                let fileName = "";
+                let periodValue = "";
+                
+                if (dashboardPeriod === 'current-month') {
+                  monthName = now.toLocaleString('default', { month: 'long' });
+                  yearString = now.getFullYear().toString();
+                  periodValue = monthName;
+                  fileName = `revenue_summary_of_${monthName.toLowerCase()}_month_${yearString}_year_${safePlanName}.csv`;
+                } else if (dashboardPeriod === 'last-month') {
+                  const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+                  monthName = lastMonth.toLocaleString('default', { month: 'long' });
+                  yearString = lastMonth.getFullYear().toString();
+                  periodValue = monthName;
+                  fileName = `revenue_summary_of_${monthName.toLowerCase()}_month_${yearString}_year_${safePlanName}.csv`;
+                } else if (dashboardPeriod === 'current-year') {
+                  yearString = now.getFullYear().toString();
+                  periodValue = yearString;
+                  fileName = `revenue_summary_of_year_${yearString}_${safePlanName}.csv`;
+                } else if (dashboardPeriod === 'last-year') {
+                  yearString = (now.getFullYear() - 1).toString();
+                  periodValue = yearString;
+                  fileName = `revenue_summary_of_year_${yearString}_${safePlanName}.csv`;
+                }
+
+                let csvRows = [];
+                const totalRevenue = stats.chartTotalRevenue !== undefined ? stats.chartTotalRevenue : (stats.totalRevenue || 0);
+
+                if (!isYear) {
+                  // Month export: Single row
+                  csvRows.push("Month,Plan,Revenue");
+                  csvRows.push(`"${periodValue}","${planName}",${totalRevenue}`);
+                } else {
+                  // Year export: Month breakdown + Total
+                  csvRows.push("Year,Month,Plan,Revenue");
+                  
+                  if (stats.monthlyRevenue && stats.monthlyRevenue.length > 0) {
+                    stats.monthlyRevenue.forEach(row => {
+                      csvRows.push(`"${yearString}","${row.month}","${planName}",${row.revenue}`);
+                    });
+                  }
+                  
+                  // Total row at the end
+                  csvRows.push(""); // Empty line for separation
+                  csvRows.push(`"Total Revenue of Year",,,${totalRevenue}`);
+                }
+                
+                const csvContent = "data:text/csv;charset=utf-8," + csvRows.join("\n");
+                const encodedUri = encodeURI(csvContent);
+                const link = document.createElement("a");
+                link.setAttribute("href", encodedUri);
+                link.setAttribute("download", fileName);
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+              }}>
                 <FiDownload /> Export
               </button>
             </div>
@@ -254,6 +349,15 @@ export default function Dashboard() {
                 />
                 <XAxis
                   dataKey="month"
+                  tickFormatter={(value) => {
+                    // Try parsing as date to format as "1 Apr"
+                    const date = new Date(value);
+                    if (!isNaN(date.getTime()) && value.length >= 8) {
+                      return date.toLocaleDateString("en-GB", { day: "numeric", month: "short" });
+                    }
+                    return value;
+                  }}
+                  minTickGap={30}
                   tick={{ fill: "#98A2B3", fontSize: 12 }}
                   axisLine={false}
                   tickLine={false}

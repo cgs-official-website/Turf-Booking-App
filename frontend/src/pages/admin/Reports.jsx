@@ -24,6 +24,7 @@ function normalizeReport(r) {
     reportId: r.reportId ?? "#RP-" + (r._id?.slice(-4) ?? "????"),
     vendorName: vendor.name ?? r.vendorName ?? "—",
     vendorEmail: vendor.email ?? r.vendorEmail ?? "—",
+    vendorAvatar: vendor.profileImage ? `http://localhost:5000${vendor.profileImage}` : (r.vendorAvatar ?? null),
     turfName: turf.name ?? r.turfName ?? "—",
     turfLocation: turf.location ?? r.location ?? "—",
     turfImage: turf.mainImage ?? r.turfImage ?? null,
@@ -161,7 +162,16 @@ function ReportDetailModal({ report, onClose, onResolved }) {
           {/* ── User (Vendor) Details ── */}
           <p className="rp-modal-section-label">USER DETAILS</p>
           <div className="rp-modal-user-card">
-            <div className="rp-modal-user-avatar">{initials}</div>
+            {report.vendorAvatar ? (
+              <img 
+                src={report.vendorAvatar} 
+                alt={report.vendorName} 
+                className="rp-modal-user-avatar" 
+                style={{ objectFit: 'cover' }} 
+              />
+            ) : (
+              <div className="rp-modal-user-avatar">{initials}</div>
+            )}
             <div className="rp-modal-user-info">
               <p className="rp-modal-user-name">{report.vendorName}</p>
               <p className="rp-modal-user-email">{report.vendorEmail}</p>

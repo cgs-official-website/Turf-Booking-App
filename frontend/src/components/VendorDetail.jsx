@@ -123,7 +123,7 @@ export default function VendorDetail({ vendor, onBack, onVendorSuspended }) {
           name: vendor.name || vendor.vendorName || 'Unknown Vendor',
           vendorId: vendor.vendorId || 'VND-0000',
           description: 'Multi-turf Facility Management & Booking Partner',
-          logo: vendor.logo || vendor.profileImage || vendor.image || 'https://images.unsplash.com/photo-1516399653135-68efc5e5cf13?w=100&h=100&fit=crop',
+          logo: vendor.profileImage || vendor.logoImage || vendor.logo || vendor.image || 'https://images.unsplash.com/photo-1516399653135-68efc5e5cf13?w=100&h=100&fit=crop',
           totalTurfs: String(transformedTurfs.length).padStart(2, '0'),
           newTurfs: '+2 New',
           subscription: 'Active',
