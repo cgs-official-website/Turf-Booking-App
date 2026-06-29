@@ -112,11 +112,13 @@ function normalizeTurf(t) {
                  : raw === "rejected" ? "rejected"
                  : "pending";
     const name = d.name ?? d.title ?? "Document";
+    const url = d.url ?? d.fileUrl ?? null;
     return {
       icon:   DOC_ICON[name] ?? d.icon ?? "bi-file-earmark",
       title:  name,
       sub:    d.subtitle ?? d.sub ?? "",
       status,
+      url,
     };
   });
 
@@ -317,9 +319,18 @@ function EditCategoryModal({ turf, onConfirm, onCancel, acting }) {
 }
 
 // ── DocBadge ──────────────────────────────────────────────────────────────────
-function DocBadge({ status }) {
-  if (status === "verified")
+function DocBadge({ status, title }) {
+  const isKyc = title && /aadhar|pan|gst/i.test(title);
+  if (status === "verified") {
+    if (isKyc) {
+      return (
+        <span className="td-doc-badge td-doc-badge--verified" style={{ backgroundColor: '#e0f2fe', color: '#0369a1', border: '1px solid #bae6fd' }}>
+          <i className="bi bi-shield-check" /> Verified via Digilocker
+        </span>
+      );
+    }
     return <span className="td-doc-badge td-doc-badge--verified"><i className="bi bi-check-circle-fill" /> Verified</span>;
+  }
   if (status === "rejected")
     return <span className="td-doc-badge td-doc-badge--rejected"><i className="bi bi-x-circle-fill" /> Rejected</span>;
   return null;
@@ -656,6 +667,7 @@ export default function TurfDetails() {
           )}
           <div>
             <p className="td-hero-vendor">{turf.ownerName}</p>
+            {turf.ownerEmail && <p className="td-hero-email">{turf.ownerEmail}</p>}
             <p className="td-hero-sub">Turf Information Details</p>
           </div>
           <span className="td-hero-id-badge">
@@ -876,7 +888,7 @@ export default function TurfDetails() {
                   <p className="td-doc-sub">{doc.sub}</p>
                 </div>
                 <div className="td-doc-right">
-                  <DocBadge status={status} />
+                  <DocBadge status={status} title={doc.title} />
 
                   {showActions && status === "pending" && (
                     <button
@@ -898,7 +910,7 @@ export default function TurfDetails() {
                   <a
                     href="#preview"
                     className="td-preview-link"
-                    onClick={(e) => e.preventDefault()}
+                    onClick={(e) => { e.preventDefault(); if (doc.url) setPreviewImage(doc.url); }}
                     aria-label={`Preview ${doc.title}`}
                   >
                     Preview <i className="bi bi-eye" />
