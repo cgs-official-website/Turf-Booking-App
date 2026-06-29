@@ -87,6 +87,7 @@ export default function Vendors() {
             _id: vendor._id,
             turfCount: vendor.turfCount,
             turfs: vendor.turfs || [],
+            kycDocuments: vendor.kycDocuments,
           };
         }));
 

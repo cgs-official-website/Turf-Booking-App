@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
 import '../assets/styles/VendorDetail.css';
+import '../assets/styles/turfDetails.css';
 import VenueCard from '../components/VenueCard';
 import SuspendModal from '../context/SuspendModal';
 import { suspendVendor, getVendorSubscriptionHistory, getVendorBookingsStats, getVendorRecentBookings } from '../services/vendors.service';
@@ -118,12 +119,18 @@ export default function VendorDetail({ vendor, onBack, onVendorSuspended }) {
           console.error("Date parsing error:", e);
         }
 
-        const newData = {
+          const vendorName = vendor.name || vendor.vendorName || 'Unknown Vendor';
+          const logoFallback = `https://ui-avatars.com/api/?name=${encodeURIComponent(vendorName)}&background=0D8B41&color=fff`;
+          const profileImageUrl = vendor.profileImage 
+            ? (vendor.profileImage.startsWith('http') ? vendor.profileImage : `http://localhost:5000${vendor.profileImage}`)
+            : null;
+
+          const newData = {
           id: vendor.id || 1,
-          name: vendor.name || vendor.vendorName || 'Unknown Vendor',
+          name: vendorName,
           vendorId: vendor.vendorId || 'VND-0000',
           description: 'Multi-turf Facility Management & Booking Partner',
-          logo: vendor.profileImage || vendor.logoImage || vendor.logo || vendor.image || 'https://images.unsplash.com/photo-1516399653135-68efc5e5cf13?w=100&h=100&fit=crop',
+          logo: profileImageUrl || vendor.logoImage || vendor.logo || vendor.image || logoFallback,
           totalTurfs: String(transformedTurfs.length).padStart(2, '0'),
           newTurfs: '+2 New',
           subscription: 'Active',
@@ -307,13 +314,33 @@ export default function VendorDetail({ vendor, onBack, onVendorSuspended }) {
 
       {/* ── Document Preview Popup ── */}
       {previewDoc && (
-        <div className="vd-popup-backdrop" onClick={() => setPreviewDoc(null)}>
-          <div className="vd-doc-popup" onClick={(e) => e.stopPropagation()}>
-            <div className="vd-doc-popup-header">
+        <div 
+          style={{
+            position: 'fixed',
+            top: 0, left: 0, right: 0, bottom: 0,
+            backgroundColor: 'rgba(0,0,0,0.9)',
+            zIndex: 99999,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            cursor: 'zoom-out'
+          }}
+          onClick={() => setPreviewDoc(null)}
+        >
+          <div style={{ position: 'relative', maxWidth: '90%', maxHeight: '90%', display: 'flex', flexDirection: 'column' }}>
+            <div style={{ color: 'white', padding: '10px', background: 'rgba(0,0,0,0.5)', textAlign: 'center', position: 'absolute', top: 0, left: 0, right: 0, zIndex: 1 }}>
               <span>{previewDoc.title}</span>
-              <button className="vd-popup-close" onClick={() => setPreviewDoc(null)}>✕</button>
+              <button 
+                style={{ background: 'transparent', border: 'none', color: 'white', float: 'right', cursor: 'pointer', fontSize: '18px' }} 
+                onClick={() => setPreviewDoc(null)}
+              >✕</button>
             </div>
-            <img src={previewDoc.src} alt={previewDoc.title} className="vd-doc-img" />
+            <img 
+              src={previewDoc.src} 
+              alt={previewDoc.title} 
+              style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }}
+              onClick={(e) => e.stopPropagation()} 
+            />
           </div>
         </div>
       )}
@@ -434,41 +461,69 @@ export default function VendorDetail({ vendor, onBack, onVendorSuspended }) {
         </div>
 
         {/* Document Information */}
-        <div className="info-card">
-          <h3 className="info-title">
-            <span className="info-icon-circle gray"><MdAccountBalance size={18} /></span>
-            Document information
-          </h3>
-          <div className="info-content">
-            <div className="info-row">
-              <div className="info-row-left">
-                <span className="info-row-icon"><MdBadge size={20} /></span>
-                <span className="info-label-standalone">PAN Card</span>
+        <div className="td-card td-card--full" style={{ marginTop: '24px' }}>
+          <div className="td-card-header">
+            <span className="td-card-title">
+              <i className="bi bi-file-earmark-text" /> Document Information
+            </span>
+          </div>
+          <div className="td-docs">
+            <div className="td-doc-row">
+              <div className="td-doc-icon-wrap">
+                <i className="bi bi-person-badge" />
               </div>
-              <button
-                className="preview-btn"
-                onClick={() => setPreviewDoc({ 
-                  title: 'PAN Card', 
-                  src: vendor.panCard || vendor.panImage || vendor.kycDocuments?.pan || vendor.documents?.pan || DOC_IMAGES.pan 
-                })}
-              >
-                Preview <MdRemoveRedEye size={16} />
-              </button>
+              <div className="td-doc-info">
+                <p className="td-doc-title">PAN Card</p>
+                <p className="td-doc-sub">Tax ID</p>
+              </div>
+              <div className="td-doc-right">
+                <a
+                  href="#preview"
+                  className="td-preview-link"
+                  onClick={(e) => { 
+                    e.preventDefault();
+                    let src = vendor.panCard || vendor.panImage || vendor.kycDocuments?.pan?.url || vendor.documents?.pan;
+                    if (src) {
+                      src = src.startsWith('http') ? src : `http://localhost:5000${src}`;
+                      setPreviewDoc({ title: 'PAN Card', src });
+                    } else {
+                      toast.error("PAN Card not uploaded by vendor");
+                    }
+                  }}
+                  aria-label="Preview PAN Card"
+                >
+                  Preview <i className="bi bi-eye" />
+                </a>
+              </div>
             </div>
-            <div className="info-row last">
-              <div className="info-row-left">
-                <span className="info-row-icon"><MdBadge size={20} /></span>
-                <span className="info-label-standalone">Aadhar card</span>
+
+            <div className="td-doc-row">
+              <div className="td-doc-icon-wrap">
+                <i className="bi bi-fingerprint" />
               </div>
-              <button
-                className="preview-btn"
-                onClick={() => setPreviewDoc({ 
-                  title: 'Aadhar Card', 
-                  src: vendor.aadharCard || vendor.aadharImage || vendor.kycDocuments?.aadhar || vendor.documents?.aadhar || DOC_IMAGES.aadhar 
-                })}
-              >
-                Preview <MdRemoveRedEye size={16} />
-              </button>
+              <div className="td-doc-info">
+                <p className="td-doc-title">Aadhar Card</p>
+                <p className="td-doc-sub">ID Proof</p>
+              </div>
+              <div className="td-doc-right">
+                <a
+                  href="#preview"
+                  className="td-preview-link"
+                  onClick={(e) => { 
+                    e.preventDefault(); 
+                    let src = vendor.aadharCard || vendor.aadharImage || vendor.kycDocuments?.aadhar?.url || vendor.documents?.aadhar;
+                    if (src) {
+                      src = src.startsWith('http') ? src : `http://localhost:5000${src}`;
+                      setPreviewDoc({ title: 'Aadhar Card', src });
+                    } else {
+                      toast.error("Aadhar Card not uploaded by vendor");
+                    }
+                  }}
+                  aria-label="Preview Aadhar Card"
+                >
+                  Preview <i className="bi bi-eye" />
+                </a>
+              </div>
             </div>
           </div>
         </div>
