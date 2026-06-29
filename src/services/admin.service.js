@@ -50,7 +50,7 @@ const loginAdmin = async ({ email, password }) => {
       name: admin.name,
       email: admin.email,
       role: admin.role,
-      profileImage: admin.profileImage && admin.profileImage.data ? "/api/admin/profile-image" : "",
+      profileImage: admin.profileImage || "",
     },
   };
 };
@@ -317,13 +317,13 @@ const getDashboardStats = async (period = "month", planId = "") => {
 
 const getAllVendors = async () => {
   const vendors = await User.find({ role: "vendor" })
-    .select("name email phone location profileImage createdAt")
+    .select("name email phone location profileImage createdAt kycDocuments")
     .lean();
 
   const vendorData = await Promise.all(
     vendors.map(async (vendor, index) => {
       const turfs = await Turf.find({ owner: vendor._id })
-        .select("name location sportType pricePerHour.basePrice approvalStatus mainImage")
+        .select("name location sportType pricePerHour.basePrice approvalStatus mainImage secondaryImages facilities sports")
         .lean();
 
       return {
@@ -336,6 +336,7 @@ const getAllVendors = async () => {
         profileImage: vendor.profileImage || "",        
         bannerImage: turfs[0]?.mainImage || "",   
         createdAt: vendor.createdAt,
+        kycDocuments: vendor.kycDocuments || {},
         turfCount: turfs.length,
         turfs: turfs.map((turf) => ({
           turfName: turf.name,
@@ -343,6 +344,10 @@ const getAllVendors = async () => {
           sportType: turf.sportType,
           pricePerHour: turf.pricePerHour?.basePrice || 0,
           approvalStatus: turf.approvalStatus,
+          mainImage: turf.mainImage,
+          secondaryImages: turf.secondaryImages || [],
+          facilities: turf.facilities || [],
+          sports: turf.sports || [],
         })),
       };
     }),

@@ -18,7 +18,7 @@ function assertObjectId(id, label = "ID") {
 // ─────────────────────────────────────────────
 const addTurf = async ({
   name, location, sportType, sports, facilities, pricePerHour, description,
-  amenities, mainImage, secondaryImages, ownerId, aadhar, pan, gst, ebBill, documents
+  amenities, mainImage, secondaryImages, logo, ownerId, aadhar, pan, gst, ebBill, documents
 }) => {
   const existing = await Turf.findOne({ name, location });
   if (existing) {
@@ -85,6 +85,7 @@ const addTurf = async ({
     amenities: amenities || [],
     mainImage,
     secondaryImages: secondaryImages || [],
+    logo: logo || "",
     owner: ownerId,
     isAvailable: true,
     approvalStatus: "pending",
@@ -192,7 +193,7 @@ const getPendingTurfs = async () => {
 const getTurfById = async (turfId) => {
   assertObjectId(turfId, "turf ID");
   const turf = await Turf.findById(turfId)
-    .populate("owner", "name email phone profileImage");
+    .populate("owner", "name email phone profileImage kycDocuments");
   if (!turf) throw new ApiError(404, "Turf not found");
   return turf;
 };
@@ -277,12 +278,23 @@ const updateTurf = async (turfId, requesterId, requesterRole, updateData) => {
 
   const allowedFields = [
     "name", "location", "sportType", "sports", "facilities", "pricePerHour", "description",
-    "amenities", "mainImage", "secondaryImages", "isAvailable", "verifications", "documents", "verificationChecklist"
+    "amenities", "mainImage", "secondaryImages", "logo", "isAvailable", "verifications", "documents", "verificationChecklist"
   ];
 
   allowedFields.forEach((field) => {
     if (updateData[field] !== undefined) turf[field] = updateData[field];
   });
+
+  if (updateData.ebBill) {
+    if (!turf.documents) turf.documents = [];
+    const ebIndex = turf.documents.findIndex(d => d.title?.toLowerCase().includes("eb bill"));
+    if (ebIndex >= 0) {
+      turf.documents[ebIndex].url = updateData.ebBill;
+      turf.documents[ebIndex].status = "pending";
+    } else {
+      turf.documents.push({ title: "EB bill", sub: "Address Proof", status: "pending", icon: "bi-lightning-charge", url: updateData.ebBill });
+    }
+  }
 
   if (requesterRole === "vendor") turf.approvalStatus = "pending";
 

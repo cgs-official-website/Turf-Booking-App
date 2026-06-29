@@ -81,9 +81,18 @@ const getProfileImage = async (req, res, next) => {
     if (!admin) {
       throw new ApiError(404, "Admin not found");
     }
-    if (!admin.profileImage || !admin.profileImage.data) {
+    if (!admin.profileImage) {
       return res.status(404).json(new ApiResponse(404, "Profile image not found", null));
     }
+    
+    if (typeof admin.profileImage === 'string') {
+      return res.redirect(admin.profileImage);
+    }
+    
+    if (!admin.profileImage.data) {
+      return res.status(404).json(new ApiResponse(404, "Profile image data not found", null));
+    }
+
     res.set('Content-Type', admin.profileImage.contentType);
     return res.send(admin.profileImage.data);
   } catch (error) {
@@ -95,8 +104,12 @@ const getProfileImage = async (req, res, next) => {
 const getProfile = async (req, res, next) => {
   try {
     const adminData = req.admin.toObject();
-    adminData.profileImage = adminData.profileImage && adminData.profileImage.data ? "/api/admin/profile-image" : "";
-    res.status(200).json(
+    if (adminData.profileImage) {
+      // If it's a Buffer (legacy), keep legacy URL for now, else just provide the Cloudinary URL
+      adminData.profileImage = typeof adminData.profileImage === 'string' && adminData.profileImage.startsWith('http') 
+        ? adminData.profileImage 
+        : (adminData.profileImage && adminData.profileImage.data ? "/api/admin/profile-image" : "");
+    }    res.status(200).json(
       new ApiResponse(
         200,
         "Admin profile fetched successfully",
@@ -328,15 +341,12 @@ const uploadProfileImage = async (req, res, next) => {
       throw new ApiError(404, "Admin not found");
     }
 
-    // Store new profile image directly in DB as Buffer
-    admin.profileImage = {
-      data: req.file.buffer,
-      contentType: req.file.mimetype,
-    };
+    // Store Cloudinary URL
+    admin.profileImage = req.file.path;
     await admin.save();
 
     const adminData = admin.toObject();
-    adminData.profileImage = "/api/admin/profile-image";
+    adminData.profileImage = admin.profileImage;
 
     res.status(200).json(
       new ApiResponse(200, "Profile image updated successfully", adminData)
@@ -354,7 +364,8 @@ const deleteProfileImage = async (req, res, next) => {
     }
 
     if (admin.profileImage) {
-      admin.profileImage = undefined;
+      // We don't delete from Cloudinary here to keep it simple, just clear it from DB
+      admin.profileImage = "";
       await admin.save();
     }
 
