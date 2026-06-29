@@ -312,13 +312,13 @@ const getDashboardStats = async (period = "month") => {
 
 const getAllVendors = async () => {
   const vendors = await User.find({ role: "vendor" })
-    .select("name email phone location")
+    .select("name email phone location profileImage createdAt")
     .lean();
 
   const vendorData = await Promise.all(
     vendors.map(async (vendor, index) => {
       const turfs = await Turf.find({ owner: vendor._id })
-        .select("name location sportType pricePerHour.basePrice approvalStatus")
+        .select("name location sportType pricePerHour.basePrice approvalStatus mainImage")
         .lean();
 
       return {
@@ -328,6 +328,9 @@ const getAllVendors = async () => {
         email: vendor.email,
         phone: vendor.phone,
         location: vendor.location,
+        profileImage: vendor.profileImage || "",        
+        bannerImage: turfs[0]?.mainImage || "",   
+        createdAt: vendor.createdAt,
         turfCount: turfs.length,
         turfs: turfs.map((turf) => ({
           turfName: turf.name,
