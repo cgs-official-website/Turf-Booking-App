@@ -24,7 +24,10 @@ export default function Navbar({ title, onMenuToggle }) {
 
   const adminData   = JSON.parse(localStorage.getItem('admin') || '{}');
   const adminName   = adminData.name || 'Admin';
-  const adminAvatar = adminName.charAt(0).toUpperCase();
+  const profileImage = adminData.profileImage ? `http://localhost:5000${adminData.profileImage}` : null;
+  const adminAvatar = profileImage 
+    ? <img src={profileImage} alt={adminName} style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover', display: 'block', flexShrink: 0 }} />
+    : adminName.charAt(0).toUpperCase();
 
   /* ── Notification state ── */
   const [notifications, setNotifications] = useState([]);
@@ -41,7 +44,7 @@ export default function Navbar({ title, onMenuToggle }) {
       const { data } = await axiosInstance.get('/notifications');
       setNotifications(Array.isArray(data.notifications) ? data.notifications : []);
     } catch {
-      // silent fail — don't break navbar
+      // silent fail
     }
   }, []);
 

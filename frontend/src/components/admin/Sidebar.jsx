@@ -130,7 +130,10 @@ export default function Sidebar({ sidebarOpen }) {
 
   const adminData = JSON.parse(localStorage.getItem("admin") || "{}");
   const adminName = adminData.name || "Admin";
-  const adminAvatar = adminName.charAt(0).toUpperCase();
+  const profileImage = adminData.profileImage ? `http://localhost:5000${adminData.profileImage}` : null;
+  const adminAvatar = profileImage 
+    ? <img src={profileImage} alt={adminName} style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover', display: 'block', flexShrink: 0 }} />
+    : adminName.charAt(0).toUpperCase();
 
   const handleLogout = () => {
     localStorage.removeItem("token");

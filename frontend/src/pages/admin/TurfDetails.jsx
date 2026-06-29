@@ -84,6 +84,7 @@ const DEFAULT_VERIFICATIONS = [
 function normalizeTurf(t) {
   // owner is populated: { name, email, phone }
   const ownerName = t.owner?.name ?? t.ownerName ?? t.vendor ?? "—";
+  const ownerProfileImage = t.owner?.profileImage ? `http://localhost:5000${t.owner.profileImage}` : null;
   const phone     = t.owner?.phone ?? t.phone ?? t.contact ?? "—";
 
   const pricing = t.pricePerHour?.basePrice != null
@@ -111,11 +112,13 @@ function normalizeTurf(t) {
                  : raw === "rejected" ? "rejected"
                  : "pending";
     const name = d.name ?? d.title ?? "Document";
+    const url = d.url ?? d.fileUrl ?? null;
     return {
       icon:   DOC_ICON[name] ?? d.icon ?? "bi-file-earmark",
       title:  name,
       sub:    d.subtitle ?? d.sub ?? "",
       status,
+      url,
     };
   });
 
@@ -141,6 +144,7 @@ function normalizeTurf(t) {
     displayId:      t.displayId ?? "TRF-" + (t._id?.slice(-4).toUpperCase() ?? "????"),
     name:           t.name           ?? "—",
     ownerName,
+    ownerProfileImage,
     location:       t.location       ?? t.address ?? "—",
     phone,
     pricing,
@@ -315,9 +319,18 @@ function EditCategoryModal({ turf, onConfirm, onCancel, acting }) {
 }
 
 // ── DocBadge ──────────────────────────────────────────────────────────────────
-function DocBadge({ status }) {
-  if (status === "verified")
+function DocBadge({ status, title }) {
+  const isKyc = title && /aadhar|pan|gst/i.test(title);
+  if (status === "verified") {
+    if (isKyc) {
+      return (
+        <span className="td-doc-badge td-doc-badge--verified" style={{ backgroundColor: '#e0f2fe', color: '#0369a1', border: '1px solid #bae6fd' }}>
+          <i className="bi bi-shield-check" /> Verified via Digilocker
+        </span>
+      );
+    }
     return <span className="td-doc-badge td-doc-badge--verified"><i className="bi bi-check-circle-fill" /> Verified</span>;
+  }
   if (status === "rejected")
     return <span className="td-doc-badge td-doc-badge--rejected"><i className="bi bi-x-circle-fill" /> Rejected</span>;
   return null;
@@ -374,9 +387,10 @@ export default function TurfDetails() {
   function initTurf(n) {
     setTurf(n);
     setChecks(n.verifications.map((v) => v.checked));
-    // If turf already approved/rejected, treat all docs as verified for display
-    if (n.approvalStatus !== "pending") {
+    if (n.approvalStatus === "approved") {
       setDocStatuses(n.documents.map(() => "verified"));
+    } else if (n.approvalStatus === "rejected") {
+      setDocStatuses(n.documents.map((d) => d.status === "verified" ? "verified" : "rejected"));
     } else {
       setDocStatuses(n.documents.map((d) => d.status));
     }
@@ -415,43 +429,86 @@ export default function TurfDetails() {
     };
   }, [previewImage]);
 
-  // ── Checklist ─────────────────────────────────────────────────────────────
+  async function saveVerifications(nextChecks, nextDocStatuses) {
+    const verificationsData = turf.verifications.map((v, idx) => ({
+      label: v.label,
+      checked: nextChecks[idx]
+    }));
+    
+    const documentsData = turf.documents.map((d, idx) => ({
+      title: d.title,
+      sub: d.sub,
+      status: nextDocStatuses[idx],
+      icon: d.icon
+    }));
+
+    try {
+      await axiosInstance.put(`/turfs/${id}`, {
+        verifications: verificationsData,
+        documents: documentsData
+      });
+    } catch (error) {
+      console.error("Failed to save verifications to backend", error);
+    }
+  }
+
   function toggleCheck(i) {
     setChecks((prev) => {
-      const next = prev.map((v, idx) => (idx === i ? !v : v));
+      const nextChecks = prev.map((v, idx) => (idx === i ? !v : v));
       const label = turf.verifications[i]?.label;
       
-      if (label === "Identity Verified") {
-        setDocStatuses((ds) => ds.map((s, dIdx) => {
-          const title = turf.documents[dIdx]?.title?.toLowerCase() || "";
-          if (title.includes("aadhar") || title.includes("pan")) {
-            return next[i] ? "verified" : "pending";
-          }
-          return s;
-        }));
-      }
+      setDocStatuses((ds) => {
+        let nextDocs = [...ds];
+        
+        if (label === "Identity Verified") {
+          nextDocs = nextDocs.map((s, dIdx) => {
+            const title = turf.documents[dIdx]?.title?.toLowerCase() || "";
+            if (title.includes("aadhar") || title.includes("pan")) {
+              return nextChecks[i] ? "verified" : "pending";
+            }
+            return s;
+          });
+        }
 
-      if (label === "Business Verified") {
-        setDocStatuses((ds) => ds.map((s, dIdx) => {
-          const title = turf.documents[dIdx]?.title?.toLowerCase() || "";
-          if (title.includes("gst") || title.includes("eb bill")) {
-            return next[i] ? "verified" : "pending";
-          }
-          return s;
-        }));
-      }
+        if (label === "Location Verified") {
+          nextDocs = nextDocs.map((s, dIdx) => {
+            const title = turf.documents[dIdx]?.title?.toLowerCase() || "";
+            if (title.includes("eb bill")) {
+              return nextChecks[i] ? "verified" : "pending";
+            }
+            return s;
+          });
+        }
 
-      if (next.every(Boolean)) {
-        // All checked → auto-verify all pending docs
-        setDocStatuses((ds) => ds.map((s) => (s === "pending" ? "verified" : s)));
-      }
-      return next;
+        if (label === "Business Verified") {
+          nextDocs = nextDocs.map((s, dIdx) => {
+            const title = turf.documents[dIdx]?.title?.toLowerCase() || "";
+            if (title.includes("gst")) {
+              return nextChecks[i] ? "verified" : "pending";
+            }
+            return s;
+          });
+        }
+
+        if (nextChecks.every(Boolean)) {
+          // All checked → auto-verify all pending docs
+          nextDocs = nextDocs.map((s) => (s === "pending" ? "verified" : s));
+        }
+        
+        saveVerifications(nextChecks, nextDocs);
+        return nextDocs;
+      });
+
+      return nextChecks;
     });
   }
 
   function resetChecks() {
-    setChecks(turf.verifications.map(() => false));
-    setDocStatuses(turf.documents.map((d) => d.status));
+    const nextChecks = turf.verifications.map(() => false);
+    const nextDocs = turf.documents.map((d) => d.status);
+    setChecks(nextChecks);
+    setDocStatuses(nextDocs);
+    saveVerifications(nextChecks, nextDocs);
   }
 
   // ── Doc status ────────────────────────────────────────────────────────────
@@ -596,11 +653,21 @@ export default function TurfDetails() {
       {/* Hero card */}
       <div className="td-hero-card">
         <div className="td-hero-left">
-          <div className="td-hero-logo">
-            <i className="bi bi-patch-check-fill" />
-          </div>
+          {turf.ownerProfileImage ? (
+            <img 
+              src={turf.ownerProfileImage} 
+              alt={turf.ownerName} 
+              className="td-hero-vendor-avatar" 
+              style={{ width: '48px', height: '48px', borderRadius: '50%', objectFit: 'cover', border: '1px solid #e5e7eb' }} 
+            />
+          ) : (
+            <div className="td-hero-logo">
+              <i className="bi bi-patch-check-fill" />
+            </div>
+          )}
           <div>
             <p className="td-hero-vendor">{turf.ownerName}</p>
+            {turf.ownerEmail && <p className="td-hero-email">{turf.ownerEmail}</p>}
             <p className="td-hero-sub">Turf Information Details</p>
           </div>
           <span className="td-hero-id-badge">
@@ -821,7 +888,7 @@ export default function TurfDetails() {
                   <p className="td-doc-sub">{doc.sub}</p>
                 </div>
                 <div className="td-doc-right">
-                  <DocBadge status={status} />
+                  <DocBadge status={status} title={doc.title} />
 
                   {showActions && status === "pending" && (
                     <button
@@ -843,7 +910,7 @@ export default function TurfDetails() {
                   <a
                     href="#preview"
                     className="td-preview-link"
-                    onClick={(e) => e.preventDefault()}
+                    onClick={(e) => { e.preventDefault(); if (doc.url) setPreviewImage(doc.url); }}
                     aria-label={`Preview ${doc.title}`}
                   >
                     Preview <i className="bi bi-eye" />

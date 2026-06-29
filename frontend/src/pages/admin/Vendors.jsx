@@ -79,7 +79,8 @@ export default function Vendors() {
             image:
               vendor.turfs?.[0]?.mainImage ||
               "https://images.unsplash.com/photo-1516399653135-68efc5e5cf13?w=600&h=400&fit=crop",
-            logoImage: vendor.turfs?.[0]?.logoImage || `https://ui-avatars.com/api/?name=${encodeURIComponent(vendor.vendorName || "Vendor")}&background=dcfce7&color=15803d`,
+            logoImage: vendor.profileImage ? `http://localhost:5000${vendor.profileImage}` : (vendor.turfs?.[0]?.logoImage || `https://ui-avatars.com/api/?name=${encodeURIComponent(vendor.vendorName || "Vendor")}&background=dcfce7&color=15803d`),
+            profileImage: vendor.profileImage ? `http://localhost:5000${vendor.profileImage}` : null,
             subscriptionStatus,
             daysLeft,
             // Store additional vendor data for detail view

@@ -1,7 +1,4 @@
 
-/* EditPlans.css */
-
-
 .ep-container {
   padding: 24px 32px;
   background: #f7f8fa;
@@ -99,7 +96,6 @@
 @media (max-width: 768px) {
   .ep-main { grid-template-columns: 1fr; }
   .ep-container { padding: 16px; }
-
 }
 
 /* ── Left Column – Plans List ── */
@@ -817,9 +813,6 @@
 /* ════════════════════════════════════════════
    MOBILE (≤ 768px)
    ════════════════════════════════════════════ */
-
-
-
 @media (max-width: 768px) {
   /* Hide desktop elements */
   .ep-header { display: none; }

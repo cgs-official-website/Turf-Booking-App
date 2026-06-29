@@ -20,9 +20,31 @@ export const getLoginActivity = async () => {
   return response.data;
 };
 
+export const updateAdminProfile = async (data) => {
+  const response = await axiosInstance.put('/admin/profile', data);
+  return response.data;
+};
+
+export const uploadAdminProfileImage = async (formData) => {
+  const response = await axiosInstance.put('/admin/profile-image', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    }
+  });
+  return response.data;
+};
+
+export const deleteAdminProfileImage = async () => {
+  const response = await axiosInstance.delete('/admin/profile-image');
+  return response.data;
+};
+
 export const adminApi = {
   adminLogin,
   adminForgotPassword,
   adminResetPassword,
-  getLoginActivity
+  getLoginActivity,
+  updateAdminProfile,
+  uploadAdminProfileImage,
+  deleteAdminProfileImage
 };
