@@ -50,11 +50,12 @@ const loginAdmin = async ({ email, password }) => {
       name: admin.name,
       email: admin.email,
       role: admin.role,
+      profileImage: admin.profileImage && admin.profileImage.data ? "/api/admin/profile-image" : "",
     },
   };
 };
 
-const getDashboardStats = async (period = "month") => {
+const getDashboardStats = async (period = "month", planId = "") => {
   const now = new Date();
   const currentYear = now.getUTCFullYear();
   const currentMonth = now.getUTCMonth() + 1;
@@ -98,6 +99,11 @@ const getDashboardStats = async (period = "month") => {
   const thirtyDaysFromNow = new Date();
   thirtyDaysFromNow.setDate(thirtyDaysFromNow.getDate() + 30);
 
+  const revenueMatchStage = { paymentStatus: "paid" };
+  if (planId) {
+    revenueMatchStage.plan = new mongoose.Types.ObjectId(planId);
+  }
+
   const [
     totalVendors,
     totalTurfs,
@@ -111,12 +117,10 @@ const getDashboardStats = async (period = "month") => {
     User.countDocuments({
       role: "vendor",
     }),
-    Turf.countDocuments(),
+    Turf.countDocuments({ approvalStatus: "approved" }),
     Subscription.aggregate([
       {
-        $match: {
-          paymentStatus: "paid",
-        },
+        $match: revenueMatchStage,
       },
       {
         $facet: {
@@ -186,6 +190,7 @@ const getDashboardStats = async (period = "month") => {
       createdAt: { $gte: startOfCurrentMonth },
     }),
     Turf.countDocuments({
+      approvalStatus: "approved",
       createdAt: { $gte: startOfCurrentMonth },
     }),
     Subscription.find({

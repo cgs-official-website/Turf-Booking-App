@@ -75,13 +75,32 @@ const loginAdmin = async (req, res, next) => {
   }
 };
 // Admin Profile
+const getProfileImage = async (req, res, next) => {
+  try {
+    const admin = await Admin.findById(req.admin._id);
+    if (!admin) {
+      throw new ApiError(404, "Admin not found");
+    }
+    if (!admin.profileImage || !admin.profileImage.data) {
+      return res.status(404).json(new ApiResponse(404, "Profile image not found", null));
+    }
+    res.set('Content-Type', admin.profileImage.contentType);
+    return res.send(admin.profileImage.data);
+  } catch (error) {
+    next(error);
+  }
+};
+
+// Admin profile data
 const getProfile = async (req, res, next) => {
   try {
+    const adminData = req.admin.toObject();
+    adminData.profileImage = adminData.profileImage && adminData.profileImage.data ? "/api/admin/profile-image" : "";
     res.status(200).json(
       new ApiResponse(
         200,
         "Admin profile fetched successfully",
-        req.admin
+        adminData
       )
     );
   } catch (error) {
@@ -93,7 +112,8 @@ const getProfile = async (req, res, next) => {
 const getDashboardStats = async (req, res, next) => {
   try {
     const period = req.query.period || "month";
-    const stats = await adminService.getDashboardStats(period);
+    const plan = req.query.plan;
+    const stats = await adminService.getDashboardStats(period, plan);
 
     res.status(200).json(
       new ApiResponse(
@@ -308,20 +328,18 @@ const uploadProfileImage = async (req, res, next) => {
       throw new ApiError(404, "Admin not found");
     }
 
-    // Delete old profile image if exists
-    if (admin.profileImage) {
-      const oldPath = path.join(__dirname, "../../", admin.profileImage);
-      if (fs.existsSync(oldPath)) {
-        fs.unlinkSync(oldPath);
-      }
-    }
-
-    const imageUrl = `/uploads/profiles/${req.file.filename}`;
-    admin.profileImage = imageUrl;
+    // Store new profile image directly in DB as Buffer
+    admin.profileImage = {
+      data: req.file.buffer,
+      contentType: req.file.mimetype,
+    };
     await admin.save();
 
+    const adminData = admin.toObject();
+    adminData.profileImage = "/api/admin/profile-image";
+
     res.status(200).json(
-      new ApiResponse(200, "Profile image updated successfully", admin)
+      new ApiResponse(200, "Profile image updated successfully", adminData)
     );
   } catch (error) {
     next(error);
@@ -336,11 +354,7 @@ const deleteProfileImage = async (req, res, next) => {
     }
 
     if (admin.profileImage) {
-      const oldPath = path.join(__dirname, "../../", admin.profileImage);
-      if (fs.existsSync(oldPath)) {
-        fs.unlinkSync(oldPath);
-      }
-      admin.profileImage = "";
+      admin.profileImage = undefined;
       await admin.save();
     }
 
@@ -367,4 +381,5 @@ module.exports = {
   updateProfile,
   uploadProfileImage,
   deleteProfileImage,
+  getProfileImage,
 };

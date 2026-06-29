@@ -95,7 +95,8 @@
       title: Joi.string(),
       sub: Joi.string().allow(""),
       status: Joi.string(),
-      icon: Joi.string()
+      icon: Joi.string(),
+      url: Joi.string().allow("").optional()
     }))
   });
 

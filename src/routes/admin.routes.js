@@ -15,6 +15,7 @@ const {
   updateProfile,
   uploadProfileImage,
   deleteProfileImage,
+  getProfileImage,
 } = require("../controllers/admin.controller");
 
 const upload = require("../middlewares/upload.middleware");
@@ -55,6 +56,9 @@ router.put("/profile", authorizeAdmin, updateProfile);
 
 // PUT /api/admin/profile-image
 router.put("/profile-image", authorizeAdmin, upload.single("profileImage"), uploadProfileImage);
+
+// GET /api/admin/profile-image
+router.get("/profile-image", authorizeAdmin, getProfileImage);
 
 // DELETE /api/admin/profile-image
 router.delete("/profile-image", authorizeAdmin, deleteProfileImage);

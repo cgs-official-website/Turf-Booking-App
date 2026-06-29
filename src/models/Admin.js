@@ -27,8 +27,8 @@ const adminSchema = new mongoose.Schema(
     },
 
     profileImage: {
-      type: String,
-      default: "",
+      data: Buffer,
+      contentType: String,
     },
 
     resetPasswordToken: {
