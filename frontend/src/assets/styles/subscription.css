@@ -11,7 +11,7 @@
 .sub-page__title {
   font-size: 2rem;
   font-weight: 600;
-  color :var(--clr-text-primary);
+  color: var(--clr-text-primary);
   letter-spacing: -0.3px;
   margin: 0 0 24px;
 }
@@ -288,10 +288,23 @@
     padding: 16px;
   }
 
+  /* Show header on mobile as well */
+  .sub-plan-management__header {
+    display: flex !important;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .sub-plan-management__header .dashboard-title {
+    font-size: 1.25rem;
+    margin: 0;
+  }
+
   .sub-plan-management__mobile-edit {
-    display: flex;
-    justify-content: flex-end;
-    margin-bottom: 0.75rem;
+    display: none !important;
   }
 
   /* ── Mobile Plan Management ── */
@@ -397,10 +410,6 @@
     display: block;
   }
 
-  .sub-plan-management__header {
-    display: none;
-  }
-
   .sub-edit-plans-btn {
     font-size: 12px;
     height: 36px;
@@ -415,5 +424,9 @@
 @media (max-width: 480px) {
   .sub-page {
     padding: 12px;
+  }
+
+  .sub-plan-management__header .dashboard-title {
+    font-size: 1.1rem;
   }
 }
