@@ -24,7 +24,7 @@ export default function Navbar({ title, onMenuToggle }) {
 
   const adminData   = JSON.parse(localStorage.getItem('admin') || '{}');
   const adminName   = adminData.name || 'Admin';
-  const profileImage = adminData.profileImage ? `http://localhost:5000${adminData.profileImage}` : null;
+  const profileImage = adminData.profileImage ? (adminData.profileImage.startsWith('http') ? adminData.profileImage : `http://localhost:5000${adminData.profileImage}`) : null;
   const adminAvatar = profileImage 
     ? <img src={profileImage} alt={adminName} style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover', display: 'block', flexShrink: 0 }} />
     : adminName.charAt(0).toUpperCase();

@@ -24,7 +24,9 @@ function normalizeReport(r) {
     reportId: r.reportId ?? "#RP-" + (r._id?.slice(-4) ?? "????"),
     vendorName: vendor.name ?? r.vendorName ?? "—",
     vendorEmail: vendor.email ?? r.vendorEmail ?? "—",
-    vendorAvatar: vendor.profileImage ? `http://localhost:5000${vendor.profileImage}` : (r.vendorAvatar ?? null),
+    vendorAvatar: vendor.profileImage 
+      ? (vendor.profileImage.startsWith("http") ? vendor.profileImage : `http://localhost:5000${vendor.profileImage.startsWith("/") ? "" : "/"}${vendor.profileImage}`) 
+      : (r.vendorAvatar ?? null),
     turfName: turf.name ?? r.turfName ?? "—",
     turfLocation: turf.location ?? r.location ?? "—",
     turfImage: turf.mainImage ?? r.turfImage ?? null,

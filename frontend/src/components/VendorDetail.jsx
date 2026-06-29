@@ -91,7 +91,9 @@ export default function VendorDetail({ vendor, onBack, onVendorSuspended }) {
             location: turf.location || 'Unknown Location',
             hourlyRate: `₹${(turf.pricePerHour || turf.price || 0).toLocaleString('en-IN')}`,
             status: turf.approvalStatus || turf.status || 'Pending',
-            image: turf.mainImage || (turf.images && turf.images[0]) || (turf.photos && turf.photos[0]) || 'https://images.unsplash.com/photo-1624880357913-a8539238245b?w=48&h=48&fit=crop',
+            image: turf.mainImage 
+              ? (turf.mainImage.startsWith('http') ? turf.mainImage : `http://localhost:5000${turf.mainImage.startsWith("/") ? "" : "/"}${turf.mainImage}`)
+              : (turf.images && turf.images[0]) || (turf.photos && turf.photos[0]) || 'https://images.unsplash.com/photo-1624880357913-a8539238245b?w=48&h=48&fit=crop',
             venueCardData: {
               name: turf.turfName || turf.name || 'Unnamed Turf',
               location: turf.location || turf.address?.city || turf.city || 'Unknown Location',
@@ -100,7 +102,11 @@ export default function VendorDetail({ vendor, onBack, onVendorSuspended }) {
               pricePerHour: turf.pricePerHour?.basePrice || turf.pricePerHour || turf.price || 0,
               facilities: turf.facilities || turf.amenities || [],
               sports: turf.sports || turf.sportTypes || (turf.sportType ? [turf.sportType] : []),
-              photos: turf.secondaryImages || turf.images || turf.photos || [turf.mainImage].filter(Boolean) || [],
+              photos: turf.secondaryImages?.length > 0 
+                ? turf.secondaryImages.map(img => img.startsWith('http') ? img : `http://localhost:5000${img.startsWith("/") ? "" : "/"}${img}`)
+                : turf.mainImage 
+                  ? [turf.mainImage.startsWith('http') ? turf.mainImage : `http://localhost:5000${turf.mainImage.startsWith("/") ? "" : "/"}${turf.mainImage}`] 
+                  : ['https://images.unsplash.com/photo-1624880357913-a8539238245b?w=600&h=400&fit=crop'],
               verified: (turf.approvalStatus || turf.status || '').toLowerCase() === 'approved',
             },
           };
@@ -312,35 +318,31 @@ export default function VendorDetail({ vendor, onBack, onVendorSuspended }) {
         </div>
       )}
 
-      {/* ── Document Preview Popup ── */}
+      {/* Image / Document Preview Modal */}
       {previewDoc && (
         <div 
           style={{
-            position: 'fixed',
-            top: 0, left: 0, right: 0, bottom: 0,
-            backgroundColor: 'rgba(0,0,0,0.9)',
-            zIndex: 99999,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            cursor: 'zoom-out'
+            position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+            background: 'rgba(0,0,0,0.3)', backdropFilter: 'blur(8px)', zIndex: 9999,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            cursor: 'pointer'
           }}
           onClick={() => setPreviewDoc(null)}
         >
-          <div style={{ position: 'relative', maxWidth: '90%', maxHeight: '90%', display: 'flex', flexDirection: 'column' }}>
-            <div style={{ color: 'white', padding: '10px', background: 'rgba(0,0,0,0.5)', textAlign: 'center', position: 'absolute', top: 0, left: 0, right: 0, zIndex: 1 }}>
-              <span>{previewDoc.title}</span>
-              <button 
-                style={{ background: 'transparent', border: 'none', color: 'white', float: 'right', cursor: 'pointer', fontSize: '18px' }} 
-                onClick={() => setPreviewDoc(null)}
-              >✕</button>
-            </div>
-            <img 
-              src={previewDoc.src} 
-              alt={previewDoc.title} 
-              style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }}
-              onClick={(e) => e.stopPropagation()} 
-            />
+          <div style={{ width: '90vw', height: 'auto', aspectRatio: '4/3', maxWidth: '800px', maxHeight: '80vh', position: 'relative', background: 'white', borderRadius: '8px', overflow: 'hidden' }}>
+            {previewDoc.src?.toLowerCase().endsWith('.pdf') ? (
+              <iframe
+                src={previewDoc.src}
+                title={previewDoc.title}
+                style={{ width: '100%', height: '100%', border: 'none' }}
+              />
+            ) : (
+              <img 
+                src={previewDoc.src} 
+                alt={previewDoc.title} 
+                style={{ width: '100%', height: '100%', objectFit: 'contain' }} 
+              />
+            )}
           </div>
         </div>
       )}
@@ -525,6 +527,8 @@ export default function VendorDetail({ vendor, onBack, onVendorSuspended }) {
                 </a>
               </div>
             </div>
+
+
           </div>
         </div>
       </div>

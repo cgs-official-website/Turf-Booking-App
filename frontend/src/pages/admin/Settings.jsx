@@ -237,7 +237,7 @@ const Settings = () => {
           <div className="profile-info">
             <div className="profile-image-container" style={{ position: 'relative', cursor: 'pointer' }} onClick={handleImageClick} ref={popupRef}>
               <img 
-                src={admin?.profileImage ? `http://localhost:5000${admin.profileImage}` : `https://ui-avatars.com/api/?name=${encodeURIComponent(admin?.name || 'Admin')}&background=0D8B41&color=fff`} 
+                src={admin?.profileImage ? (admin.profileImage.startsWith('http') ? admin.profileImage : `http://localhost:5000${admin.profileImage}`) : `https://ui-avatars.com/api/?name=${encodeURIComponent(admin?.name || 'Admin')}&background=0D8B41&color=fff`} 
                 alt={admin?.name || 'Admin'} 
                 style={{ opacity: isUploadingImage ? 0.5 : 1, transition: 'opacity 0.2s' }}
               />

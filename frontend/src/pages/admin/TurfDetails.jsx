@@ -85,7 +85,7 @@ function normalizeTurf(t) {
   // owner is populated: { name, email, phone }
   const ownerName = t.owner?.name ?? t.ownerName ?? t.vendor ?? "—";
   const ownerProfileImage = t.owner?.profileImage 
-    ? `http://localhost:5000${t.owner.profileImage}` 
+    ? (t.owner.profileImage.startsWith("http") ? t.owner.profileImage : `http://localhost:5000${t.owner.profileImage.startsWith("/") ? "" : "/"}${t.owner.profileImage}`)
     : `https://ui-avatars.com/api/?name=${encodeURIComponent(ownerName)}&background=0D8B41&color=fff`;
   const phone     = t.owner?.phone ?? t.phone ?? t.contact ?? "—";
 
@@ -102,10 +102,10 @@ function normalizeTurf(t) {
   let rawDocs = t.documents ?? t.docs ?? [];
   if (rawDocs.length === 0) {
     rawDocs = [
-      { title: "Aadhar card", sub: "ID Proof", status: "pending", icon: "bi-fingerprint" },
-      { title: "Pan card", sub: "Tax ID", status: "pending", icon: "bi-person-vcard" },
-      { title: "GST certificated", sub: "Business Proof", status: "pending", icon: "bi-file-earmark-ruled" },
-      { title: "EB bill", sub: "Address Proof", status: "pending", icon: "bi-lightning-charge" }
+      { title: "Aadhar card", sub: "ID Proof", status: "pending", icon: "bi-fingerprint", url: t.owner?.kycDocuments?.aadhar?.url },
+      { title: "Pan card", sub: "Tax ID", status: "pending", icon: "bi-person-vcard", url: t.owner?.kycDocuments?.pan?.url },
+      { title: "GST certificated", sub: "Business Proof", status: "pending", icon: "bi-file-earmark-ruled", url: t.owner?.kycDocuments?.gst?.url },
+      { title: "EB bill", sub: "Address Proof", status: "pending", icon: "bi-lightning-charge", url: t.owner?.kycDocuments?.ebBill?.url }
     ];
   }
   const documents = rawDocs.map((d) => {
@@ -114,16 +114,33 @@ function normalizeTurf(t) {
                  : raw === "rejected" ? "rejected"
                  : "pending";
     const name = d.name ?? d.title ?? "Document";
-    let url = d.url ?? d.fileUrl ?? null;
-    if (url && !url.startsWith("http")) {
-      url = `http://localhost:5000${url.startsWith("/") ? "" : "/"}${url}`;
+    
+    let docUrl = d.url ?? d.fileUrl ?? null;
+    
+    if (!docUrl && t.owner) {
+      const owner = t.owner;
+      const lowerTitle = name.toLowerCase();
+      if (lowerTitle.includes("aadhar")) {
+        docUrl = owner.kycDocuments?.aadhar?.url || owner.aadharCard || owner.aadharImage || owner.documents?.aadhar || owner.aadhar;
+      } else if (lowerTitle.includes("pan")) {
+        docUrl = owner.kycDocuments?.pan?.url || owner.panCard || owner.panImage || owner.documents?.pan || owner.pan;
+      } else if (lowerTitle.includes("gst")) {
+        docUrl = owner.kycDocuments?.gst?.url || owner.gstCertificate || owner.documents?.gst || owner.gst;
+      } else if (lowerTitle.includes("eb bill")) {
+        docUrl = owner.kycDocuments?.ebBill?.url || owner.ebBill || owner.documents?.ebBill;
+      }
     }
+
+    if (docUrl && !docUrl.startsWith("http")) {
+      docUrl = `http://localhost:5000${docUrl.startsWith("/") ? "" : "/"}${docUrl}`;
+    }
+
     return {
       icon:   DOC_ICON[name] ?? d.icon ?? "bi-file-earmark",
       title:  name,
       sub:    d.subtitle ?? d.sub ?? "",
       status,
-      url,
+      url: docUrl
     };
   });
 
@@ -143,6 +160,15 @@ function normalizeTurf(t) {
       { label: "Business Verified",    checked: !!t.verifications.business },
     ];
   }
+
+  const formatTurfImageUrl = (url) => {
+    if (!url) return null;
+    return url.startsWith("http") ? url : `http://localhost:5000${url.startsWith("/") ? "" : "/"}${url}`;
+  };
+
+  const formattedMainImage = formatTurfImageUrl(t.mainImage);
+  const formattedSecondaryImages = (Array.isArray(t.secondaryImages) ? t.secondaryImages : []).map(formatTurfImageUrl);
+  const formattedLogo = formatTurfImageUrl(t.logo);
 
   return {
     _id:            t._id,
@@ -164,8 +190,9 @@ function normalizeTurf(t) {
     amenities:  t.amenities  ?? t.facilities ?? [],
     sportTypes,
     photos: [
-      ...(Array.isArray(t.secondaryImages) ? t.secondaryImages : []),
+      ...formattedSecondaryImages,
     ].filter(Boolean),
+    logo: formattedLogo,
     verifications,
     documents,
     rejectionReason: t.rejectionReason || "",
@@ -955,12 +982,20 @@ export default function TurfDetails() {
           }}
           onClick={() => setPreviewImage(null)}
         >
-          <div style={{ width: '90vw', height: 'auto', aspectRatio: '4/3', maxWidth: '800px', maxHeight: '80vh', position: 'relative' }}>
-            <img 
-              src={previewImage} 
-              alt="Preview" 
-              style={{ width: '100%', height: '100%', objectFit: 'contain', borderRadius: '8px' }} 
-            />
+          <div style={{ width: '90vw', height: 'auto', aspectRatio: '4/3', maxWidth: '800px', maxHeight: '80vh', position: 'relative', background: 'white', borderRadius: '8px', overflow: 'hidden' }}>
+            {previewImage?.toLowerCase().endsWith('.pdf') ? (
+              <iframe
+                src={previewImage}
+                title="PDF Preview"
+                style={{ width: '100%', height: '100%', border: 'none' }}
+              />
+            ) : (
+              <img 
+                src={previewImage} 
+                alt="Preview" 
+                style={{ width: '100%', height: '100%', objectFit: 'contain' }} 
+              />
+            )}
           </div>
         </div>
       )}

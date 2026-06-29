@@ -76,11 +76,15 @@ export default function Vendors() {
             email: vendor.email,
             phone: vendor.phone,
             location: vendor.location,
-            image:
-              vendor.turfs?.[0]?.mainImage ||
-              "https://images.unsplash.com/photo-1516399653135-68efc5e5cf13?w=600&h=400&fit=crop",
-            logoImage: vendor.profileImage ? `http://localhost:5000${vendor.profileImage}` : (vendor.turfs?.[0]?.logoImage || `https://ui-avatars.com/api/?name=${encodeURIComponent(vendor.vendorName || "Vendor")}&background=dcfce7&color=15803d`),
-            profileImage: vendor.profileImage ? `http://localhost:5000${vendor.profileImage}` : null,
+            image: vendor.bannerImage 
+              ? (vendor.bannerImage.startsWith("http") ? vendor.bannerImage : `http://localhost:5000${vendor.bannerImage.startsWith("/") ? "" : "/"}${vendor.bannerImage}`)
+              : "https://images.unsplash.com/photo-1516399653135-68efc5e5cf13?w=600&h=400&fit=crop",
+            logoImage: vendor.profileImage 
+              ? (vendor.profileImage.startsWith("http") ? vendor.profileImage : `http://localhost:5000${vendor.profileImage.startsWith("/") ? "" : "/"}${vendor.profileImage}`) 
+              : (vendor.turfs?.[0]?.logoImage || `https://ui-avatars.com/api/?name=${encodeURIComponent(vendor.vendorName || "Vendor")}&background=dcfce7&color=15803d`),
+            profileImage: vendor.profileImage 
+              ? (vendor.profileImage.startsWith("http") ? vendor.profileImage : `http://localhost:5000${vendor.profileImage.startsWith("/") ? "" : "/"}${vendor.profileImage}`) 
+              : null,
             subscriptionStatus,
             daysLeft,
             // Store additional vendor data for detail view
