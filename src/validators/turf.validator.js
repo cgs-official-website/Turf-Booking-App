@@ -9,14 +9,10 @@
       "any.required": "Location is required",
     }),
 
-    sportType: Joi.string()
-      .valid("football", "cricket", "badminton", "multi-sport")
-      .optional()
-      .messages({
-        "any.only": "Invalid sport type",
-      }),
 
-    sports: Joi.array().items(Joi.string().valid("football", "cricket", "badminton", "multi-sport", "tennis", "basketball", "volleyball", "swimming", "table-tennis")).default([]).messages({
+
+    // Case‑insensitive sport validation – accepts any capitalisation
+    sports: Joi.array().items(Joi.string().lowercase().valid("football","cricket","badminton","multi-sport","tennis","basketball","volleyball","swimming","table-tennis").insensitive()).default([]).messages({
       "any.only": "Invalid sport type in array",
     }),
 
@@ -45,6 +41,18 @@
       .messages({
         "array.max": "Maximum 4 secondary images are allowed",
       }),
+
+    aadhar: Joi.string().optional(),
+    pan: Joi.string().optional(),
+    gst: Joi.string().optional(),
+    ebBill: Joi.string().optional(),
+    
+    documents: Joi.array().items(Joi.object({
+      title: Joi.string(),
+      sub: Joi.string().allow(""),
+      status: Joi.string(),
+      icon: Joi.string()
+    })).optional()
   });
 
   const updateTurfSchema = Joi.object({
@@ -52,14 +60,10 @@
 
     location: Joi.string().trim(),
 
-    sportType: Joi.string().valid(
-      "football",
-      "cricket",
-      "badminton",
-      "multi-sport"
-    ),
 
-    sports: Joi.array().items(Joi.string().valid("football", "cricket", "badminton", "multi-sport", "tennis", "basketball", "volleyball", "swimming", "table-tennis")),
+
+    // Case‑insensitive sport validation for updates
+    sports: Joi.array().items(Joi.string().lowercase().valid("football", "cricket", "badminton", "multi-sport", "tennis", "basketball", "volleyball", "swimming", "table-tennis").insensitive()),
 
     facilities: Joi.array().items(Joi.string()),
 
@@ -81,6 +85,18 @@
       .max(4),
 
     isAvailable: Joi.boolean(),
+
+    verifications: Joi.array().items(Joi.object({
+      label: Joi.string(),
+      checked: Joi.boolean()
+    })),
+
+    documents: Joi.array().items(Joi.object({
+      title: Joi.string(),
+      sub: Joi.string().allow(""),
+      status: Joi.string(),
+      icon: Joi.string()
+    }))
   });
 
   module.exports = {

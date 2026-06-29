@@ -12,7 +12,12 @@ const {
   getAllBookings,
   getVendorRecentBookings,
   suspendVendor,
+  updateProfile,
+  uploadProfileImage,
+  deleteProfileImage,
 } = require("../controllers/admin.controller");
+
+const upload = require("../middlewares/upload.middleware");
 
 const validate = require("../middlewares/validation.middleware");
 const {
@@ -44,6 +49,15 @@ router.post(
 
 // GET /api/admin/profile
 router.get("/profile", authorizeAdmin, getProfile);
+
+// PUT /api/admin/profile
+router.put("/profile", authorizeAdmin, updateProfile);
+
+// PUT /api/admin/profile-image
+router.put("/profile-image", authorizeAdmin, upload.single("profileImage"), uploadProfileImage);
+
+// DELETE /api/admin/profile-image
+router.delete("/profile-image", authorizeAdmin, deleteProfileImage);
 
 // GET /admin/login-activity
 router.get("/login-activity", authorizeAdmin, getLoginActivity);

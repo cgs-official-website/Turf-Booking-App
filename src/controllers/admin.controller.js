@@ -267,6 +267,91 @@ const suspendVendor = async (req, res, next) => {
   }
 };
 
+const updateProfile = async (req, res, next) => {
+  try {
+    const { name } = req.body;
+    if (!name) {
+      throw new ApiError(400, "Name is required");
+    }
+
+    const admin = await Admin.findById(req.admin._id);
+    if (!admin) {
+      throw new ApiError(404, "Admin not found");
+    }
+
+    admin.name = name;
+    await admin.save();
+
+    res.status(200).json(
+      new ApiResponse(
+        200,
+        "Admin profile updated successfully",
+        admin
+      )
+    );
+  } catch (error) {
+    next(error);
+  }
+};
+
+const fs = require("fs");
+const path = require("path");
+
+const uploadProfileImage = async (req, res, next) => {
+  try {
+    if (!req.file) {
+      throw new ApiError(400, "Please upload an image");
+    }
+
+    const admin = await Admin.findById(req.admin._id);
+    if (!admin) {
+      throw new ApiError(404, "Admin not found");
+    }
+
+    // Delete old profile image if exists
+    if (admin.profileImage) {
+      const oldPath = path.join(__dirname, "../../", admin.profileImage);
+      if (fs.existsSync(oldPath)) {
+        fs.unlinkSync(oldPath);
+      }
+    }
+
+    const imageUrl = `/uploads/profiles/${req.file.filename}`;
+    admin.profileImage = imageUrl;
+    await admin.save();
+
+    res.status(200).json(
+      new ApiResponse(200, "Profile image updated successfully", admin)
+    );
+  } catch (error) {
+    next(error);
+  }
+};
+
+const deleteProfileImage = async (req, res, next) => {
+  try {
+    const admin = await Admin.findById(req.admin._id);
+    if (!admin) {
+      throw new ApiError(404, "Admin not found");
+    }
+
+    if (admin.profileImage) {
+      const oldPath = path.join(__dirname, "../../", admin.profileImage);
+      if (fs.existsSync(oldPath)) {
+        fs.unlinkSync(oldPath);
+      }
+      admin.profileImage = "";
+      await admin.save();
+    }
+
+    res.status(200).json(
+      new ApiResponse(200, "Profile image deleted successfully", admin)
+    );
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   loginAdmin,
   getProfile,
@@ -279,4 +364,7 @@ module.exports = {
   getAllBookings,
   getVendorRecentBookings,
   suspendVendor,
+  updateProfile,
+  uploadProfileImage,
+  deleteProfileImage,
 };

@@ -3,7 +3,7 @@ const ApiError = require("../utils/ApiError");
 const { generateToken } = require("../utils/jwt");
 const User = require("../models/User");
 
-const registerUser = async ({ name, email, password, phone, role }) => {
+const registerUser = async ({ name, email, password, phone, role, profileImage, aadhar, pan, gst, ebBill }) => {
   const existingUser = await User.findOne({ email });
   if (existingUser) {
     throw new ApiError(409, "User with this email already exists");
@@ -11,12 +11,27 @@ const registerUser = async ({ name, email, password, phone, role }) => {
 
   const hashedPassword = await bcrypt.hash(password, 10);
 
+  let kycDocuments = undefined;
+  if (role === "vendor") {
+    if (!aadhar || !pan || !gst || !ebBill) {
+      throw new ApiError(400, "Aadhar, PAN, GST, and EB Bill are required for vendor registration.");
+    }
+    kycDocuments = {
+      aadhar: { url: aadhar, verified: false },
+      pan: { url: pan, verified: false },
+      gst: { url: gst, verified: false },
+      ebBill: { url: ebBill, verified: false }
+    };
+  }
+
   const user = await User.create({
     name,
     email,
     password: hashedPassword,
     phone,
     role,
+    profileImage,
+    kycDocuments,
   });
 
   const token = generateToken(user);

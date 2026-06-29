@@ -40,11 +40,6 @@ const turfSchema = new mongoose.Schema(
     //   },
     // },
 
-    sportType: {
-      type: String,
-      enum: ["football", "cricket", "badminton", "multi-sport"],
-      required: false, // Made optional for backward compatibility
-    },
 
     sports: [
       {
@@ -87,6 +82,11 @@ const turfSchema = new mongoose.Schema(
       default: "",
     },
 
+    logo: {
+      type: String,
+      default: "",
+    },
+
     mainImage: {
       type: String,
       required: true,
@@ -108,10 +108,43 @@ const turfSchema = new mongoose.Schema(
       ref: "User",
       required: [true, "Owner is required"],
     },
+    
+    verifications: [
+      {
+        label: String,
+        checked: Boolean
+      }
+    ],
+
+    documents: [
+      {
+        title: String,
+        sub: String,
+        status: String,
+        icon: String,
+        url: String
+      }
+    ],
+
     approvalStatus: {
       type: String,
       enum: ["pending", "approved", "rejected"],
       default: "pending",
+    },
+
+    // Verification checklist defaults to false (not verified)
+    verificationChecklist: {
+      identityVerified: { type: Boolean, default: false },
+      locationVerified: { type: Boolean, default: false },
+      turfPhotosVerified: { type: Boolean, default: false },
+      contactVerified: { type: Boolean, default: false },
+      businessVerified: { type: Boolean, default: false },
+      documentVerification: {
+        aadhar: { type: Boolean, default: false },
+        pan: { type: Boolean, default: false },
+        gst: { type: Boolean, default: false },
+        ebBill: { type: Boolean, default: false },
+      },
     },
 
     averageRating: {

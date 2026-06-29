@@ -33,6 +33,16 @@ const registerSchema = Joi.object({
     }),
 
   role: Joi.string().valid("user", "vendor").default("user"),
+
+  profileImage: Joi.string().uri().required().messages({
+    "any.required": "Profile image is required",
+    "string.uri": "Profile image must be a valid URL",
+  }),
+
+  aadhar: Joi.string().uri().optional(),
+  pan: Joi.string().uri().optional(),
+  gst: Joi.string().uri().optional(),
+  ebBill: Joi.string().uri().optional(),
 });
 
 const loginSchema = Joi.object({

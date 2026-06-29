@@ -22,11 +22,16 @@ const reportRoutes = require("./routes/report.routes");
 
 const app = express();
 
+const path = require("path");
+
 // Middleware
-app.use(helmet());
+app.use(helmet({ crossOriginResourcePolicy: false })); // To allow image loading from frontend
 app.use(cors());
 app.use(express.json());
 app.use(morgan("dev"));
+
+// Serve static files
+app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 
 // Routes
 app.use("/", routes);

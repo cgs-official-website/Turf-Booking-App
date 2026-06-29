@@ -18,12 +18,49 @@ function assertObjectId(id, label = "ID") {
 // ─────────────────────────────────────────────
 const addTurf = async ({
   name, location, sportType, sports, facilities, pricePerHour, description,
-  amenities, mainImage, secondaryImages, ownerId,
+  amenities, mainImage, secondaryImages, ownerId, aadhar, pan, gst, ebBill, documents
 }) => {
   const existing = await Turf.findOne({ name, location });
   if (existing) {
     throw new ApiError(400, "A turf with this name already exists at this location");
   }
+
+  const User = require("../models/User");
+  const vendor = await User.findById(ownerId);
+  if (!vendor) {
+    throw new ApiError(404, "Vendor not found");
+  }
+
+  // Handle KYC documents logic
+  const turfDocs = [];
+
+  // Check if vendor already has KYC documents
+  const hasKyc = vendor.kycDocuments && (vendor.kycDocuments.aadhar || vendor.kycDocuments.pan || vendor.kycDocuments.gst || vendor.kycDocuments.ebBill);
+  
+  if (hasKyc) {
+    // Reuse existing KYC docs for this turf (status pending by default)
+    if (vendor.kycDocuments.aadhar?.url) {
+        turfDocs.push({ title: "Aadhar card", sub: "ID Proof", status: "pending", icon: "bi-fingerprint", url: vendor.kycDocuments.aadhar.url });
+    }
+    if (vendor.kycDocuments.pan?.url) {
+        turfDocs.push({ title: "Pan card", sub: "Tax ID", status: "pending", icon: "bi-person-vcard", url: vendor.kycDocuments.pan.url });
+    }
+    if (vendor.kycDocuments.gst?.url) {
+        turfDocs.push({ title: "GST certificated", sub: "Business Proof", status: "pending", icon: "bi-file-earmark-ruled", url: vendor.kycDocuments.gst.url });
+    }
+    if (vendor.kycDocuments.ebBill?.url) {
+        turfDocs.push({ title: "EB bill", sub: "Address Proof", status: "pending", icon: "bi-lightning-charge", url: vendor.kycDocuments.ebBill.url });
+    }  
+  } else {
+    // Fallback if older vendor without KYC docs creates turf
+    if (aadhar) turfDocs.push({ title: "Aadhar card", sub: "ID Proof", status: "pending", icon: "bi-fingerprint" });
+    if (pan) turfDocs.push({ title: "Pan card", sub: "Tax ID", status: "pending", icon: "bi-person-vcard" });
+    if (gst) turfDocs.push({ title: "GST certificated", sub: "Business Proof", status: "pending", icon: "bi-file-earmark-ruled" });
+    if (ebBill) turfDocs.push({ title: "EB bill", sub: "Address Proof", status: "pending", icon: "bi-lightning-charge" });
+  }
+
+  // Fallback to passed documents array if it exists and we didn't process the flat fields
+  const finalDocs = turfDocs.length > 0 ? turfDocs : (documents || []);
 
   const turf = await Turf.create({
     name, location, sportType, sports, facilities, pricePerHour, description,
@@ -33,6 +70,7 @@ const addTurf = async ({
     owner: ownerId,
     isAvailable: true,
     approvalStatus: "pending",
+    documents: finalDocs
   });
 
   try {

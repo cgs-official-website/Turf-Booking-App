@@ -41,6 +41,18 @@ const userSchema = new mongoose.Schema(
       enum: ["user", "vendor"],
       default: "user",
     },
+    profileImage: {
+      type: String,
+      default: "",
+      required: [true, "Profile image is required"],
+    },
+
+    kycDocuments: {
+      aadhar: { url: String, verified: { type: Boolean, default: false } },
+      pan: { url: String, verified: { type: Boolean, default: false } },
+      gst: { url: String, verified: { type: Boolean, default: false } },
+      ebBill: { url: String, verified: { type: Boolean, default: false } }
+    },
 
 
   },
