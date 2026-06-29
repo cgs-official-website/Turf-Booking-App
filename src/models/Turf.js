@@ -132,6 +132,11 @@ const turfSchema = new mongoose.Schema(
       default: "pending",
     },
 
+    rejectionReason: {
+      type: String,
+      default: "",
+    },
+
     // Verification checklist defaults to false (not verified)
     verificationChecklist: {
       identityVerified: { type: Boolean, default: false },

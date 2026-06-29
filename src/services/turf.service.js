@@ -33,34 +33,52 @@ const addTurf = async ({
 
   // Handle KYC documents logic
   const turfDocs = [];
-
-  // Check if vendor already has KYC documents
-  const hasKyc = vendor.kycDocuments && (vendor.kycDocuments.aadhar || vendor.kycDocuments.pan || vendor.kycDocuments.gst || vendor.kycDocuments.ebBill);
   
-  if (hasKyc) {
-    // Reuse existing KYC docs for this turf (status pending by default)
+  // Check if vendor already has an approved turf
+  const approvedTurf = await Turf.findOne({ owner: ownerId, approvalStatus: "approved" });
+  const hasApprovedTurf = !!approvedTurf;
+  const defaultKycStatus = hasApprovedTurf ? "verified" : "pending";
+
+  if (vendor.kycDocuments) {
     if (vendor.kycDocuments.aadhar?.url) {
-        turfDocs.push({ title: "Aadhar card", sub: "ID Proof", status: "pending", icon: "bi-fingerprint", url: vendor.kycDocuments.aadhar.url });
+      turfDocs.push({ title: "Aadhar card", sub: "ID Proof", status: defaultKycStatus, icon: "bi-fingerprint", url: vendor.kycDocuments.aadhar.url });
     }
     if (vendor.kycDocuments.pan?.url) {
-        turfDocs.push({ title: "Pan card", sub: "Tax ID", status: "pending", icon: "bi-person-vcard", url: vendor.kycDocuments.pan.url });
+      turfDocs.push({ title: "Pan card", sub: "Tax ID", status: defaultKycStatus, icon: "bi-person-vcard", url: vendor.kycDocuments.pan.url });
     }
     if (vendor.kycDocuments.gst?.url) {
-        turfDocs.push({ title: "GST certificated", sub: "Business Proof", status: "pending", icon: "bi-file-earmark-ruled", url: vendor.kycDocuments.gst.url });
+      turfDocs.push({ title: "GST certificated", sub: "Business Proof", status: defaultKycStatus, icon: "bi-file-earmark-ruled", url: vendor.kycDocuments.gst.url });
     }
-    if (vendor.kycDocuments.ebBill?.url) {
-        turfDocs.push({ title: "EB bill", sub: "Address Proof", status: "pending", icon: "bi-lightning-charge", url: vendor.kycDocuments.ebBill.url });
-    }  
   } else {
-    // Fallback if older vendor without KYC docs creates turf
-    if (aadhar) turfDocs.push({ title: "Aadhar card", sub: "ID Proof", status: "pending", icon: "bi-fingerprint" });
-    if (pan) turfDocs.push({ title: "Pan card", sub: "Tax ID", status: "pending", icon: "bi-person-vcard" });
-    if (gst) turfDocs.push({ title: "GST certificated", sub: "Business Proof", status: "pending", icon: "bi-file-earmark-ruled" });
-    if (ebBill) turfDocs.push({ title: "EB bill", sub: "Address Proof", status: "pending", icon: "bi-lightning-charge" });
+    if (aadhar) turfDocs.push({ title: "Aadhar card", sub: "ID Proof", status: defaultKycStatus, icon: "bi-fingerprint" });
+    if (pan) turfDocs.push({ title: "Pan card", sub: "Tax ID", status: defaultKycStatus, icon: "bi-person-vcard" });
+    if (gst) turfDocs.push({ title: "GST certificated", sub: "Business Proof", status: defaultKycStatus, icon: "bi-file-earmark-ruled" });
   }
 
-  // Fallback to passed documents array if it exists and we didn't process the flat fields
+  // Handle EB Bill (location specific) - ALWAYS pending for new turf
+  let providedEbBillUrl = ebBill;
+  if (!providedEbBillUrl && documents && Array.isArray(documents)) {
+    const docEbBill = documents.find(d => d.title?.toLowerCase().includes("eb bill"));
+    if (docEbBill && docEbBill.url) providedEbBillUrl = docEbBill.url;
+  }
+
+  if (providedEbBillUrl) {
+    turfDocs.push({ title: "EB bill", sub: "Address Proof", status: "pending", icon: "bi-lightning-charge", url: providedEbBillUrl });
+  } else if (vendor.kycDocuments && vendor.kycDocuments.ebBill?.url) {
+    turfDocs.push({ title: "EB bill", sub: "Address Proof", status: "pending", icon: "bi-lightning-charge", url: vendor.kycDocuments.ebBill.url });
+  } else if (!vendor.kycDocuments && ebBill) {
+    turfDocs.push({ title: "EB bill", sub: "Address Proof", status: "pending", icon: "bi-lightning-charge" });
+  }
+
   const finalDocs = turfDocs.length > 0 ? turfDocs : (documents || []);
+
+  const verifications = [
+    { label: "Identity Verified", checked: hasApprovedTurf },
+    { label: "Location Verified", checked: false },
+    { label: "Turf Photos Verified", checked: false },
+    { label: "Contact Verified", checked: false },
+    { label: "Business Verified", checked: hasApprovedTurf }
+  ];
 
   const turf = await Turf.create({
     name, location, sportType, sports, facilities, pricePerHour, description,
@@ -70,7 +88,21 @@ const addTurf = async ({
     owner: ownerId,
     isAvailable: true,
     approvalStatus: "pending",
-    documents: finalDocs
+    documents: finalDocs,
+    verifications: verifications,
+    verificationChecklist: {
+      identityVerified: hasApprovedTurf,
+      locationVerified: false,
+      turfPhotosVerified: false,
+      contactVerified: false,
+      businessVerified: hasApprovedTurf,
+      documentVerification: {
+        aadhar: hasApprovedTurf,
+        pan: hasApprovedTurf,
+        gst: hasApprovedTurf,
+        ebBill: false
+      }
+    }
   });
 
   try {
@@ -160,7 +192,7 @@ const getPendingTurfs = async () => {
 const getTurfById = async (turfId) => {
   assertObjectId(turfId, "turf ID");
   const turf = await Turf.findById(turfId)
-    .populate("owner", "name email phone");
+    .populate("owner", "name email phone profileImage");
   if (!turf) throw new ApiError(404, "Turf not found");
   return turf;
 };
@@ -209,6 +241,16 @@ const rejectTurf = async (turfId, reason) => {
   if (turf.approvalStatus === "rejected") throw new ApiError(400, "Turf is already rejected");
 
   turf.approvalStatus = "rejected";
+  turf.rejectionReason = reason || "";
+  
+  if (turf.documents && turf.documents.length > 0) {
+    turf.documents.forEach(doc => {
+      if (doc.status !== "verified") {
+        doc.status = "rejected";
+      }
+    });
+  }
+  
   await turf.save();
 
   await Notification.create({
@@ -235,7 +277,7 @@ const updateTurf = async (turfId, requesterId, requesterRole, updateData) => {
 
   const allowedFields = [
     "name", "location", "sportType", "sports", "facilities", "pricePerHour", "description",
-    "amenities", "mainImage", "secondaryImages", "isAvailable",
+    "amenities", "mainImage", "secondaryImages", "isAvailable", "verifications", "documents", "verificationChecklist"
   ];
 
   allowedFields.forEach((field) => {
