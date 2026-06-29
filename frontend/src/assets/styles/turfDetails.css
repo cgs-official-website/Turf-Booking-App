@@ -681,7 +681,7 @@
 
 /* ── Responsive ───────────────────────────────────────────────────────────── */
 @media (max-width: 768px) {
-  .td-page           { padding: 20px 16px 80px; }
+  .td-page           { padding: 20px 16px 40px; }
   .td-main-grid      { grid-template-columns: 1fr; }
   .td-info-grid      { grid-template-columns: 1fr; }
   .td-category-grid  { grid-template-columns: 1fr; }

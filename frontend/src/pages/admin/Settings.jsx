@@ -138,6 +138,9 @@ const Settings = () => {
       setIsUploadingImage(true);
       const response = await uploadAdminProfileImage(formData);
       const updatedAdmin = response.data || response;
+      if (updatedAdmin && updatedAdmin.profileImage && !updatedAdmin.profileImage.includes('?')) {
+        updatedAdmin.profileImage = `${updatedAdmin.profileImage}?t=${Date.now()}`;
+      }
       setAdmin(updatedAdmin);
       const localAdmin = JSON.parse(localStorage.getItem("admin") || "{}");
       localStorage.setItem("admin", JSON.stringify({ ...localAdmin, profileImage: updatedAdmin.profileImage }));

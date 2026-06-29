@@ -84,7 +84,9 @@ const DEFAULT_VERIFICATIONS = [
 function normalizeTurf(t) {
   // owner is populated: { name, email, phone }
   const ownerName = t.owner?.name ?? t.ownerName ?? t.vendor ?? "—";
-  const ownerProfileImage = t.owner?.profileImage ? `http://localhost:5000${t.owner.profileImage}` : null;
+  const ownerProfileImage = t.owner?.profileImage 
+    ? `http://localhost:5000${t.owner.profileImage}` 
+    : `https://ui-avatars.com/api/?name=${encodeURIComponent(ownerName)}&background=0D8B41&color=fff`;
   const phone     = t.owner?.phone ?? t.phone ?? t.contact ?? "—";
 
   const pricing = t.pricePerHour?.basePrice != null
@@ -112,7 +114,10 @@ function normalizeTurf(t) {
                  : raw === "rejected" ? "rejected"
                  : "pending";
     const name = d.name ?? d.title ?? "Document";
-    const url = d.url ?? d.fileUrl ?? null;
+    let url = d.url ?? d.fileUrl ?? null;
+    if (url && !url.startsWith("http")) {
+      url = `http://localhost:5000${url.startsWith("/") ? "" : "/"}${url}`;
+    }
     return {
       icon:   DOC_ICON[name] ?? d.icon ?? "bi-file-earmark",
       title:  name,
@@ -163,6 +168,7 @@ function normalizeTurf(t) {
     ].filter(Boolean),
     verifications,
     documents,
+    rejectionReason: t.rejectionReason || "",
   };
 }
 
@@ -439,7 +445,8 @@ export default function TurfDetails() {
       title: d.title,
       sub: d.sub,
       status: nextDocStatuses[idx],
-      icon: d.icon
+      icon: d.icon,
+      url: d.url
     }));
 
     try {
@@ -653,18 +660,12 @@ export default function TurfDetails() {
       {/* Hero card */}
       <div className="td-hero-card">
         <div className="td-hero-left">
-          {turf.ownerProfileImage ? (
-            <img 
-              src={turf.ownerProfileImage} 
-              alt={turf.ownerName} 
-              className="td-hero-vendor-avatar" 
-              style={{ width: '48px', height: '48px', borderRadius: '50%', objectFit: 'cover', border: '1px solid #e5e7eb' }} 
-            />
-          ) : (
-            <div className="td-hero-logo">
-              <i className="bi bi-patch-check-fill" />
-            </div>
-          )}
+          <img 
+            src={turf.ownerProfileImage} 
+            alt={turf.ownerName} 
+            className="td-hero-vendor-avatar" 
+            style={{ width: '48px', height: '48px', borderRadius: '8px', objectFit: 'cover', border: '1px solid #e5e7eb' }} 
+          />
           <div>
             <p className="td-hero-vendor">{turf.ownerName}</p>
             {turf.ownerEmail && <p className="td-hero-email">{turf.ownerEmail}</p>}
@@ -720,6 +721,7 @@ export default function TurfDetails() {
             : "All documents must be verified before approving the turf."}
         </div>
       )}
+
 
       {/* Main 2-col: info + photos */}
       <div className="td-main-grid">
@@ -921,6 +923,26 @@ export default function TurfDetails() {
           })}
         </div>
       </div>
+
+      {/* Small Rejection Reason at the bottom */}
+      {isRejected && turf.rejectionReason && (
+        <div style={{
+          margin: '24px 24px 24px', 
+          padding: '12px 16px', 
+          backgroundColor: '#fef2f2', 
+          border: '1px solid #fee2e2', 
+          borderRadius: '8px', 
+          display: 'flex', 
+          alignItems: 'flex-start', 
+          gap: '10px'
+        }}>
+          <i className="bi bi-exclamation-octagon-fill" style={{ color: '#ef4444', fontSize: '14px', marginTop: '2px' }} />
+          <div>
+            <span style={{ color: '#991b1b', fontWeight: '600', fontSize: '13px', display: 'block', marginBottom: '2px' }}>Reason for Rejection</span>
+            <span style={{ color: '#b91c1c', fontSize: '13px', lineHeight: '1.4' }}>{turf.rejectionReason}</span>
+          </div>
+        </div>
+      )}
 
       {/* Full-screen Image Preview Modal */}
       {previewImage && (
