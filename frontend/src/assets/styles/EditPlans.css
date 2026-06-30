@@ -264,7 +264,7 @@
   margin: 0;
 }
 
-/* "Most Popular" toggle button — green accent (was violet) */
+/* "Most Popular" toggle button — green accent */
 .ep-most-popular-btn {
   padding: 6px 14px;
   border: 1.5px solid #e5e7eb;
@@ -541,115 +541,133 @@
   margin: 0 0 14px 0;
 }
 
+/* ═══════════════════════════════════════════
+   PREVIEW CARD - UPDATED TO MATCH PricingCard
+   ═══════════════════════════════════════════ */
+
 /* Preview card */
 .ep-preview {
-  padding: 20px;
-  border-radius: 14px;
-  background: white;
-  border: 2px solid #e5e7eb;
+  padding: 28px 26px;
+  border-radius: 24px;
+  background: #ffffff;
+  border: 2px solid #e8e8e8;
   position: relative;
   transition: all 0.3s;
-  overflow: hidden;
+  overflow: visible;
   box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
 }
 
-/* "Most Popular" state – green tinted card (was violet) */
+/* "Most Popular" state – bold green styling */
 .ep-preview-popular {
-  border-color: #22c55e;
-  box-shadow: 0 4px 20px rgba(34, 197, 94, 0.2);
+  border: 3px solid #22c55e;
+  box-shadow: 0 12px 32px rgba(34, 197, 94, 0.2);
+  background: #ffffff;
+  padding-top: 50px;
 }
 
-/* "Most popular" pill – top-right corner, outlined style — green (was violet) */
+/* "Most popular" pill – top-right corner, light green background */
 .ep-preview-popular-tag {
   position: absolute;
-  top: 16px;
-  right: 16px;
-  background: #f0fdf4;
-  color: #16a34a;
-  font-size: 11px;
+  top: 10px;
+  right: 10px;
+  background: #dcfce7;
+  color: #22c55e;
+  font-size: 10px;
   font-weight: 600;
-  padding: 5px 12px;
-  border-radius: 20px;
-  border: 1.5px solid #bbf7d0;
-  letter-spacing: 0.2px;
+  padding: 6px 16px;
+  border-radius: 999px;
+  letter-spacing: 0.3px;
   white-space: nowrap;
 }
 
-/* Plan name – bold, dark; green when popular (was violet) */
+/* Plan name – bold, dark; GREEN when popular */
 .ep-preview-name {
-  font-size: 22px;
-  font-weight: 800;
+  
+  font-size: 15px;
+  font-weight: 700;
   color: #111827;
-  margin-bottom: 4px;
-  padding-right: 100px; /* room for the badge */
+  margin-bottom: 8px;
   line-height: 1.2;
   overflow-wrap: anywhere;
   word-break: break-word;
+  padding-right: 100px;
 }
-.ep-preview-popular .ep-preview-name { color: #16a34a; }
+.ep-preview-popular .ep-preview-name { color: #22c55e; }
 
-/* Tagline – muted gray normally, green when popular (was violet) */
+/* Tagline – gray text */
 .ep-preview-tagline {
-  font-size: 13px;
-  color: #6b7280;
-  margin-bottom: 14px;
+  font-size: 14px;
+  color: #9ca3af;
+  margin-bottom: 24px;
   line-height: 1.4;
   overflow-wrap: anywhere;
   word-break: break-word;
   white-space: pre-wrap;
+  font-weight: 500;
 }
-.ep-preview-popular .ep-preview-tagline { color: #16a34a; }
 
 /* Price row */
 .ep-preview-price {
   display: flex;
   align-items: baseline;
-  gap: 2px;
-  margin-bottom: 16px;
+  gap: 3px;
+  margin-bottom: 28px;
 }
 
 .ep-preview-currency {
-  font-size: 22px;
-  font-weight: 700;
+  font-size: 24px;
+  font-weight: 800;
   color: #111827;
 }
-.ep-preview-popular .ep-preview-currency { color: #16a34a; }
+.ep-preview-popular .ep-preview-currency { color: #22c55e; font-size: 20px; }
 
 .ep-preview-amount {
   font-size: 20px;
-  font-weight: 800;
+  font-weight: 700;
   color: #111827;
   line-height: 1;
 }
-.ep-preview-popular .ep-preview-amount { color: #16a34a; }
+.ep-preview-popular .ep-preview-amount { color: #22c55e; font-size: 30px; }
 
 .ep-preview-period {
-  font-size: 15px;
-  color: #6b7280;
+  font-size: 14px;
+  color: #9ca3af;
   margin-left: 4px;
-  font-weight: 400;
+  font-weight: 600;
 }
+.ep-preview-popular .ep-preview-period { color: #22c55e; }
 
-/* Features – plain list, NO individual borders */
+/* Features – plain list */
 .ep-preview-features {
   list-style: none;
   padding: 0;
   margin: 0;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 14px;
+  flex: 1;
+  margin-bottom: 0;
 }
 
 .ep-preview-features li {
   display: flex;
   align-items: flex-start;
-  gap: 10px;
-  font-size: 13.5px;
-  color: #374151;
-  line-height: 1.4;
+  gap: 12px;
+  font-size: 14px;
+  color: #1f2937;
+  line-height: 1.5;
+  font-weight: 500;
 }
 
-.ep-preview-features li svg { flex-shrink: 0; margin-top: 2px; }
+.ep-preview-features li svg { 
+  flex-shrink: 0; 
+  margin-top: 2px; 
+  width: 18px;
+  height: 18px;
+  color: #22c55e;
+}
 
 .ep-preview-features li span {
   overflow-wrap: anywhere;
@@ -709,10 +727,6 @@
   transition: background 0.2s;
 }
 .ep-retry-btn:hover { background: #16a34a; }
-
-.ep-retry-btn:hover {
-  background: #16a34a;
-}
 
 /* Unsaved Changes Badge */
 .ep-unsaved-badge {
@@ -841,7 +855,6 @@
     padding: 20px 24px;
   }
 
-
   .ep-main {
     flex-direction: column;
   }
@@ -878,8 +891,6 @@
     display: flex;
   }
 }
-
-/* ── Tablet (≤ 768px) ── */
 
 /* ════════════════════════════════════════════
    MOBILE (≤ 768px)
