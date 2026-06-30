@@ -1,4 +1,3 @@
-
 .ep-container {
   padding: 24px 32px;
   background: #f7f8fa;
@@ -83,18 +82,18 @@
 /* ── Main 3-Column Layout ── */
 .ep-main {
   display: grid;
-  grid-template-columns: 260px 1fr 300px;
+  grid-template-columns: 260px minmax(0, 1fr) minmax(0, 300px);
   gap: 20px;
   align-items: start;
 }
 
 @media (max-width: 1200px) {
-  .ep-main { grid-template-columns: 260px 1fr; }
+  .ep-main { grid-template-columns: 260px minmax(0, 1fr); }
   .ep-right { grid-column: 1 / -1; }
 
 }
 @media (max-width: 768px) {
-  .ep-main { grid-template-columns: 1fr; }
+  .ep-main { grid-template-columns: minmax(0, 1fr); }
   .ep-container { padding: 16px; }
 }
 
@@ -104,6 +103,8 @@
   border-radius: 12px;
   padding: 20px;
   border: 1px solid #e5e7eb;
+  min-width: 0;
+  box-sizing: border-box;
 }
 
 .ep-left-title {
@@ -243,6 +244,8 @@
   border-radius: 12px;
   padding: 24px;
   border: 1px solid #e5e7eb;
+  min-width: 0;
+  box-sizing: border-box;
 }
 
 .ep-details-header {
@@ -303,6 +306,7 @@
 .ep-input:focus { outline: none; border-color: #22c55e; }
 
 .ep-textarea-wrapper { position: relative; }
+.ep-textarea-wrapper .ep-input { padding-right: 56px; }
 
 .ep-textarea {
   width: 100%;
@@ -375,6 +379,50 @@
   flex: 1;
   font-size: 14px;
   color: #374151;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+  cursor: text;
+  border-radius: 4px;
+  padding: 2px 4px;
+  margin: -2px -4px;
+  transition: background 0.15s;
+}
+.ep-feature-text:hover {
+  background: #f0fdf4;
+}
+
+/* Inline edit input shown when a feature is clicked */
+.ep-feature-edit-wrapper {
+  flex: 1;
+  position: relative;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+}
+
+.ep-feature-edit-input {
+  width: 100%;
+  font-size: 14px;
+  color: #111827;
+  border: 1.5px solid #22c55e;
+  border-radius: 6px;
+  padding: 6px 56px 6px 8px;
+  box-sizing: border-box;
+  background: white;
+}
+.ep-feature-edit-input:focus { outline: none; }
+
+.ep-feature-edit-count {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 10px;
+  color: #9ca3af;
+  pointer-events: none;
+  white-space: nowrap;
 }
 
 .ep-feature-delete {
@@ -387,6 +435,7 @@
   transition: opacity 0.15s;
   display: flex;
   align-items: center;
+  flex-shrink: 0;
 }
 .ep-feature-item:hover .ep-feature-delete { opacity: 1; }
 .ep-feature-delete:hover { background: #fef2f2; }
@@ -398,7 +447,7 @@
   margin-top: 6px;
   flex-wrap: wrap;
 }
-.ep-add-feature-form .ep-input { flex: 1; min-width: 150px; }
+.ep-add-feature-form .ep-input { flex: 1; min-width: 150px; padding-right: 56px; }
 
 .ep-add-feature-actions { display: flex; gap: 6px; }
 
@@ -441,6 +490,13 @@
 }
 .ep-add-feature-btn:hover { color: #16a34a; }
 
+.ep-feature-limit-note {
+  font-size: 13px;
+  color: #9ca3af;
+  padding: 8px 0;
+  margin: 0;
+}
+
 /* Delete plan – solid red filled */
 .ep-delete-plan {
   width: 100%;
@@ -473,6 +529,9 @@
   border: 1px solid #e5e7eb;
   position: sticky;
   top: 24px;
+  min-width: 0;
+  overflow: hidden;
+  box-sizing: border-box;
 }
 
 .ep-right-title {
@@ -490,6 +549,8 @@
   border: 2px solid #e5e7eb;
   position: relative;
   transition: all 0.3s;
+  overflow: hidden;
+  box-sizing: border-box;
 }
 
 /* "Most Popular" state – green tinted card (was violet) */
@@ -522,6 +583,8 @@
   margin-bottom: 4px;
   padding-right: 100px; /* room for the badge */
   line-height: 1.2;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 .ep-preview-popular .ep-preview-name { color: #16a34a; }
 
@@ -531,6 +594,9 @@
   color: #6b7280;
   margin-bottom: 14px;
   line-height: 1.4;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  white-space: pre-wrap;
 }
 .ep-preview-popular .ep-preview-tagline { color: #16a34a; }
 
@@ -550,7 +616,7 @@
 .ep-preview-popular .ep-preview-currency { color: #16a34a; }
 
 .ep-preview-amount {
-  font-size: 44px;
+  font-size: 20px;
   font-weight: 800;
   color: #111827;
   line-height: 1;
@@ -584,6 +650,11 @@
 }
 
 .ep-preview-features li svg { flex-shrink: 0; margin-top: 2px; }
+
+.ep-preview-features li span {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
 
 /* ── Scrollbar (hidden — list still scrolls via mouse/touch) ── */
 .ep-plans-list::-webkit-scrollbar { width: 0; display: none; }

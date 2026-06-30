@@ -176,13 +176,14 @@
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 24px;
-  align-items: start;
+  align-items: stretch;
   padding: 24px 0 32px;
 }
 
 .sub-plan-management__cards-grid .plan-card-wrapper {
   display: flex;
   flex-direction: column;
+  min-width: 0;
 }
 
 .sub-plan-management__cards-grid .plan-card--popular-wrapper {
@@ -197,6 +198,7 @@
   min-height: 400px;
   display: flex;
   flex-direction: column;
+  min-width: 0;
 }
 
 .sub-plan-management__mobile-cards {
@@ -271,9 +273,14 @@
   }
 
   .sub-plan-management__cards-grid .pricing-card {
+    
     min-height: 320px;
     font-size: 13px;
   }
+  .sub-plan-management__cards-grid .pricing-card--popular{
+    padding-top: 40px;
+  }
+  
 
   .sub-plan-management__cards-grid .plan-card--popular-wrapper {
     transform: none;
