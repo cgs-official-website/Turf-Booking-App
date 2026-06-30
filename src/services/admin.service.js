@@ -136,6 +136,11 @@ const getDashboardStats = async (period = "month", planId = "") => {
           ],
           byMonth: [
             {
+              $match: {
+                createdAt: { $gte: startOfTarget, $lt: endOfTarget },
+              },
+            },
+            {
               $group: {
                 _id: {
                   year: {
@@ -160,14 +165,17 @@ const getDashboardStats = async (period = "month", planId = "") => {
             {
               $group: {
                 _id: {
-                  day: {
-                    $dayOfMonth: "$createdAt",
-                  },
+                  day: { $dayOfMonth: "$createdAt" },
+                  month: { $month: "$createdAt" },
+                  year: { $year: "$createdAt" },
                 },
                 revenue: {
                   $sum: "$amountPaid",
                 },
               },
+            },
+            {
+              $sort: { "_id.day": 1 },
             },
           ],
         },
@@ -217,27 +225,16 @@ const getDashboardStats = async (period = "month", planId = "") => {
       revenue: revenueByMonth.get(`${targetYear}-${index + 1}`) || 0,
     }));
   } else {
-    // 5-day intervals for the target month
-    const intervals = [
-      { label: "1-5", revenue: 0, min: 1, max: 5 },
-      { label: "6-10", revenue: 0, min: 6, max: 10 },
-      { label: "11-15", revenue: 0, min: 11, max: 15 },
-      { label: "16-20", revenue: 0, min: 16, max: 20 },
-      { label: "21-25", revenue: 0, min: 21, max: 25 },
-      { label: "26-31", revenue: 0, min: 26, max: 31 },
-    ];
-    const daysData = revenueData[0]?.byDay || [];
-    daysData.forEach((dayData) => {
-      const day = dayData._id.day;
-      const rev = dayData.revenue;
-      const interval = intervals.find((i) => day >= i.min && day <= i.max);
-      if (interval) {
-        interval.revenue += rev;
-      }
+    // Daily data for the target month — fill all days with 0, then populate from DB
+    const daysInMonth = new Date(Date.UTC(targetYear, targetMonth, 0)).getUTCDate();
+    const monthAbbr = MONTH_NAMES[targetMonth - 1]; // e.g. "Jun"
+    const dayRevenueMap = new Map();
+    (revenueData[0]?.byDay || []).forEach((d) => {
+      dayRevenueMap.set(d._id.day, d.revenue);
     });
-    formattedMonthlyRevenue = intervals.map((i) => ({
-      month: i.label, // use month key to match Recharts XAxis
-      revenue: i.revenue,
+    formattedMonthlyRevenue = Array.from({ length: daysInMonth }, (_, i) => ({
+      month: `${i + 1} ${monthAbbr}`,   // "1 Jun", "2 Jun" ...
+      revenue: dayRevenueMap.get(i + 1) || 0,
     }));
   }
 
