@@ -18,6 +18,7 @@ import {
   MdStar,
   MdRemoveRedEye,
   MdSportsSoccer,
+  MdHistory,
 } from 'react-icons/md';
 
 // Document preview popup images (placeholder)
@@ -508,7 +509,7 @@ export default function VendorDetail({ vendor, onBack, onVendorSuspended }) {
       {/* Information Sections */}
       <div className="info-sections">
         {/* Vendor Information */}
-        <div className="info-card">
+        <div className="info-card" style={{ height: '100%' }}>
           <h3 className="info-title">
             <span className="section-icon-circle star"><MdBadge size={16} /></span>
             Vendor Information
@@ -545,7 +546,7 @@ export default function VendorDetail({ vendor, onBack, onVendorSuspended }) {
         </div>
 
         {/* Document Information */}
-        <div className="td-card td-card--full" style={{ marginTop: '24px' }}>
+        <div className="td-card" style={{ height: '100%' }}>
           <div className="td-card-header">
             <span className="td-card-title">
               <span className="section-icon-circle star"><i className="bi bi-file-earmark-text" style={{ fontSize: '16px' }} /></span>
@@ -667,7 +668,7 @@ export default function VendorDetail({ vendor, onBack, onVendorSuspended }) {
       <div className="bottom-sections">
         <div className="recent-bookings">
           <h3 className="section-title">
-            <span className="section-icon-circle star"><MdCalendarToday size={16} /></span>
+            <span className="section-icon-circle star"><MdHistory size={16} /></span>
             Recent Bookings
           </h3>
           <div className="bookings-list">
