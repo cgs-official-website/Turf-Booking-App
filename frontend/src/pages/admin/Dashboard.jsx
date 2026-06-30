@@ -331,11 +331,16 @@ export default function Dashboard() {
                   tickLine={false}
                   dy={10}
                   padding={{ left: 10, right: 30 }}
-                  interval={(() => {
+                  ticks={(() => {
                     const isYearView = dashboardPeriod === 'current-year' || dashboardPeriod === 'last-year';
-                    // yearly: show all 12 months; monthly: show every 5th day (1,5,10,15,20,25,30)
-                    return isYearView ? 0 : 4;
+                    if (isYearView) return undefined; // Let Recharts handle year view ticks
+                    
+                    // For month view, show every 5th item (0, 5, 10...) and the very last item
+                    return stats.monthlyRevenue
+                      ?.map(d => d.month)
+                      .filter((m, i, arr) => i % 5 === 0 || i === arr.length - 1);
                   })()}
+                  interval={0}
                   tickFormatter={(value) => {
                     const isYearView = dashboardPeriod === 'current-year' || dashboardPeriod === 'last-year';
                     if (isYearView) {

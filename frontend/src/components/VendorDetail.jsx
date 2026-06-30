@@ -453,7 +453,7 @@ export default function VendorDetail({ vendor, onBack, onVendorSuspended }) {
           </div>
           <div className="stat-content">
             <div className="stat-label">ACTIVE BOOKINGS</div>
-            <div className="stat-value">{vendorStats.activeBookings ?? 0}</div>
+            <div className="stat-value">{String(vendorStats.activeBookings ?? 0).padStart(2, '0')}</div>
           </div>
         </div>
         {/* Subscription - Dynamic based on status */}
@@ -510,7 +510,7 @@ export default function VendorDetail({ vendor, onBack, onVendorSuspended }) {
         {/* Vendor Information */}
         <div className="info-card">
           <h3 className="info-title">
-            <span className="info-icon-circle gray"><MdBadge size={18} /></span>
+            <span className="section-icon-circle star"><MdBadge size={16} /></span>
             Vendor Information
           </h3>
           <div className="info-content">
@@ -548,7 +548,8 @@ export default function VendorDetail({ vendor, onBack, onVendorSuspended }) {
         <div className="td-card td-card--full" style={{ marginTop: '24px' }}>
           <div className="td-card-header">
             <span className="td-card-title">
-              <i className="bi bi-file-earmark-text" /> Document Information
+              <span className="section-icon-circle star"><i className="bi bi-file-earmark-text" style={{ fontSize: '16px' }} /></span>
+              Document Information
             </span>
           </div>
           <div className="td-docs">
@@ -666,7 +667,7 @@ export default function VendorDetail({ vendor, onBack, onVendorSuspended }) {
       <div className="bottom-sections">
         <div className="recent-bookings">
           <h3 className="section-title">
-            <span className="section-icon-circle"><MdCalendarToday size={16} /></span>
+            <span className="section-icon-circle star"><MdCalendarToday size={16} /></span>
             Recent Bookings
           </h3>
           <div className="bookings-list">

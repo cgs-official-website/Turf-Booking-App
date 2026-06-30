@@ -111,8 +111,13 @@ export default function Sidebar({ sidebarOpen }) {
   const location = useLocation();
 
   const getActivePage = () => {
-    const activeItem = navItems.find(item => location.pathname === item.path);
-    return activeItem ? activeItem.id : null;  // ✅ null fallback, no false active
+    // Exact match first
+    const exactMatch = navItems.find(item => location.pathname === item.path);
+    if (exactMatch) return exactMatch.id;
+
+    // Fallback to prefix match for nested routes (e.g., detail pages)
+    const prefixMatch = navItems.find(item => location.pathname.startsWith(item.path + "/"));
+    return prefixMatch ? prefixMatch.id : null;
   };
 
   const activePage = getActivePage();
