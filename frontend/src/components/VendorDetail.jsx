@@ -405,13 +405,13 @@ export default function VendorDetail({ vendor, onBack, onVendorSuspended }) {
       />
 
       {/* Back Navigation */}
-      <div className="back-navigation">
+      <div className="back-navigation" style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px' }}>
         <button className="back-btn" onClick={onBack}>
           <MdArrowBack size={20} />
           <span>Vendor Management</span>
-          <span className="breadcrumb-separator">/</span>
-          <span className="vendor-name-breadcrumb">{vendorData.name}</span>
         </button>
+        <span className="breadcrumb-separator">/</span>
+        <span className="vendor-name-breadcrumb">{vendorData.name}</span>
       </div>
 
       {/* Vendor Header */}
@@ -715,7 +715,7 @@ export default function VendorDetail({ vendor, onBack, onVendorSuspended }) {
               </div>
             )}
           </div>
-          <button className="view-all-btn" onClick={() => navigate(`/admin/bookings?vendorId=${vendor._id}`)}>View all bookings</button>
+          <button className="view-all-btn" onClick={() => navigate('/admin/bookings', { state: { searchVendor: vendorData.name } })}>View all bookings</button>
         </div>
 
         {/* Subscription History */}

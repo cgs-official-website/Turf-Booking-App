@@ -1,5 +1,6 @@
 import React from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { MdOutlineVerified } from "react-icons/md";
 import '../../assets/styles/sidebar.css';
 
 const navItems = [
@@ -42,19 +43,7 @@ const navItems = [
   id: "turfs",
   label: "Turf Approvals",
   path: "/admin/turf-approvals",
-  icon: (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M12 2l2.4 2.1 3.2-.5 1.3 3 3 1.3-.5 3.2L22 12l-2.1 2.4.5 3.2-3 1.3-1.3 3-3.2-.5L12 22l-2.4-2.1-3.2.5-1.3-3-3-1.3.5-3.2L2 12l2.1-2.4-.5-3.2 3-1.3 1.3-3 3.2.5L12 2z" />
-      <path d="M9 12l2 2 4-4" />
-    </svg>
-  ),
+  icon: <MdOutlineVerified size={24} />,
 },
   {
     id: "bookings",

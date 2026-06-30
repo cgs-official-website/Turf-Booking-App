@@ -19,14 +19,16 @@ const PAGE_SIZE = 8;
 function normalizeReport(r) {
   const vendor = r.vendor ?? {};
   const turf = r.turf ?? {};
+  const img = vendor.profileImage || vendor.profileImageUrl || vendor.logoImage || vendor.image || vendor.logo || r.vendorAvatar;
+  
   return {
     ...r,
     reportId: r.reportId ?? "#RP-" + (r._id?.slice(-4) ?? "????"),
     vendorName: vendor.name ?? r.vendorName ?? "—",
     vendorEmail: vendor.email ?? r.vendorEmail ?? "—",
-    vendorAvatar: vendor.profileImage 
-      ? (vendor.profileImage.startsWith("http") ? vendor.profileImage : `http://localhost:5000${vendor.profileImage.startsWith("/") ? "" : "/"}${vendor.profileImage}`) 
-      : (r.vendorAvatar ?? null),
+    vendorAvatar: img 
+      ? (img.startsWith("http") ? img : `http://localhost:5000${img.startsWith("/") ? "" : "/"}${img}`) 
+      : null,
     turfName: turf.name ?? r.turfName ?? "—",
     turfLocation: turf.location ?? r.location ?? "—",
     turfImage: turf.mainImage ?? r.turfImage ?? null,

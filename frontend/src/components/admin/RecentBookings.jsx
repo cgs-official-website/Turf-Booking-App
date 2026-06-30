@@ -6,6 +6,7 @@
 
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { FaArrowRight } from "react-icons/fa";
 import axiosInstance from "../../services/axiosInstance";
 import "../../assets/styles/recentBookings.css";
 
@@ -93,10 +94,11 @@ export default function RecentBookings({ limit = 3, showHeader = true }) {
           <a
             href="#"
             className="rb-view-all"
+            style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}
             onClick={(e) => { e.preventDefault(); navigate("/admin/bookings"); }}
             aria-label="View all bookings"
           >
-            View all →
+            View all <FaArrowRight />
           </a>
         </div>
       )}

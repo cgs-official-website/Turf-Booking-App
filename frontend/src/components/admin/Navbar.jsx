@@ -32,6 +32,7 @@ export default function Navbar({ title, onMenuToggle }) {
   /* ── Notification state ── */
   const [notifications, setNotifications] = useState([]);
   const [panelOpen, setPanelOpen]         = useState(false);
+  const [vendors, setVendors]             = useState([]);
 
   const panelRef = useRef(null);
   const bellRef  = useRef(null);
@@ -48,12 +49,23 @@ export default function Navbar({ title, onMenuToggle }) {
     }
   }, []);
 
+  const fetchVendors = useCallback(async () => {
+    try {
+      const response = await axiosInstance.get('/admin/vendors');
+      const data = response?.data;
+      setVendors(Array.isArray(data) ? data : (data?.vendors ?? []));
+    } catch {
+      // silent fail
+    }
+  }, []);
+
   useEffect(() => {
     fetchNotifications();
+    fetchVendors();
     // Poll every 60s to keep badge current
     const id = setInterval(fetchNotifications, 60000);
     return () => clearInterval(id);
-  }, [fetchNotifications]);
+  }, [fetchNotifications, fetchVendors]);
 
   /* ── Close panel on outside click and keydown ── */
   useEffect(() => {
@@ -116,6 +128,99 @@ export default function Navbar({ title, onMenuToggle }) {
     setNotifications(prev => prev.filter(n => n._id !== id));
   }
 
+  /* ── Delete all notifications ── */
+  async function handleDeleteAll() {
+    if (window.confirm("Are you sure you want to delete all notifications?")) {
+      try {
+        await axiosInstance.delete('/notifications');
+        setNotifications([]);
+      } catch {
+        // silent fail
+      }
+    }
+  }
+
+  /* ── Helpers for role-based avatars ── */
+  function getNotificationSenderRole(notif) {
+    const type = notif.type || "";
+    const title = (notif.title || "").toLowerCase();
+    const message = (notif.message || "").toLowerCase();
+
+    if (type === "TURF_APPROVED" || type === "TURF_REJECTED" || title.includes("approved by admin") || message.includes("by admin")) {
+      return "admin";
+    }
+
+    if (
+      notif.vendorId ||
+      type.startsWith("subscription_") ||
+      type === "autopay_cancelled" ||
+      type === "turf_submitted" ||
+      type === "turf_deleted" ||
+      type === "vendor_report" ||
+      message.includes("vendor") ||
+      title.includes("subscription")
+    ) {
+      return "vendor";
+    }
+
+    if (type === "booking_received" || type.startsWith("BOOKING_") || title.includes("booking") || message.includes("booking")) {
+      return "user";
+    }
+
+    return "user";
+  }
+
+  function renderAvatar(notif) {
+    const role = getNotificationSenderRole(notif);
+
+    if (role === 'admin') {
+      const imgUrl = adminData.profileImage ? (adminData.profileImage.startsWith('http') ? adminData.profileImage : `http://localhost:5000${adminData.profileImage.startsWith('/') ? '' : '/'}${adminData.profileImage}`) : null;
+      if (imgUrl) {
+        return <img src={imgUrl} alt="Admin" className="notif-avatar-img" />;
+      }
+      return (
+        <div className="notif-avatar-fallback notif-avatar-admin">
+          {adminName.charAt(0).toUpperCase()}
+        </div>
+      );
+    }
+
+    if (role === 'vendor') {
+      const vendorObj = typeof notif.vendorId === 'object' ? notif.vendorId : null;
+      const vId = vendorObj ? vendorObj._id : notif.vendorId;
+      const vendor = vendors.find(v => v._id === vId) || vendorObj || {};
+      
+      const rawImg = vendor.profileImage || vendor.profileImageUrl || vendor.logoImage || vendor.image || vendor.logo;
+      const imgUrl = rawImg ? (rawImg.startsWith('http') ? rawImg : `http://localhost:5000${rawImg.startsWith('/') ? '' : '/'}${rawImg}`) : null;
+      
+      if (imgUrl) {
+        return <img src={imgUrl} alt={vendor?.name || "Vendor"} className="notif-avatar-img" />;
+      }
+
+      let nameLetter = "V";
+      if (vendor?.name) {
+        nameLetter = vendor.name.charAt(0).toUpperCase();
+      } else {
+        const match = notif.message.match(/Vendor "([^"]+)"/);
+        if (match && match[1]) {
+          nameLetter = match[1].charAt(0).toUpperCase();
+        }
+      }
+
+      return (
+        <div className="notif-avatar-fallback notif-avatar-vendor">
+          {nameLetter}
+        </div>
+      );
+    }
+
+    return (
+      <div className="notif-avatar-fallback notif-avatar-user">
+        U
+      </div>
+    );
+  }
+
   /* ── Render ── */
   return (
     <header className="navbar">
@@ -138,9 +243,7 @@ export default function Navbar({ title, onMenuToggle }) {
           >
             <MdNotifications size={20} />
             {unreadCount > 0 && (
-              <span className="navbar-notif-badge">
-                {unreadCount > 99 ? '99+' : unreadCount}
-              </span>
+              <span className="navbar-notif-dot" />
             )}
           </button>
 
@@ -160,11 +263,11 @@ export default function Navbar({ title, onMenuToggle }) {
                   </button>
                 </div>
 
-                {/* Read all link */}
+                {/* Delete all link */}
                 {notifications.length > 0 && (
                   <div className="notif-panel-readall-row">
-                    <button className="notif-panel-readall-btn" onClick={markAllAsRead}>
-                      Read all
+                    <button className="notif-panel-readall-btn" onClick={handleDeleteAll}>
+                      Delete all
                     </button>
                   </div>
                 )}
@@ -183,7 +286,9 @@ export default function Navbar({ title, onMenuToggle }) {
                         className={`notif-panel-item${notif.isRead ? '' : ' notif-panel-item--unread'}`}
                       >
                         {/* Avatar circle */}
-                        <div className="notif-panel-avatar" />
+                        <div className="notif-panel-avatar">
+                          {renderAvatar(notif)}
+                        </div>
 
                         {/* Content */}
                         <div className="notif-panel-content">
@@ -207,6 +312,8 @@ export default function Navbar({ title, onMenuToggle }) {
             </>
           )}
         </div>
+
+        <div className="navbar-divider" />
 
         {/* Avatar → Settings */}
         <div className="navbar-user">

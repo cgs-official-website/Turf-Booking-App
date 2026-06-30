@@ -11,6 +11,7 @@ import { getAllVendors, getVendorSubscriptionHistory } from "../../services/vend
 import { getSubscriptionStats } from "../../services/subscription.service";
 import "../../assets/styles/Vendors.css";
 import "../../assets/styles/Subscription.css";
+import "../../assets/styles/payment.css";
 
 const STATUS_OPTIONS = ["Status", "Active", "Expired"];
 
@@ -311,43 +312,30 @@ export default function Vendors() {
       </div>
 
       {/* ── Pagination ── */}
-      <div className="pagination-container">
-        <span className="pagination-info-left">
-          Showing {(safePage - 1) * PER_PAGE + 1} to {Math.min(safePage * PER_PAGE, filteredVendors.length)} results
+      <div className="pay-table-footer" style={{ marginTop: '20px', background: 'transparent', padding: '0' }}>
+        <span className="pay-showing-label">
+          Showing {paginated.length} of {filteredVendors.length} record{filteredVendors.length !== 1 ? "s" : ""}
         </span>
-
-        <div className="pagination-center">
-          <button
-            className="pagination-arrow"
-            disabled={safePage === 1}
+        <div className="pay-pagination">
+          <button className="pay-page-btn"
             onClick={() => setPage((p) => Math.max(1, p - 1))}
+            disabled={safePage === 1}
+            aria-label="Previous"
           >
-            ‹
+            <i className="bi bi-chevron-left" />
           </button>
-
-          <div className="page-numbers">
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map((n) => (
-              <button
-                key={n}
-                className={`page-number ${safePage === n ? "active" : ""}`}
-                onClick={() => setPage(n)}
-              >
-                {n}
-              </button>
-            ))}
-          </div>
-
-          <button
-            className="pagination-arrow"
-            disabled={safePage === totalPages}
+          {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+            <button key={p}
+              className={`pay-page-btn${p === safePage ? " pay-page-btn--active" : ""}`}
+              onClick={() => setPage(p)}>{p}</button>
+          ))}
+          <button className="pay-page-btn"
             onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+            disabled={safePage === totalPages}
+            aria-label="Next"
           >
-            ›
+            <i className="bi bi-chevron-right" />
           </button>
-        </div>
-
-        <div className="pagination-info">
-          Rows per page <span className="rows-per-page">04</span>
         </div>
       </div>
     </div>

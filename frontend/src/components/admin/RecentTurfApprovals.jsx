@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { FaArrowRight } from "react-icons/fa";
 import axiosInstance from "../../services/axiosInstance";
 import "../../assets/styles/recentTurfApprovals.css";
 
@@ -62,9 +63,10 @@ export default function RecentTurfApprovals({ limit = 5 }) {
         <a
           href="#"
           className="rta-view-all"
+          style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}
           onClick={(e) => { e.preventDefault(); navigate("/admin/turf-approvals"); }}
         >
-          View all →
+          View all <FaArrowRight />
         </a>
       </div>
 

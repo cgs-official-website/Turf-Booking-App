@@ -167,6 +167,24 @@
   line-height: 1;
 }
 
+.navbar-notif-dot {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  width: 8px;
+  height: 8px;
+  background-color: #ef4444;
+  border-radius: 50%;
+  border: 1px solid #ffffff;
+}
+
+.navbar-divider {
+  width: 1px;
+  height: 24px;
+  background-color: var(--gray-200, #e2e8f0);
+  margin: 0 4px;
+}
+
 /* User Profile */
 .navbar-user {
   display: flex;
@@ -285,4 +303,4 @@
     width: 100%;
     margin: 0;
   }
-}
+}

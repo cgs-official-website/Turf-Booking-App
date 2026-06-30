@@ -197,13 +197,45 @@
   align-items: center;
   justify-content: center;
   position: relative;
+  overflow: hidden;
 }
 
 .notif-panel-avatar::after {
-  content: '🔔';
-  font-size: 18px;
+  display: none;
 }
 
+
+.notif-avatar-img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
+}
+
+.notif-avatar-fallback {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 16px;
+  color: #ffffff;
+}
+
+.notif-avatar-admin {
+  background: #ea4335;
+}
+
+.notif-avatar-vendor {
+  background: #10b981;
+}
+
+.notif-avatar-user {
+  background: #3b82f6;
+}
 /* ── Message + time ──────────────────────────── */
 .notif-panel-content {
   flex: 1;
