@@ -69,9 +69,6 @@ export default function VenueCard({
 
   return (
     <div className="vc-card">
-      {verified && (
-        <div className="vc-verified-badge">✓ Verified</div>
-      )}
 
       <h2 className="vc-name">{name}</h2>
 

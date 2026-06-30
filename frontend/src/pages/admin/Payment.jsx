@@ -145,11 +145,10 @@ function calculateStatsForPeriod(subscriptions, vendors, dateChecker, ranges) {
   return { revenue, active, expired, vendors: vendorsCount };
 }
 
-// ── Growth %: (this - last) / last * 100 ────────────
+// ── Share/progress %: this / (this + last) * 100 ────────────
 function calcGrowth(thisVal, lastVal) {
   if (lastVal === 0 && thisVal === 0) return 0;
-  if (lastVal === 0) return 100;
-  return Math.round(((thisVal - lastVal) / lastVal) * 100);
+  return Math.round((thisVal / (thisVal + lastVal)) * 100);
 }
 
 // ── Growth badge with dynamic comparison text ─────────────────────────────────
@@ -379,20 +378,7 @@ export default function Payment() {
     <div className="pay-page">
       <h1 className="pay-page-title">Payment history</h1>
 
-      {/* ── NEW: Period Selector ───────────────────────────────────────────── */}
-      <div className="pay-period-selector" style={{ marginBottom: "20px" }}>
-        <label style={{ marginRight: "10px", fontWeight: "500" }}>Compare to: </label>
-        <select 
-          value={comparePeriod} 
-          onChange={(e) => setComparePeriod(e.target.value)}
-          className="pay-select"
-          style={{ width: "180px" }}
-        >
-          <option value="lastWeek">Last Week</option>
-          <option value="twoWeeks">2 Weeks Ago</option>
-          <option value="lastMonth">Last Month</option>
-        </select>
-      </div>
+
 
       {/* Stat Cards */}
       <div className="pay-stat-grid">

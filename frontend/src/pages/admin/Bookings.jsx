@@ -79,12 +79,11 @@ function StatusBadge({ status }) {
 export default function Bookings() {
   const navigate = useNavigate();
   const location = useLocation();
-  const vendorId = new URLSearchParams(location.search).get("vendorId");
 
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState(location.state?.searchVendor || "");
   const [locationFilter, setLocationFilter] = useState("All");
   const [statusFilter, setStatusFilter] = useState("All");
   const [page, setPage] = useState(1);
@@ -102,7 +101,7 @@ export default function Bookings() {
       }
 
       try {
-        const url = vendorId ? `/admin/bookings?vendorId=${vendorId}` : "/bookings/admin/all";
+        const url = "/bookings/admin/all";
         const response = await axiosInstance.get(url, {
           signal: ctrl.signal,
         });
@@ -152,7 +151,7 @@ export default function Bookings() {
 
     load();
     return () => ctrl.abort();
-  }, [navigate, vendorId]);
+  }, [navigate]);
 
   /* ── Derived values ── */
   const locations = [

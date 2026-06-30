@@ -10,6 +10,7 @@ import {
   FiDownload,
 } from "react-icons/fi";
 import { FaIndianRupeeSign } from "react-icons/fa6";
+import { FaArrowRight } from "react-icons/fa";
 import { HiOutlineLocationMarker } from "react-icons/hi";
 import RecentTurfApprovals from "../../components/admin/RecentTurfApprovals";
 import RecentBookings from "../../components/admin/RecentBookings.jsx";
@@ -39,7 +40,7 @@ const ExpiringSubscriptionCard = ({ subscriptions = [] }) => {
     <div className="rb-card" style={{ height: '100%', boxSizing: 'border-box' }}>
       <div className="rb-card-header">
         <h2 className="rb-card-title">Expiring Subscriptions</h2>
-        <Link to="/admin/vendors" className="rb-view-all">View All &rarr;</Link>
+        <Link to="/admin/vendors" className="rb-view-all" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>View all <FaArrowRight /></Link>
       </div>
       <div>
         {subscriptions.length === 0 ? (
@@ -333,8 +334,8 @@ export default function Dashboard() {
             </div>
           </div>
 
-          <div className="chart-container">
-            <ResponsiveContainer width="100%" height="100%">
+          <div className="chart-container" style={{ width: '100%', minHeight: '300px' }}>
+            <ResponsiveContainer width="100%" height="100%" minHeight={300}>
               <AreaChart data={stats.monthlyRevenue}>
                 <defs>
                   <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">

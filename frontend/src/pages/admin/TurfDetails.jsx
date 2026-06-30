@@ -73,11 +73,11 @@ const DOC_ICON = {
 
 // Default checklist labels (DB doesn't store these — admin fills them locally)
 const DEFAULT_VERIFICATIONS = [
-  { label: "Identity Verified" },
-  { label: "Location Verified" },
-  { label: "Turf Photos Verified" },
-  { label: "Contact Verified" },
-  { label: "Business Verified" },
+  { label: "Turf photos verified" },
+  { label: "Aadhar card verified" },
+  { label: "Pan card verified" },
+  { label: "GST certificate verified" },
+  { label: "EB bill verified" },
 ];
 
 // ── Normalise raw API response ────────────────────────────────────────────────
@@ -226,34 +226,25 @@ function ApproveModal({ turfName, onConfirm, onCancel, acting }) {
   );
 }
 
-function RejectModal({ onConfirm, onCancel, acting }) {
-  const [reason, setReason] = useState("");
+function RejectModal({ turfName, onConfirm, onCancel, acting }) {
   return (
     <div className="td-modal-backdrop" role="dialog" aria-modal="true">
       <div className="td-modal">
         <div className="td-modal-icon td-modal-icon--reject">
           <i className="bi bi-x-circle-fill" />
         </div>
-        <h2 className="td-modal-title">Reject Turf</h2>
-        <p className="td-modal-body" style={{ marginBottom: '12px' }}>
-          Please provide a reason. This will be sent to the vendor.
+        <h2 className="td-modal-title">Reject this turf?</h2>
+        <p className="td-modal-body">
+          Are you sure you want to reject <strong>{turfName}</strong>? The vendor will be notified of this rejection.
         </p>
-        <textarea
-          className="td-modal-textarea"
-          style={{ marginBottom: '20px' }}
-          placeholder="Reason for rejection..."
-          value={reason}
-          onChange={(e) => setReason(e.target.value)}
-          rows={3}
-        />
         <div className="td-modal-actions">
           <button className="td-modal-btn td-modal-btn--cancel" onClick={onCancel} disabled={acting}>
             Cancel
           </button>
           <button
             className="td-modal-btn td-modal-btn--reject"
-            onClick={() => onConfirm(reason)}
-            disabled={acting || !reason.trim()}
+            onClick={() => onConfirm("Admin rejected this turf.")}
+            disabled={acting}
           >
             {acting ? <span className="td-spinner-sm" /> : <i className="bi bi-x-circle" />}
             Reject
@@ -487,54 +478,32 @@ export default function TurfDetails() {
   }
 
   function toggleCheck(i) {
-    setChecks((prev) => {
-      const nextChecks = prev.map((v, idx) => (idx === i ? !v : v));
-      const label = turf.verifications[i]?.label;
-      
-      setDocStatuses((ds) => {
-        let nextDocs = [...ds];
-        
-        if (label === "Identity Verified") {
-          nextDocs = nextDocs.map((s, dIdx) => {
-            const title = turf.documents[dIdx]?.title?.toLowerCase() || "";
-            if (title.includes("aadhar") || title.includes("pan")) {
-              return nextChecks[i] ? "verified" : "pending";
-            }
-            return s;
-          });
-        }
+    const nextChecks = checks.map((v, idx) => (idx === i ? !v : v));
+    const label = turf.verifications[i]?.label;
+    
+    let nextDocs = [...docStatuses];
+    
+    if (label === "Aadhar card verified" || label === "aadhar card verified") {
+      nextDocs = nextDocs.map((s, dIdx) => (turf.documents[dIdx]?.title?.toLowerCase().includes("aadhar") ? (nextChecks[i] ? "verified" : "pending") : s));
+    }
+    if (label === "Pan card verified" || label === "pan card verifired") {
+      nextDocs = nextDocs.map((s, dIdx) => (turf.documents[dIdx]?.title?.toLowerCase().includes("pan") ? (nextChecks[i] ? "verified" : "pending") : s));
+    }
+    if (label === "GST certificate verified" || label === "gst ceritificate verified") {
+      nextDocs = nextDocs.map((s, dIdx) => (turf.documents[dIdx]?.title?.toLowerCase().includes("gst") ? (nextChecks[i] ? "verified" : "pending") : s));
+    }
+    if (label === "EB bill verified" || label === "ebBill verified") {
+      nextDocs = nextDocs.map((s, dIdx) => (turf.documents[dIdx]?.title?.toLowerCase().includes("eb bill") ? (nextChecks[i] ? "verified" : "pending") : s));
+    }
 
-        if (label === "Location Verified") {
-          nextDocs = nextDocs.map((s, dIdx) => {
-            const title = turf.documents[dIdx]?.title?.toLowerCase() || "";
-            if (title.includes("eb bill")) {
-              return nextChecks[i] ? "verified" : "pending";
-            }
-            return s;
-          });
-        }
-
-        if (label === "Business Verified") {
-          nextDocs = nextDocs.map((s, dIdx) => {
-            const title = turf.documents[dIdx]?.title?.toLowerCase() || "";
-            if (title.includes("gst")) {
-              return nextChecks[i] ? "verified" : "pending";
-            }
-            return s;
-          });
-        }
-
-        if (nextChecks.every(Boolean)) {
-          // All checked → auto-verify all pending docs
-          nextDocs = nextDocs.map((s) => (s === "pending" ? "verified" : s));
-        }
-        
-        saveVerifications(nextChecks, nextDocs);
-        return nextDocs;
-      });
-
-      return nextChecks;
-    });
+    if (nextChecks.every(Boolean)) {
+      // All checked → auto-verify all pending docs
+      nextDocs = nextDocs.map((s) => (s === "pending" ? "verified" : s));
+    }
+    
+    setChecks(nextChecks);
+    setDocStatuses(nextDocs);
+    saveVerifications(nextChecks, nextDocs);
   }
 
   function resetChecks() {
@@ -547,7 +516,24 @@ export default function TurfDetails() {
 
   // ── Doc status ────────────────────────────────────────────────────────────
   function setDocStatus(i, status) {
-    setDocStatuses((prev) => prev.map((s, idx) => (idx === i ? status : s)));
+    const nextDocs = docStatuses.map((s, idx) => (idx === i ? status : s));
+    const docTitle = turf.documents[i]?.title?.toLowerCase() || "";
+    
+    let checkIndex = -1;
+    if (docTitle.includes("aadhar")) checkIndex = turf.verifications.findIndex(v => v.label === "Aadhar card verified" || v.label === "aadhar card verified");
+    else if (docTitle.includes("pan")) checkIndex = turf.verifications.findIndex(v => v.label === "Pan card verified" || v.label === "pan card verifired");
+    else if (docTitle.includes("gst")) checkIndex = turf.verifications.findIndex(v => v.label === "GST certificate verified" || v.label === "gst ceritificate verified");
+    else if (docTitle.includes("eb bill")) checkIndex = turf.verifications.findIndex(v => v.label === "EB bill verified" || v.label === "ebBill verified");
+    
+    const nextChecks = [...checks];
+    if (checkIndex !== -1) {
+      nextChecks[checkIndex] = (status === "verified");
+    }
+    
+    setDocStatuses(nextDocs);
+    if (checkIndex !== -1) setChecks(nextChecks);
+    
+    saveVerifications(nextChecks, nextDocs);
   }
 
   // ── Approval gates ────────────────────────────────────────────────────────
@@ -652,6 +638,7 @@ export default function TurfDetails() {
       )}
       {modal === "reject-confirm" && (
         <RejectModal
+          turfName={turf.name}
           acting={acting}
           onConfirm={handleReject}
           onCancel={() => setModal(null)}
@@ -982,7 +969,7 @@ export default function TurfDetails() {
           }}
           onClick={() => setPreviewImage(null)}
         >
-          <div style={{ width: '90vw', height: 'auto', aspectRatio: '4/3', maxWidth: '800px', maxHeight: '80vh', position: 'relative', background: 'white', borderRadius: '8px', overflow: 'hidden' }}>
+          <div style={{ width: '90vw', height: 'auto', aspectRatio: '4/3', maxWidth: '800px', maxHeight: '80vh', position: 'relative', background: 'white', borderRadius: '8px', overflow: 'hidden' }} onClick={(e) => e.stopPropagation()}>
             {previewImage?.toLowerCase().endsWith('.pdf') ? (
               <iframe
                 src={previewImage}
@@ -995,6 +982,34 @@ export default function TurfDetails() {
                 alt="Preview" 
                 style={{ width: '100%', height: '100%', objectFit: 'contain' }} 
               />
+            )}
+
+            {/* Next/Prev Navigation Buttons */}
+            {turf.photos?.includes(previewImage) && turf.photos.length > 1 && (
+              <>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    const idx = turf.photos.indexOf(previewImage);
+                    const prevIdx = (idx - 1 + turf.photos.length) % turf.photos.length;
+                    setPreviewImage(turf.photos[prevIdx]);
+                  }}
+                  style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', background: 'rgba(0,0,0,0.5)', color: 'white', border: 'none', borderRadius: '50%', width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', zIndex: 10 }}
+                >
+                  <i className="bi bi-chevron-left" style={{ fontSize: '20px' }}></i>
+                </button>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    const idx = turf.photos.indexOf(previewImage);
+                    const nextIdx = (idx + 1) % turf.photos.length;
+                    setPreviewImage(turf.photos[nextIdx]);
+                  }}
+                  style={{ position: 'absolute', right: '16px', top: '50%', transform: 'translateY(-50%)', background: 'rgba(0,0,0,0.5)', color: 'white', border: 'none', borderRadius: '50%', width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', zIndex: 10 }}
+                >
+                  <i className="bi bi-chevron-right" style={{ fontSize: '20px' }}></i>
+                </button>
+              </>
             )}
           </div>
         </div>
