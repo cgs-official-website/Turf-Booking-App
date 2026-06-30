@@ -467,10 +467,9 @@ const deletePlan = async (planId) => {
   const plan = await Plan.findById(planId);
   if (!plan) throw new ApiError(404, "Plan not found");
 
-  // Soft-delete: deactivate instead of hard delete
-  plan.isActive = false;
-  await plan.save();
-  return { message: "Plan deactivated successfully" };
+  // Hard delete
+  await Plan.findByIdAndDelete(planId);
+  return { message: "Plan deleted successfully" };
 };
 
 // ─────────────────────────────────────────────
