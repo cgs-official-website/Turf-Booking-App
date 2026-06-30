@@ -389,9 +389,9 @@
   margin: -2px -4px;
   transition: background 0.15s;
 }
-.ep-feature-text:hover {
+/* .ep-feature-text:hover {
   background: #f0fdf4;
-}
+} */
 
 /* Inline edit input shown when a feature is clicked */
 .ep-feature-edit-wrapper {
