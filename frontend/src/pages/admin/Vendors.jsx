@@ -78,7 +78,9 @@ export default function Vendors() {
             location: vendor.location,
             image: vendor.bannerImage 
               ? (vendor.bannerImage.startsWith("http") ? vendor.bannerImage : `http://localhost:5000${vendor.bannerImage.startsWith("/") ? "" : "/"}${vendor.bannerImage}`)
-              : "https://images.unsplash.com/photo-1516399653135-68efc5e5cf13?w=600&h=400&fit=crop",
+              : (vendor.turfs?.[0]?.mainImage 
+                 ? (vendor.turfs[0].mainImage.startsWith("http") ? vendor.turfs[0].mainImage : `http://localhost:5000${vendor.turfs[0].mainImage.startsWith("/") ? "" : "/"}${vendor.turfs[0].mainImage}`)
+                 : "https://images.unsplash.com/photo-1516399653135-68efc5e5cf13?w=600&h=400&fit=crop"),
             logoImage: vendor.profileImage 
               ? (vendor.profileImage.startsWith("http") ? vendor.profileImage : `http://localhost:5000${vendor.profileImage.startsWith("/") ? "" : "/"}${vendor.profileImage}`) 
               : (vendor.turfs?.[0]?.logoImage || `https://ui-avatars.com/api/?name=${encodeURIComponent(vendor.vendorName || "Vendor")}&background=dcfce7&color=15803d`),

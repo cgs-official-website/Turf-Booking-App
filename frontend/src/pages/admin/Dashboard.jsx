@@ -343,9 +343,10 @@ export default function Dashboard() {
                   </linearGradient>
                 </defs>
                 <CartesianGrid
-                  strokeDasharray="3 3"
+                  strokeDasharray="4 4"
                   vertical={false}
-                  stroke="#EAECF0"
+                  stroke="#D0D5DD"
+                  strokeWidth={1.5}
                 />
                 <XAxis
                   dataKey="month"
@@ -376,9 +377,9 @@ export default function Dashboard() {
                 <Tooltip
                   content={<CustomTooltip />}
                   cursor={{
-                    stroke: "#EAECF0",
-                    strokeWidth: 1,
-                    strokeDasharray: "3 3",
+                    stroke: "#98A2B3",
+                    strokeWidth: 1.5,
+                    strokeDasharray: "4 4",
                   }}
                 />
                 <Area

@@ -35,7 +35,7 @@ export default function Card({ vendor, onClick }) {
   return (
     <div className="vendor-card" onClick={handleButtonClick}>
       <div className="vendor-image-wrapper">
-        <img src={vendor.image} alt={vendor.name} className="vendor-image" />
+        <img src={vendor.image || vendor.bannerImage} alt={vendor.name} className="vendor-image" />
         {vendor.logoImage && (
           <img src={vendor.logoImage} alt="logo" className="vendor-logo-overlay" />
         )}

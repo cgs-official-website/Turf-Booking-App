@@ -569,13 +569,11 @@ export default function EditPlans({ onBack, onSave }) {
               <div className="ep-two-cols">
                 <div className="ep-field">
                   <label className="ep-label">Price (₹)</label>
-                  <input
-                    type="number"
-                    className="ep-input"
-                    value={selected.price}
+                <input
+                    type="number" className="ep-input" value={selected.price === 0 ? "" : selected.price}
+placeholder="0" min={0}
                     onChange={(e) => updateSelected("price", Number(e.target.value))}
                     disabled={isSaving}
-                    min={0}
                   />
                 </div>
                 <div className="ep-field">

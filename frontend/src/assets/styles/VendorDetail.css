@@ -124,7 +124,6 @@
 .suspend-btn:hover { 
   background: #dc2626; 
 }
-
 /* ── Stats Grid ── */
 .stats-grid {
   display: grid;
@@ -152,13 +151,20 @@
   justify-content: center;
   flex-shrink: 0;
 }
+
 .stat-icon-circle.green { 
   background: #dcfce7; 
-  color: #22c55e; 
+  color: #22c55e;
 }
-.stat-icon-circle.white { 
-  background: rgba(255,255,255,0.25); 
-  color: #ffffff; 
+
+/* ── Subscription Card Icon - Green for both states ── */
+.subscription-card .stat-icon-circle {
+  background: rgba(255, 255, 255, 0.25);
+  color: #22c55e;
+}
+
+.subscription-card .stat-icon-circle svg path {
+  fill: #22c55e !important;
 }
 
 .stat-label, .subscription-label {
@@ -184,17 +190,47 @@
   margin-top: 6px; 
 }
 
+/* ── Subscription Card States ── */
 .subscription-card.active {
   background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
   border-color: transparent;
 }
+
+.subscription-card.expired {
+  background: #f4f4f4;
+}
+
 .subscription-card.active .subscription-label { 
   color: rgba(255,255,255,0.8); 
 }
+
 .subscription-card.active .subscription-value { 
   color: #ffffff; 
 }
 
+.subscription-card.expired .subscription-value { 
+  color: #64748b; 
+}
+
+/* ── Active state icon ── */
+.subscription-card.active .stat-icon-circle {
+  background: rgba(255, 255, 255, 0.25);
+  color: #ffffff;
+}
+
+.subscription-card.active .stat-icon-circle svg path {
+  fill: #ffffff !important;
+}
+
+/* ── Expired state icon ── */
+.subscription-card.expired .stat-icon-circle {
+  background: #dcfce7;
+  color: #22c55e;
+}
+
+.subscription-card.expired .stat-icon-circle svg path {
+  fill: #22c55e !important;
+}
 /* ── Info Sections ── */
 .info-sections {
   display: grid;
@@ -830,6 +866,7 @@
     height: 14px; 
   }
   .stat-value, .subscription-value { 
+    
     font-size: 18px; 
   }
   .stat-label, .subscription-label { 
@@ -837,6 +874,7 @@
     letter-spacing: 0.3px; 
     margin-bottom: 2px;
   }
+  
   .stat-badge { 
     font-size: 9px; 
     margin-top: 2px;
