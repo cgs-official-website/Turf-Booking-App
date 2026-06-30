@@ -259,7 +259,6 @@ export default function EditPlans({ onBack, onSave }) {
       setPlans(remaining);
       setSelectedId(remaining[0]?.id || null);
       setShowDeleteModal(false);
-      setHasChanges(true);
     } catch (err) {
       console.error('Delete failed:', err);
       const msg = err.response?.data?.message || 'Failed to delete plan';
