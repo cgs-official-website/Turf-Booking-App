@@ -62,7 +62,7 @@ const createReport = async ({ vendorId, turfId, category, description }) => {
 // ─────────────────────────────────────────────
 const getAllReportsAdmin = async () => {
   return await Report.find({})
-    .populate("vendor", "name email phone")
+    .populate("vendor", "name email phone profileImage")
     .populate("turf", "name location mainImage")
     .select("-__v")
     .sort({ createdAt: -1 });
@@ -75,7 +75,7 @@ const getReportById = async (reportId) => {
   assertObjectId(reportId, "report ID");
 
   const report = await Report.findById(reportId)
-    .populate("vendor", "name email phone")
+    .populate("vendor", "name email phone profileImage")
     .populate("turf", "name location mainImage");
 
   if (!report) throw new ApiError(404, "Report not found");

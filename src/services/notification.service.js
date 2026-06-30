@@ -14,7 +14,9 @@ const createNotification = async (data) => {
 };
 
 const getMyNotifications = async (userId) => {
-  return await Notification.find({ user: userId }).sort({ createdAt: -1 });
+  return await Notification.find({ user: userId })
+    .populate("vendorId", "name profileImage profileImageUrl image logo logoImage")
+    .sort({ createdAt: -1 });
 };
 
 const markAsRead = async (notificationId, userId) => {
@@ -25,8 +27,13 @@ const markAsRead = async (notificationId, userId) => {
   );
 };
 
+const deleteAllNotifications = async (userId) => {
+  return await Notification.deleteMany({ user: userId });
+};
+
 module.exports = {
   createNotification,
   getMyNotifications,
   markAsRead,
+  deleteAllNotifications,
 };

@@ -73,11 +73,11 @@ const addTurf = async ({
   const finalDocs = turfDocs.length > 0 ? turfDocs : (documents || []);
 
   const verifications = [
-    { label: "Identity Verified", checked: hasApprovedTurf },
-    { label: "Location Verified", checked: false },
-    { label: "Turf Photos Verified", checked: false },
-    { label: "Contact Verified", checked: false },
-    { label: "Business Verified", checked: hasApprovedTurf }
+    { label: "Turf photos verified", checked: false },
+    { label: "Aadhar card verified", checked: hasApprovedTurf },
+    { label: "Pan card verified", checked: hasApprovedTurf },
+    { label: "GST certificate verified", checked: hasApprovedTurf },
+    { label: "EB bill verified", checked: false }
   ];
 
   const turf = await Turf.create({

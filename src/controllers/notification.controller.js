@@ -1,6 +1,8 @@
+
 const {
   getMyNotifications: getNotifs,
   markAsRead: markNotifAsRead,
+  deleteAllNotifications: deleteNotifs,
 } = require("../services/notification.service");
 
 const getMyNotifications = async (req, res, next) => {
@@ -34,7 +36,20 @@ const markAsRead = async (req, res, next) => {
   }
 };
 
+const deleteAllNotifications = async (req, res, next) => {
+  try {
+    await deleteNotifs(req.user._id);
+    res.status(200).json({
+      success: true,
+      message: "All notifications deleted successfully",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   getMyNotifications,
   markAsRead,
+  deleteAllNotifications,
 };

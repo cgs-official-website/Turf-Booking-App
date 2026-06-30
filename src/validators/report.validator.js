@@ -2,10 +2,9 @@
 const Joi = require("joi");
 
 const CATEGORIES = [
-  "System bug",
-  "Over charged",
-  "Request slot Issue",
-  "Facility Damage",
+  "Subscription",
+  "Slot update",
+  "Slot booking",
   "Other",
 ];
 
