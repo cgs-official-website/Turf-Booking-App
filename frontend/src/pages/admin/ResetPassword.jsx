@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import logo from "../../assets/images/logo.png";
 import "../../assets/styles/login.css";
 import { adminResetPassword } from "../../services/adminApi";
+import { FiEye, FiEyeOff } from "react-icons/fi";
 
 function ResetPassword() {
   const [searchParams] = useSearchParams();
@@ -13,6 +14,8 @@ function ResetPassword() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   
   const navigate = useNavigate();
 
@@ -88,26 +91,46 @@ function ResetPassword() {
             
             <div className="form-group">
               <label>New password</label>
-              <input
-                type="password"
-                placeholder="Enter your new password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                disabled={loading || successMsg}
-              />
+              <div className="password-input-wrapper">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  placeholder="Enter your new password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  disabled={loading || successMsg}
+                />
+                <button 
+                  type="button"
+                  className="password-toggle-icon"
+                  onClick={() => setShowPassword(!showPassword)}
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                >
+                  {showPassword ? <FiEyeOff size={18} /> : <FiEye size={18} />}
+                </button>
+              </div>
             </div>
 
             <div className="form-group">
               <label>Confirm new password</label>
-              <input
-                type="password"
-                placeholder="Enter your confirm password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                required
-                disabled={loading || successMsg}
-              />
+              <div className="password-input-wrapper">
+                <input
+                  type={showConfirmPassword ? "text" : "password"}
+                  placeholder="Enter your confirm password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  required
+                  disabled={loading || successMsg}
+                />
+                <button 
+                  type="button"
+                  className="password-toggle-icon"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  aria-label={showConfirmPassword ? "Hide password" : "Show password"}
+                >
+                  {showConfirmPassword ? <FiEyeOff size={18} /> : <FiEye size={18} />}
+                </button>
+              </div>
             </div>
 
             <button 
