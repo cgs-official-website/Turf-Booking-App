@@ -155,7 +155,7 @@ export default function Dashboard() {
           <div className="stat-card">
             <div className="stat-content">
               <h3>Total Revenue</h3>
-              <h2>
+              <h2 title={`₹${stats.totalRevenue?.toLocaleString("en-IN") || stats.totalRevenue}`}>
                 {stats.totalRevenue?.toLocaleString("en-IN") || stats.totalRevenue}
               </h2>
               <p className={`stat-growth ${stats.revenueGrowth?.percentage < 0 ? "negative-growth" : ""}`}>

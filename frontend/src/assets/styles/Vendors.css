@@ -4,8 +4,9 @@
 
 .vendor-management-container {
   padding: 28px 28px 40px;
-  background-color: #f8f8f8;
-  min-height: 100%;
+  background: #f4f6f8;
+  font-family: "Poppins", system-ui, sans-serif;
+  min-height: 100vh;
   width: 100%;
   max-width: 100%;
   box-sizing: border-box;
@@ -525,7 +526,11 @@
   }
 
   /* Vendor Grid - Single column on mobile */
-  
+  .vendor-grid {
+    grid-template-columns: 1fr !important;
+    gap: 14px;
+    margin-bottom: 20px;
+  }
 
   .vendor-grid > * {
     width: 100% !important;
@@ -606,11 +611,11 @@
     font-size: 18px;
     margin-bottom: 14px;
   }
-  .vendor-grid {
-    grid-template-columns: 1fr !important;
-    gap: 14px;
-    margin-bottom: 20px;
+
+  .vendor-stats-grid {
+    gap: 8px;
   }
+
   .vendor-stat-card {
     padding: 12px 14px;
     min-height: 80px;
@@ -651,6 +656,7 @@
   }
 
   .vendor-grid {
+    grid-template-columns: 1fr !important;
     gap: 12px;
     margin-bottom: 16px;
   }
@@ -741,6 +747,12 @@
     left: 10px;
     width: 14px;
     height: 14px;
+  }
+
+  .vendor-grid {
+    grid-template-columns: 1fr !important;
+    gap: 10px;
+    margin-bottom: 12px;
   }
 
   .pagination-container {

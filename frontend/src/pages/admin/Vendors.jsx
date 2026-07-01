@@ -1,18 +1,13 @@
 // pages/admin/Vendors.jsx
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { HiOutlineSearch, HiOutlineLocationMarker, HiOutlineBadgeCheck } from "react-icons/hi";
-import { HiOutlineBuildingOffice2 } from "react-icons/hi2";
-import { PiWalletDuotone } from "react-icons/pi";
 import { FiUser, FiCreditCard } from "react-icons/fi";
-import { FaIndianRupeeSign } from "react-icons/fa6";
 import Card from "../../components/Card";
 import VendorDetail from "../../components/VendorDetail";
 import { getAllVendors, getVendorSubscriptionHistory } from "../../services/vendors.service";
 import { getSubscriptionStats } from "../../services/subscription.service";
 import "../../assets/styles/Vendors.css";
 import "../../assets/styles/Subscription.css";
-import "../../assets/styles/payment.css";
-import "../../assets/styles/dashboard.css";
 
 const STATUS_OPTIONS = ["Status", "Active", "Expired"];
 
@@ -30,7 +25,7 @@ export default function Vendors() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Stats
+  // Stats - all come from API
   const [stats, setStats] = useState({
     total: 0,
     active: 0,
@@ -49,9 +44,10 @@ export default function Vendors() {
       setError(null);
 
       try {
+        // Fetch vendors
         const response = await getAllVendors();
 
-        // Transform backend data to match frontend format and fetch subscription status for each
+        // Transform backend data to match frontend format
         const transformedVendors = await Promise.all(response.data.map(async (vendor, index) => {
           let subscriptionStatus = 'expired';
           let daysLeft = null;
@@ -59,7 +55,6 @@ export default function Vendors() {
           try {
             const historyRes = await getVendorSubscriptionHistory(vendor._id);
             const history = historyRes.data || [];
-            // Look for an active or trial subscription in the vendor's history
             const activeSub = history.find(s => s.status === 'active' || s.status === 'trial');
             
             if (activeSub) {
@@ -93,7 +88,6 @@ export default function Vendors() {
               : null,
             subscriptionStatus,
             daysLeft,
-            // Store additional vendor data for detail view
             _id: vendor._id,
             turfCount: vendor.turfCount,
             turfs: vendor.turfs || [],
@@ -101,8 +95,11 @@ export default function Vendors() {
           };
         }));
 
+        // Fetch subscription stats from API - NO HARDCODE
         try {
           const statsRes = await getSubscriptionStats();
+          console.log("📊 Subscription Stats from API:", statsRes?.data);
+          
           if (statsRes?.data) {
             setStats({
               total: statsRes.data.totalSubscriptions || statsRes.data.total || 0,
@@ -112,13 +109,13 @@ export default function Vendors() {
             });
           }
         } catch (statsErr) {
-          console.error("Failed to load subscription stats:", statsErr);
+          console.error("❌ Failed to load subscription stats:", statsErr);
         }
 
         setVendors(transformedVendors);
         setFilteredVendors(transformedVendors);
       } catch (err) {
-        console.error("Failed to load vendors from backend:", err);
+        console.error("❌ Failed to load vendors from backend:", err);
         setError("Failed to load vendors from backend. Please try again.");
         setVendors([]);
         setFilteredVendors([]);
@@ -197,59 +194,58 @@ export default function Vendors() {
 
   // ── Render Vendor List ──
   return (
-    <div className="dashboard-wrapper">
-      <div className="dashboard-content">
-        {/* ── Page Title ── */}
-        <h1 className="dashboard-title">Vendor Management</h1>
+    <div className="vendor-management-container">
+      {/* ── Page Title ── */}
+      <h1 className="page-title">Vendor Management</h1>
 
-        {/* ── Stat Cards - Dashboard Style 2x2 ── */}
-        <div className="stats-grid">
-          <div className="stat-card">
-            <div className="stat-content">
-              <h3>Total Vendors</h3>
-              <h2>{stats.total}</h2>
-              <p className="stat-growth">+{stats.total} this month</p>
-            </div>
-            <div className="stat-icon vendor-icon">
-              <FiUser />
-            </div>
+      {/* ── Stat Cards - All data from API ── */}
+      <div className="vendor-stats-grid">
+        <div className="vendor-stat-card">
+          <div className="vendor-stat-content">
+            <h3>Total Subscription</h3>
+            <h2>{stats.total}</h2>
+            <p className="vendor-stat-growth">+{stats.total} this month</p>
           </div>
-
-          <div className="stat-card">
-            <div className="stat-content">
-              <h3>Active Subscriptions</h3>
-              <h2>{stats.active}</h2>
-              <p className="stat-growth">+{stats.active} this month</p>
-            </div>
-            <div className="stat-icon subscription-icon">
-              <FiCreditCard />
-            </div>
-          </div>
-
-          <div className="stat-card">
-            <div className="stat-content">
-              <h3>Expiring Soon</h3>
-              <h2>{stats.expiringSoon}</h2>
-              <p className="stat-growth">{stats.expiringSoon > 0 ? `⚠️ ${stats.expiringSoon} expiring soon` : "All good"}</p>
-            </div>
-            <div className="stat-icon turf-icon">
-              <HiOutlineLocationMarker />
-            </div>
-          </div>
-
-          <div className="stat-card">
-            <div className="stat-content">
-              <h3>Expired</h3>
-              <h2>{stats.expired}</h2>
-              <p className={`stat-growth ${stats.expired > 0 ? "negative-growth" : ""}`}>{stats.expired > 0 ? `⚠️ ${stats.expired} expired` : "All active"}</p>
-            </div>
-            <div className="stat-icon vendor-icon">
-              <HiOutlineBadgeCheck />
-            </div>
+          <div className="vendor-stat-icon vendor-icon-bg">
+            <FiUser />
           </div>
         </div>
 
-        {/* ── Filters ── */}
+        <div className="vendor-stat-card">
+          <div className="vendor-stat-content">
+            <h3>Active Subscription</h3>
+            <h2>{stats.active}</h2>
+            <p className="vendor-stat-growth">+{stats.active} this month</p>
+          </div>
+          <div className="vendor-stat-icon subscription-icon-bg">
+            <FiCreditCard />
+          </div>
+        </div>
+
+        <div className="vendor-stat-card">
+          <div className="vendor-stat-content">
+            <h3>Expiring soon</h3>
+            <h2>{stats.expiringSoon}</h2>
+            <p className="vendor-stat-growth">+{stats.expiringSoon} this month</p>
+          </div>
+          <div className="vendor-stat-icon expiring-icon-bg">
+            <HiOutlineLocationMarker />
+          </div>
+        </div>
+
+        <div className="vendor-stat-card">
+          <div className="vendor-stat-content">
+            <h3>Expired</h3>
+            <h2>{stats.expired}</h2>
+            <p className="vendor-stat-growth">+{stats.expired} this month</p>
+          </div>
+          <div className="vendor-stat-icon expired-icon-bg">
+            <HiOutlineBadgeCheck />
+          </div>
+        </div>
+      </div>
+
+      {/* ── Filters ── */}
       <div className="filters-section">
         <div className="search-wrapper">
           <HiOutlineSearch className="search-icon" />
@@ -314,32 +310,44 @@ export default function Vendors() {
       </div>
 
       {/* ── Pagination ── */}
-      <div className="pay-table-footer" style={{ marginTop: '20px', background: 'transparent', padding: '0' }}>
-        <span className="pay-showing-label">
-          Showing {paginated.length} of {filteredVendors.length} record{filteredVendors.length !== 1 ? "s" : ""}
+      <div className="pagination-container">
+        <span className="pagination-info-left">
+          Showing {(safePage - 1) * PER_PAGE + 1} to {Math.min(safePage * PER_PAGE, filteredVendors.length)} results
         </span>
-        <div className="pay-pagination">
-          <button className="pay-page-btn"
-            onClick={() => setPage((p) => Math.max(1, p - 1))}
+
+        <div className="pagination-center">
+          <button
+            className="pagination-arrow"
             disabled={safePage === 1}
-            aria-label="Previous"
+            onClick={() => setPage((p) => Math.max(1, p - 1))}
           >
-            <i className="bi bi-chevron-left" />
+            ‹
           </button>
-          {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
-            <button key={p}
-              className={`pay-page-btn${p === safePage ? " pay-page-btn--active" : ""}`}
-              onClick={() => setPage(p)}>{p}</button>
-          ))}
-          <button className="pay-page-btn"
-            onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+
+          <div className="page-numbers">
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((n) => (
+              <button
+                key={n}
+                className={`page-number ${safePage === n ? "active" : ""}`}
+                onClick={() => setPage(n)}
+              >
+                {n}
+              </button>
+            ))}
+          </div>
+
+          <button
+            className="pagination-arrow"
             disabled={safePage === totalPages}
-            aria-label="Next"
+            onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
           >
-            <i className="bi bi-chevron-right" />
+            ›
           </button>
         </div>
-      </div>
+
+        <div className="pagination-info">
+          Rows per page <span className="rows-per-page">04</span>
+        </div>
       </div>
     </div>
   );

@@ -78,6 +78,9 @@ body,
 .stat-content {
   display: flex;
   flex-direction: column;
+  min-width: 0;
+  flex: 1;
+  padding-right: 12px;
 }
 
 .stat-content h3 {
@@ -88,6 +91,8 @@ body,
   color: #6b7280;
   letter-spacing: 0.01em;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .stat-content h2 {
@@ -96,6 +101,9 @@ body,
   font-weight: 700;
   line-height: 1;
   color: #111111;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .stat-content p {
