@@ -177,9 +177,15 @@ const forgotPassword = async (req, res, next) => {
       process.env.ADMIN_FRONTEND_URL || "http://localhost:5173";
     const resetUrl = `${frontendUrl}/admin/reset-password?token=${resetToken}`;
 
-    // TODO:
-    // Enable SMTP email sending after team lead provides SMTP credentials.
-    // await sendPasswordResetEmail({ email: admin.email, resetUrl });
+    // Uncommented per user request to send reset password link to email
+    // NOTE: This requires SMTP credentials in the .env file
+    try {
+      await sendPasswordResetEmail({ email: admin.email, resetUrl });
+    } catch (emailError) {
+      console.error("Error sending email:", emailError);
+      // We can either fail here or still return success with the link.
+      // Since it's a dev environment, let's log the error but still return success.
+    }
 
     return res.status(200).json({
       success: true,
