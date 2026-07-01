@@ -54,6 +54,22 @@ const userSchema = new mongoose.Schema(
       ebBill: { url: String, verified: { type: Boolean, default: false } }
     },
 
+    verificationMethod: {
+      type: String,
+      enum: ["manual", "digilocker"],
+      default: "manual",
+    },
+
+    verificationStatus: {
+      type: String,
+      enum: ["pending", "verified", "rejected"],
+      default: "pending",
+    },
+
+    verifiedAt: {
+      type: Date,
+    },
+
 
   },
   {

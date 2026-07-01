@@ -18,6 +18,7 @@ const adminRoutes = require("./routes/admin.routes");
 const notificationRoutes = require("./routes/notification.routes");
 const subscriptionRoutes = require("./routes/subscription.routes"); // ← ADD THIS
 const reportRoutes = require("./routes/report.routes");
+const digilockerRoutes = require("./routes/digilocker.routes");
 
 
 const app = express();
@@ -36,6 +37,7 @@ app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 // Routes
 app.use("/", routes);
 app.use("/auth", authRoutes);
+app.use("/auth/digilocker", digilockerRoutes);
 app.use("/users", userRoutes);
 app.use("/turfs", turfRoutes);
 app.use("/bookings", bookingRoutes);

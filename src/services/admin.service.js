@@ -314,7 +314,7 @@ const getDashboardStats = async (period = "month", planId = "") => {
 
 const getAllVendors = async () => {
   const vendors = await User.find({ role: "vendor" })
-    .select("name email phone location profileImage createdAt kycDocuments")
+    .select("name email phone location profileImage createdAt kycDocuments verificationMethod verificationStatus verifiedAt")
     .lean();
 
   const vendorData = await Promise.all(
@@ -334,6 +334,9 @@ const getAllVendors = async () => {
         bannerImage: turfs[0]?.mainImage || "",   
         createdAt: vendor.createdAt,
         kycDocuments: vendor.kycDocuments || {},
+        verificationMethod: vendor.verificationMethod || "manual",
+        verificationStatus: vendor.verificationStatus || "pending",
+        verifiedAt: vendor.verifiedAt || null,
         turfCount: turfs.length,
         turfs: turfs.map((turf) => ({
           turfName: turf.name,

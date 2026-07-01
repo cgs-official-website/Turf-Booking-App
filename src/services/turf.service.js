@@ -34,10 +34,12 @@ const addTurf = async ({
   // Handle KYC documents logic
   const turfDocs = [];
   
-  // Check if vendor already has an approved turf
+  // Check if vendor already has an approved turf or is DigiLocker verified
   const approvedTurf = await Turf.findOne({ owner: ownerId, approvalStatus: "approved" });
   const hasApprovedTurf = !!approvedTurf;
-  const defaultKycStatus = hasApprovedTurf ? "verified" : "pending";
+  const isDigilockerVerified = vendor.verificationMethod === "digilocker" && vendor.verificationStatus === "verified";
+  const isVerified = hasApprovedTurf || isDigilockerVerified;
+  const defaultKycStatus = isVerified ? "verified" : "pending";
 
   if (vendor.kycDocuments) {
     if (vendor.kycDocuments.aadhar?.url) {
@@ -74,9 +76,9 @@ const addTurf = async ({
 
   const verifications = [
     { label: "Turf photos verified", checked: false },
-    { label: "Aadhar card verified", checked: hasApprovedTurf },
-    { label: "Pan card verified", checked: hasApprovedTurf },
-    { label: "GST certificate verified", checked: hasApprovedTurf },
+    { label: "Aadhar card verified", checked: isVerified },
+    { label: "Pan card verified", checked: isVerified },
+    { label: "GST certificate verified", checked: isVerified },
     { label: "EB bill verified", checked: false }
   ];
 
@@ -92,15 +94,15 @@ const addTurf = async ({
     documents: finalDocs,
     verifications: verifications,
     verificationChecklist: {
-      identityVerified: hasApprovedTurf,
+      identityVerified: isVerified,
       locationVerified: false,
       turfPhotosVerified: false,
       contactVerified: false,
-      businessVerified: hasApprovedTurf,
+      businessVerified: isVerified,
       documentVerification: {
-        aadhar: hasApprovedTurf,
-        pan: hasApprovedTurf,
-        gst: hasApprovedTurf,
+        aadhar: isVerified,
+        pan: isVerified,
+        gst: isVerified,
         ebBill: false
       }
     }
