@@ -1,0 +1,122 @@
+/* recentTurfApprovals.css */
+.rta-card {
+  background: #ffffff;
+  border: 1px solid #f0f0f0;
+  border-radius: 14px;
+  padding: 24px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  font-family: "Poppins", system-ui, sans-serif;
+}
+
+.rta-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.rta-card-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #111827;
+  margin: 0;
+}
+
+.rta-view-all {
+  font-size: 13px;
+  font-weight: 500;
+  color: #10B981;
+  text-decoration: none;
+}
+/* .rta-view-all:hover { text-decoration: underline; } */
+
+.rta-loading {
+  display: flex;
+  justify-content: center;
+  padding: 24px 0;
+}
+
+.rta-spinner {
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  border: 3px solid #e5e7eb;
+  border-top-color: #10B981;
+  border-radius: 50%;
+  animation: rta-spin 0.7s linear infinite;
+}
+@keyframes rta-spin { to { transform: rotate(360deg); } }
+
+.rta-empty {
+  font-size: 13px;
+  color: #9ca3af;
+  text-align: center;
+  padding: 20px 0;
+  margin: 0;
+}
+
+.rta-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.rta-table thead tr {
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.rta-table th {
+  padding: 12px 10px;
+  text-align: left;
+  font-size: 11px;
+  font-weight: 600;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+
+.rta-table tbody tr {
+  border-bottom: 1px solid #f9fafb;
+  transition: background 0.12s;
+}
+.rta-table tbody tr:last-child { border-bottom: none; }
+.rta-table tbody tr:hover { background: #fafafa; }
+
+.rta-table td {
+  padding: 14px 10px;
+  color: #374151;
+  vertical-align: middle;
+}
+
+.rta-td-name { font-weight: 600; color: #111827; }
+.rta-td-vendor { color: #6b7280; font-weight: 500; }
+.rta-td-loc { color: #6b7280; }
+.rta-td-date { color: #6b7280; font-size: 12.5px; }
+
+.rta-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+.rta-badge--pending { background: #ffedd5; color: #ea580c; }
+.rta-badge--approved { background: #D1FAE5; color: #065F46; }
+.rta-badge--rejected { background: #FEE2E2; color: #991B1B; }
+
+.rta-action-btn {
+  background: none;
+  border: none;
+  color: #3B82F6;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  padding: 0;
+}
+/* .rta-action-btn:hover {
+  text-decoration: underline;
+} */
+
+.rta-table-wrap { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }

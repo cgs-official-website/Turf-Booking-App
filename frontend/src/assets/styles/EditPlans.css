@@ -1,0 +1,1340 @@
+.ep-container {
+  padding: 24px 32px;
+  background: #f7f8fa;
+  min-height: 100vh;
+}
+
+/* ── Header ── */
+.ep-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 32px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.ep-header-left { flex: 1; }
+
+.ep-back-btn {
+  background: none;
+  border: none;
+  font-size: 20px;
+  font-weight: 700;
+  color: #111827;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.ep-back-btn:hover { color: #22c55e; }
+
+.ep-header-sub {
+  font-size: 13px;
+  color: #6b7280;
+  margin: 6px 0 0 0;
+}
+
+.ep-header-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.ep-reset-btn {
+  padding: 8px 20px;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 8px;
+  background: white;
+  color: #374151;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.ep-reset-btn:hover { background: #f9fafb; border-color: #d1d5db; }
+
+.ep-save-btn {
+  padding: 9px 24px;
+  border: none;
+  border-radius: 8px;
+  background: #22c55e;
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.ep-save-btn:hover {
+  background: #16a34a;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+}
+
+/* ── Main 3-Column Layout ── */
+.ep-main {
+  display: grid;
+  grid-template-columns: 260px minmax(0, 1fr) minmax(0, 300px);
+  gap: 20px;
+  align-items: start;
+}
+
+@media (max-width: 1200px) {
+  .ep-main { grid-template-columns: 260px minmax(0, 1fr); }
+  .ep-right { grid-column: 1 / -1; }
+
+}
+@media (max-width: 768px) {
+  .ep-main { grid-template-columns: minmax(0, 1fr); }
+  .ep-container { padding: 16px; }
+}
+
+/* ── Left Column – Plans List ── */
+.ep-left {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  border: 1px solid #e5e7eb;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.ep-left-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #111827;
+  margin: 0 0 2px 0;
+}
+
+.ep-left-sub {
+  font-size: 12px;
+  color: #9ca3af;
+  margin: 0 0 14px 0;
+}
+
+.ep-plans-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 14px;
+  max-height: 500px;
+  overflow-y: auto;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
+}
+
+.ep-plans-list::-webkit-scrollbar { width: 0; display: none; }
+
+.ep-plan-card {
+  display: flex;
+  flex-direction: column;
+  padding: 12px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.15s;
+  border: 2px solid #f3f4f6;
+  background: white;
+}
+.ep-plan-card:hover { background: #f9fafb; }
+.ep-plan-card-active { border-color: #22c55e; background: white; }
+
+/* Top row inside card: icon on left, badge on right */
+.ep-plan-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.ep-plan-icon-box {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  background: #f0fdf4;
+  color: #22c55e;
+  transition: background 0.15s, color 0.15s;
+}
+
+/* "Most Popular" plan icon box — violet accent (left "Select a plan to edit" list only) */
+.ep-plan-icon-box--popular {
+  background: #f5f3ff;
+  color: #7c3aed;
+}
+
+/* "Most Popular" badge in left-column card — violet accent (left "Select a plan to edit" list only) */
+.ep-most-popular-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  font-weight: 600;
+  color: #7c3aed;
+  background: #f5f3ff;
+  border: 1.5px solid #ddd6fe;
+  padding: 3px 9px;
+  border-radius: 20px;
+  letter-spacing: 0.2px;
+  white-space: nowrap;
+}
+
+.ep-plan-info { width: 100%; }
+
+.ep-plan-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #111827;
+  line-height: 1.3;
+  margin-bottom: 2px;
+}
+
+.ep-plan-price {
+  font-size: 13px;
+  color: #374151;
+  font-weight: 500;
+}
+
+.ep-plan-period {
+  font-size: 12px;
+  color: #9ca3af;
+  font-weight: 400;
+}
+
+.ep-plan-billing {
+  font-size: 10px;
+  color: #9ca3af;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  margin-top: 2px;
+}
+
+.ep-add-plan {
+  width: 100%;
+  padding: 10px;
+  border: 2px dashed #d1d5db;
+  border-radius: 10px;
+  background: transparent;
+  color: #22c55e;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+.ep-add-plan:hover { border-color: #22c55e; background: #f0fdf4; }
+
+/* ── Center Column – Form ── */
+.ep-center {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  border: 1px solid #e5e7eb;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.ep-details-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.ep-details-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #111827;
+  margin: 0;
+}
+
+/* "Most Popular" toggle button — green accent */
+.ep-most-popular-btn {
+  padding: 6px 14px;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 8px;
+  background: white;
+  color: #9ca3af;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.ep-most-popular-btn:hover { border-color: #22c55e; color: #16a34a; }
+.ep-most-popular-btn-active { background: #f0fdf4; border-color: #22c55e; color: #16a34a; }
+
+.ep-field { margin-bottom: 14px; }
+
+.ep-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  color: #374151;
+  margin-bottom: 6px;
+}
+
+.ep-input {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #111827;
+  transition: border-color 0.15s;
+  background: white;
+  box-sizing: border-box;
+}
+.ep-input:focus { outline: none; border-color: #22c55e; }
+
+.ep-textarea-wrapper { position: relative; }
+.ep-textarea-wrapper .ep-input { padding-right: 56px; }
+
+.ep-textarea {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #111827;
+  resize: vertical;
+  font-family: inherit;
+  transition: border-color 0.15s;
+  box-sizing: border-box;
+}
+.ep-textarea:focus { outline: none; border-color: #22c55e; }
+
+.ep-char-count {
+  position: absolute;
+  bottom: 8px;
+  right: 12px;
+  font-size: 11px;
+  color: #9ca3af;
+}
+
+.ep-section-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #9ca3af;
+  letter-spacing: 0.6px;
+  margin: 18px 0 10px 0;
+  text-transform: uppercase;
+}
+
+.ep-two-cols {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.ep-select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236b7280' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 36px;
+  cursor: pointer;
+}
+
+/* Features list – bordered rows */
+.ep-features-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ep-feature-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1.5px solid #e5e7eb;
+  background: white;
+  transition: background 0.15s;
+}
+.ep-feature-item:hover { background: #f9fafb; }
+
+.ep-check { flex-shrink: 0; }
+
+.ep-feature-text {
+  flex: 1;
+  font-size: 14px;
+  color: #374151;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+  cursor: text;
+  border-radius: 4px;
+  padding: 2px 4px;
+  margin: -2px -4px;
+  transition: background 0.15s;
+}
+/* .ep-feature-text:hover {
+  background: #f0fdf4;
+} */
+
+/* Inline edit input shown when a feature is clicked */
+.ep-feature-edit-wrapper {
+  flex: 1;
+  position: relative;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+}
+
+.ep-feature-edit-input {
+  width: 100%;
+  font-size: 14px;
+  color: #111827;
+  border: 1.5px solid #22c55e;
+  border-radius: 6px;
+  padding: 6px 56px 6px 8px;
+  box-sizing: border-box;
+  background: white;
+}
+.ep-feature-edit-input:focus { outline: none; }
+
+.ep-feature-edit-count {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 10px;
+  color: #9ca3af;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.ep-feature-delete {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  opacity: 0;
+  transition: opacity 0.15s;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+.ep-feature-item:hover .ep-feature-delete { opacity: 1; }
+.ep-feature-delete:hover { background: #fef2f2; }
+
+.ep-add-feature-form {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-top: 6px;
+  flex-wrap: wrap;
+}
+.ep-add-feature-form .ep-input { flex: 1; min-width: 150px; padding-right: 56px; }
+
+.ep-add-feature-actions { display: flex; gap: 6px; }
+
+.ep-add-feature-confirm {
+  padding: 8px 18px;
+  border: none;
+  border-radius: 7px;
+  background: #22c55e;
+  color: white;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+}
+.ep-add-feature-confirm:hover { background: #16a34a; }
+
+.ep-add-feature-cancel {
+  padding: 8px 16px;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 7px;
+  background: white;
+  color: #6b7280;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+}
+.ep-add-feature-cancel:hover { background: #f9fafb; }
+
+.ep-add-feature-btn {
+  background: none;
+  border: none;
+  color: #22c55e;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 8px 0;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.ep-add-feature-btn:hover { color: #16a34a; }
+
+.ep-feature-limit-note {
+  font-size: 13px;
+  color: #9ca3af;
+  padding: 8px 0;
+  margin: 0;
+}
+
+/* Delete plan – solid red filled */
+.ep-delete-plan {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  color: white;
+  background: #ef4444;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 20px;
+  transition: all 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.ep-delete-plan:hover {
+  background: #dc2626;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25);
+}
+
+/* ── Right Column – Live Preview ── */
+.ep-right {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  border: 1px solid #e5e7eb;
+  position: sticky;
+  top: 24px;
+  min-width: 0;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.ep-right-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #111827;
+  margin: 0 0 14px 0;
+}
+
+/* ═══════════════════════════════════════════
+   PREVIEW CARD - UPDATED TO MATCH PricingCard
+   ═══════════════════════════════════════════ */
+
+/* Preview card */
+.ep-preview {
+  padding: 28px 26px;
+  border-radius: 24px;
+  background: #ffffff;
+  border: 2px solid #e8e8e8;
+  position: relative;
+  transition: all 0.3s;
+  overflow: visible;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
+
+/* "Most Popular" state – bold green styling */
+.ep-preview-popular {
+  border: 3px solid #22c55e;
+  box-shadow: 0 12px 32px rgba(34, 197, 94, 0.2);
+  background: #ffffff;
+  padding-top: 50px;
+}
+
+/* "Most popular" pill – top-right corner, light green background */
+.ep-preview-popular-tag {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: #dcfce7;
+  color: #22c55e;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 6px 16px;
+  border-radius: 999px;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+}
+
+/* Plan name – bold, dark; GREEN when popular */
+.ep-preview-name {
+  
+  font-size: 15px;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 8px;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  padding-right: 100px;
+}
+.ep-preview-popular .ep-preview-name { color: #22c55e; }
+
+/* Tagline – gray text */
+.ep-preview-tagline {
+  font-size: 14px;
+  color: #9ca3af;
+  margin-bottom: 24px;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  white-space: pre-wrap;
+  font-weight: 500;
+}
+
+/* Price row */
+.ep-preview-price {
+  display: flex;
+  align-items: baseline;
+  gap: 3px;
+  margin-bottom: 28px;
+}
+
+.ep-preview-currency {
+  font-size: 24px;
+  font-weight: 800;
+  color: #111827;
+}
+.ep-preview-popular .ep-preview-currency { color: #22c55e; font-size: 20px; }
+
+.ep-preview-amount {
+  font-size: 20px;
+  font-weight: 700;
+  color: #111827;
+  line-height: 1;
+}
+.ep-preview-popular .ep-preview-amount { color: #22c55e; font-size: 30px; }
+
+.ep-preview-period {
+  font-size: 14px;
+  color: #9ca3af;
+  margin-left: 4px;
+  font-weight: 600;
+}
+.ep-preview-popular .ep-preview-period { color: #22c55e; }
+
+/* Features – plain list */
+.ep-preview-features {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  flex: 1;
+  margin-bottom: 0;
+}
+
+.ep-preview-features li {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  font-size: 14px;
+  color: #1f2937;
+  line-height: 1.5;
+  font-weight: 500;
+}
+
+.ep-preview-features li svg { 
+  flex-shrink: 0; 
+  margin-top: 2px; 
+  width: 18px;
+  height: 18px;
+  color: #22c55e;
+}
+
+.ep-preview-features li span {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+/* ── Scrollbar (hidden — list still scrolls via mouse/touch) ── */
+.ep-plans-list::-webkit-scrollbar { width: 0; display: none; }
+
+/* EditPlans.css - Additional styles for API integration */
+
+/* Loading State */
+.ep-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  gap: 16px;
+}
+
+.ep-loading-spinner {
+  animation: ep-spin 1s linear infinite;
+  color: #22c55e;
+}
+
+@keyframes ep-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Error State */
+.ep-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  gap: 12px;
+  text-align: center;
+}
+
+.ep-error h3 { color: #ef4444; margin: 0; }
+.ep-error p { color: #6b7280; max-width: 400px; }
+
+.ep-retry-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 20px;
+  background: #22c55e;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.2s;
+}
+.ep-retry-btn:hover { background: #16a34a; }
+
+/* Unsaved Changes Badge */
+.ep-unsaved-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  background: #fef3c7;
+  color: #d97706;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+  margin-left: 12px;
+}
+
+.ep-spin { animation: ep-spin 1s linear infinite; }
+
+.ep-save-btn:disabled,
+.ep-reset-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* No Plan Selected */
+.ep-no-plan-selected {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+  gap: 16px;
+  color: #6b7280;
+}
+
+.ep-no-plan-selected .ep-add-plan { margin: 0; }
+
+/* Preview Empty State */
+.ep-preview-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+  color: #9ca3af;
+  text-align: center;
+  padding: 20px;
+}
+
+/* ── Delete Modal ── */
+.ep-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.ep-modal {
+  background: white;
+  border-radius: 14px;
+  padding: 28px 32px;
+  width: 100%;
+  max-width: 420px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ep-modal h3 {
+  font-size: 18px;
+  font-weight: 700;
+  color: #111827;
+  margin: 0;
+}
+
+.ep-modal p {
+  font-size: 14px;
+  color: #6b7280;
+  margin: 0;
+}
+
+.ep-modal-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 8px;
+}
+
+.ep-modal-actions button {
+  padding: 9px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1.5px solid #e5e7eb;
+  background: white;
+  color: #374151;
+  transition: background 0.15s;
+}
+
+.ep-modal-actions button:hover { background: #f9fafb; }
+
+.ep-modal-delete-btn {
+  background: #ef4444 !important;
+  border-color: #ef4444 !important;
+  color: white !important;
+}
+
+.ep-modal-delete-btn:hover { background: #dc2626 !important; }
+
+/* ── Hide mobile on desktop ── */
+@media (min-width: 769px) {
+  .ep-mobile-header    { display: none; }
+  .ep-mobile-plan-tabs { display: none; }
+  .ep-mobile-actions   { display: none; }
+  .ep-mobile-edit-link { display: none; }
+}
+
+/* ════════════════════════════════════════════
+   TABLET (≤ 900px)
+   ════════════════════════════════════════════ */
+@media (max-width: 900px) {
+  .ep-container {
+    padding: 20px 24px;
+  }
+
+  .ep-main {
+    flex-direction: column;
+  }
+
+  .ep-left,
+  .ep-center,
+  .ep-right {
+    width: 100% !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .ep-header {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .ep-header-actions {
+    width: 100%;
+    justify-content: flex-end;
+    width: 100%;
+  }
+
+  /* Show mobile elements */
+  .ep-mobile-header {
+    display: flex;
+  }
+
+  .ep-mobile-plan-tabs {
+    display: flex;
+  }
+
+  .ep-mobile-actions {
+    display: flex;
+  }
+}
+
+/* ════════════════════════════════════════════
+   MOBILE (≤ 768px)
+   ════════════════════════════════════════════ */
+@media (max-width: 768px) {
+  /* Hide desktop elements */
+  .ep-header { display: none; }
+  .ep-left   { display: none; }
+
+  .ep-container {
+    padding: 16px 16px 40px;
+    background: #f7f8fa;
+    min-height: 100vh;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  /* ── Mobile Header ── */
+  .ep-mobile-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    padding: 0 2px;
+  }
+
+  .ep-mobile-header .ep-back-btn {
+    font-size: 2rem;
+    font-weight: 600;
+    color: #111111;
+    letter-spacing: -0.3px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0;
+  }
+
+  /* ── Horizontal scrollable plan tab cards ── */
+  .ep-mobile-plan-tabs {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    padding: 4px 2px 16px 2px;
+    margin-bottom: 4px;
+    flex-wrap: nowrap;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  .ep-mobile-plan-tabs::-webkit-scrollbar { display: none; }
+
+  /* Plan tab card */
+  .ep-mobile-plan-tab {
+    flex: 0 0 160px;
+    min-width: 150px;
+    background: #ffffff;
+    border: 1.5px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 16px 14px 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    box-sizing: border-box;
+  }
+
+  .ep-mobile-plan-tab--active {
+    border-color: #22c55e;
+    box-shadow: 0 2px 8px rgba(34, 197, 94, 0.15);
+  }
+
+  .ep-mobile-plan-tab:hover {
+    border-color: #22c55e;
+    transform: translateY(-1px);
+  }
+
+  .ep-mobile-plan-tab__top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+  }
+
+  .ep-mobile-plan-tab__icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: #f0fdf4;
+    color: #22c55e;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .ep-mobile-plan-tab__icon--popular {
+    background: #f5f3ff;
+    color: #7c3aed;
+  }
+
+  .ep-mobile-plan-tab__popular-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    font-size: 9px;
+    font-weight: 600;
+    color: #7c3aed;
+    background: #f5f3ff;
+    border: 1px solid #ddd6fe;
+    padding: 2px 7px;
+    border-radius: 20px;
+    letter-spacing: 0.2px;
+    white-space: nowrap;
+  }
+
+  .ep-mobile-plan-tab__name {
+    font-size: 14px;
+    font-weight: 700;
+    color: #111827;
+    letter-spacing: -0.2px;
+  }
+
+  .ep-mobile-plan-tab__price {
+    font-size: 17px;
+    font-weight: 700;
+    color: #111827;
+    display: flex;
+    align-items: baseline;
+    gap: 2px;
+    margin-top: 2px;
+  }
+
+  .ep-mobile-plan-tab__per {
+    font-size: 12px;
+    font-weight: 400;
+    color: #6b7280;
+  }
+
+  .ep-mobile-plan-tab__billing {
+    font-size: 10px;
+    font-weight: 600;
+    color: #9ca3af;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 4px;
+  }
+
+  /* ── Add plan card ── */
+  .ep-mobile-plan-tab--add {
+    flex: 0 0 130px;
+    min-width: 120px;
+    border: 2px dashed #d1d5db;
+    background: transparent;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 16px 12px;
+  }
+
+  .ep-mobile-plan-tab--add:hover {
+    border-color: #22c55e;
+    background: #f0fdf4;
+    transform: translateY(-1px);
+  }
+
+  .ep-mobile-plan-tab__add-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 1.5px solid #d1d5db;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #22c55e;
+  }
+
+  .ep-mobile-plan-tab__add-label {
+    font-size: 13px;
+    font-weight: 500;
+    color: #22c55e;
+  }
+
+  /* ── Reset + Save row ── */
+  .ep-mobile-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-bottom: 20px;
+    padding: 0 2px;
+    flex-wrap: nowrap;
+  }
+
+  .ep-mobile-actions .ep-reset-btn {
+    padding: 11px 16px;
+    font-size: 13px;
+    border-radius: 12px;
+    border: 1.5px solid #a78bfa;
+    color: #7c3aed;
+    background: #ffffff;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+    white-space: nowrap;
+    font-weight: 600;
+  }
+
+  .ep-mobile-actions .ep-reset-btn:hover {
+    background: #f5f3ff;
+    border-color: #7c3aed;
+  }
+
+  .ep-mobile-actions .ep-save-btn {
+    padding: 11px 20px;
+    font-size: 13px;
+    border-radius: 12px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+    white-space: nowrap;
+    font-weight: 600;
+  }
+
+  /* ── Main: single column stacked ── */
+  .ep-main {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .ep-center {
+    border-radius: 12px;
+    padding: 20px 16px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .ep-right {
+    position: static;
+    border-radius: 12px;
+    padding: 20px 16px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .ep-two-cols {
+    flex-direction: column;
+  }
+
+  .ep-details-header {
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .ep-delete-plan {
+    border-radius: 12px;
+    font-size: 14px;
+    padding: 13px;
+    height: 48px;
+  }
+
+  /* Always show delete button on mobile (no hover needed) */
+  .ep-feature-delete {
+    opacity: 1;
+  }
+
+  .ep-preview-name {
+    font-size: 18px;
+    padding-right: 80px;
+  }
+
+  .ep-preview-amount {
+    font-size: 34px;
+  }
+
+  .ep-preview-currency {
+    font-size: 18px;
+  }
+
+  .ep-preview-period {
+    font-size: 13px;
+  }
+
+  .ep-preview-features li {
+    font-size: 12.5px;
+  }
+
+  /* ── Inputs & fields ── */
+  .ep-input {
+    font-size: 16px; /* Prevents iOS zoom on focus */
+    height: 48px;
+    border-radius: 12px;
+    padding: 11px 14px;
+  }
+
+  .ep-textarea {
+    font-size: 16px;
+    border-radius: 12px;
+  }
+
+  .ep-select {
+    height: 48px;
+    font-size: 16px;
+    border-radius: 12px;
+  }
+
+  .ep-add-feature-confirm,
+  .ep-add-feature-cancel {
+    height: 44px;
+    padding: 0 16px;
+    border-radius: 10px;
+    font-size: 14px;
+  }
+
+  /* Unsaved badge stacks below back button on mobile */
+  .ep-unsaved-badge {
+    margin-left: 0;
+    font-size: 11px;
+  }
+}
+
+/* ── Extra small (≤ 480px) ── */
+@media (max-width: 480px) {
+  .ep-container {
+    padding: 12px 12px 32px;
+  }
+
+  .ep-mobile-header .ep-back-btn {
+    font-size: 1.6rem;
+  }
+
+  .ep-mobile-plan-tab {
+    flex: 0 0 140px;
+    min-width: 130px;
+    padding: 14px 12px 12px;
+  }
+
+  .ep-mobile-plan-tab__name {
+    font-size: 13px;
+  }
+
+  .ep-mobile-plan-tab__price {
+    font-size: 15px;
+  }
+
+  .ep-mobile-plan-tab__per {
+    font-size: 11px;
+  }
+
+  .ep-mobile-plan-tab__billing {
+    font-size: 9px;
+    letter-spacing: 0.3px;
+  }
+
+  .ep-mobile-plan-tab--add {
+    flex: 0 0 110px;
+    min-width: 100px;
+  }
+
+  .ep-mobile-plan-tab__add-icon {
+    width: 34px;
+    height: 34px;
+    font-size: 15px;
+  }
+
+  .ep-mobile-plan-tab__add-label {
+    font-size: 11px;
+  }
+
+  .ep-center {
+    padding: 16px 12px;
+  }
+
+  .ep-two-cols {
+    grid-template-columns: 1fr;
+  }
+
+  .ep-right {
+    padding: 16px 12px;
+  }
+
+  .ep-mobile-actions .ep-reset-btn,
+  .ep-mobile-actions .ep-save-btn {
+    font-size: 12px;
+    padding: 0 14px;
+    height: 40px;
+  }
+
+  .ep-delete-plan {
+    font-size: 13px;
+    padding: 12px;
+    height: 44px;
+  }
+}
+
+/* ── Extra extra small (≤ 360px) ── */
+@media (max-width: 360px) {
+  .ep-container {
+    padding: 10px 10px 28px;
+  }
+
+  .ep-mobile-plan-tab {
+    flex: 0 0 124px;
+    min-width: 110px;
+    padding: 12px 10px;
+  }
+
+  .ep-mobile-plan-tab__name {
+    font-size: 12px;
+  }
+
+  .ep-mobile-plan-tab__price {
+    font-size: 14px;
+  }
+
+  .ep-mobile-plan-tab--add {
+    flex: 0 0 100px;
+    min-width: 90px;
+  }
+
+  .ep-mobile-actions .ep-reset-btn,
+  .ep-mobile-actions .ep-save-btn {
+    font-size: 11px;
+    padding: 0 12px;
+    height: 38px;
+    border-radius: 10px;
+  }
+
+  .ep-center,
+  .ep-right {
+    padding: 14px 10px;
+  }
+}

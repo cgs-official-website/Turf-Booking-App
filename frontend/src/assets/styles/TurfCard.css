@@ -1,0 +1,183 @@
+/* TurfCard.css */
+
+.turf-card {
+  max-width: 380px;
+  width: 100%;
+  background: #ffffff;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+/* ── Image wrapper ── */
+.turf-card__image-wrapper {
+  position: relative;
+  width: 100%;
+  height: 200px;
+  background: #eef0f2;
+  overflow: visible;
+}
+
+.turf-card__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Empty state when backend has no image yet — plain, no upload affordance */
+.turf-card__image-placeholder {
+  width: 100%;
+  height: 100%;
+  background: #eef0f2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.turf-card__image-placeholder-icon {
+  width: 36px;
+  height: 36px;
+  color: #c4c9d0;
+}
+
+/* ── Logo circle ── */
+.turf-card__logo-circle {
+  position: absolute;
+  bottom: -22px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 2px solid #ffffff;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  z-index: 2;
+}
+
+.turf-card__logo-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.turf-card__logo-placeholder {
+  width: 100%;
+  height: 100%;
+  background: #f5f5f5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.turf-card__logo-placeholder-icon {
+  width: 22px;
+  height: 22px;
+  color: #c4c9d0;
+}
+
+/* ── Content ── */
+.turf-card__content {
+  padding: 2rem 1.5rem 1.5rem;
+}
+
+/* Meta row: ID + Status badge */
+.turf-card__meta-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.turf-card__turf-id {
+  font-size: 13px;
+  font-weight: 500;
+  color: #1d9e75;
+}
+
+.turf-card__status {
+  font-size: 12px;
+  font-weight: 500;
+  padding: 4px 14px;
+  border-radius: 20px;
+}
+
+.turf-card__status--active {
+  background: #d6f5e3;
+  color: #16a34a;
+}
+
+.turf-card__status--expired {
+  background: #f1f5f9;
+  color: #64748b;
+}
+
+/* Title */
+.turf-card__title {
+  font-size: 22px;
+  font-weight: 700;
+  color: #111;
+  margin: 4px 0 8px;
+  line-height: 1.2;
+}
+
+/* Price */
+.turf-card__price {
+  font-size: 24px;
+  font-weight: 700;
+  color: #111;
+  margin: 0 0 10px;
+}
+
+.turf-card__price-unit {
+  font-size: 14px;
+  font-weight: 400;
+  color: #888;
+}
+
+/* Dates */
+.turf-card__dates {
+  font-size: 13px;
+  color: #888;
+  margin: 0 0 18px;
+}
+
+/* Footer row */
+.turf-card__footer {
+  display: flex;
+  align-items: stretch;
+  border-top: 1px solid #f0f0f0;
+  padding-top: 14px;
+}
+
+.turf-card__footer-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.turf-card__footer-divider {
+  width: 1px;
+  background: #f0f0f0;
+  margin: 0 16px;
+}
+
+.turf-card__footer-label {
+  font-size: 12px;
+  color: #888;
+}
+
+
+
+.turf-card__footer-value {
+  font-size: 15px;
+  
+  color: #111;
+}
