@@ -29,18 +29,18 @@ function ForgotPasswordSuccess() {
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             {/* Circular Envelope Icon */}
             <div style={{ 
-              width: '64px', 
-              height: '64px', 
+              width: '72px', 
+              height: '72px', 
               borderRadius: '50%', 
-              border: '4px solid #f4f4f5', 
+              border: '4px solid #f8fafc', 
               display: 'flex', 
               alignItems: 'center', 
               justifyContent: 'center',
               marginBottom: '20px'
             }}>
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#0A9847" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
-                <polyline points="22,6 12,13 2,6"></polyline>
+              <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#0A9847" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="2" y="4" width="20" height="16" rx="2" ry="2"></rect>
+                <path d="M2 4l10 8 10-8"></path>
               </svg>
             </div>
             
@@ -79,11 +79,13 @@ function ForgotPasswordSuccess() {
             >
               <div style={{ 
                 backgroundColor: 'white', 
-                borderRadius: '4px', 
-                padding: '2px', 
+                borderRadius: '6px', 
+                width: '26px',
+                height: '26px',
                 display: 'flex',
                 alignItems: 'center',
-                justifyContent: 'center'
+                justifyContent: 'center',
+                boxShadow: '0 1px 2px rgba(0,0,0,0.1)'
               }}>
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M24 5.457v13.909c0 .904-.732 1.636-1.636 1.636h-3.819V11.728L12 16.669 5.455 11.728v9.273H1.636A1.636 1.636 0 0 1 0 19.366V5.457c0-2.023 2.309-3.178 3.927-1.964L12 10.468l8.073-6.975C21.691 2.279 24 3.434 24 5.457z" fill="#EA4335"/>

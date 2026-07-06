@@ -156,7 +156,7 @@ export default function Dashboard() {
             <div className="stat-content">
               <h3>Total Revenue</h3>
               <h2 title={`₹${stats.totalRevenue?.toLocaleString("en-IN") || stats.totalRevenue}`}>
-                {stats.totalRevenue?.toLocaleString("en-IN") || stats.totalRevenue}
+                {stats.totalRevenue ? new Intl.NumberFormat('en-US', { notation: 'compact', maximumFractionDigits: 1 }).format(stats.totalRevenue) : (stats.totalRevenue || "0")}
               </h2>
               <p className={`stat-growth ${stats.revenueGrowth?.percentage < 0 ? "negative-growth" : ""}`}>
                 {stats.revenueGrowth?.percentage >= 0 ? "↑" : "↓"}{" "}

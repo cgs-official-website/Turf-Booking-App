@@ -34,8 +34,9 @@
 }
 
 .login-logo {
-  width: 140px;
+  width: 160px;
   object-fit: contain;
+  border-radius: 8px;
 }
 
 .welcome-section {

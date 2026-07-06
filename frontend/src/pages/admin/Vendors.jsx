@@ -309,44 +309,36 @@ export default function Vendors() {
         </div>
       </div>
 
-      {/* ── Pagination ── */}
-      <div className="pagination-container">
-        <span className="pagination-info-left">
-          Showing {(safePage - 1) * PER_PAGE + 1} to {Math.min(safePage * PER_PAGE, filteredVendors.length)} results
+      {/* Footer / Pagination */}
+      <div className="bk-table-footer" style={{ marginTop: '20px' }}>
+        <span className="bk-showing-label">
+          Showing {paginated.length} of {filteredVendors.length} vendor
+          {filteredVendors.length !== 1 ? "s" : ""}
         </span>
-
-        <div className="pagination-center">
+        <div className="bk-pagination">
           <button
-            className="pagination-arrow"
-            disabled={safePage === 1}
+            className="bk-page-btn"
             onClick={() => setPage((p) => Math.max(1, p - 1))}
+            disabled={safePage === 1}
           >
-            ‹
+            <i className="bi bi-chevron-left" />
           </button>
-
-          <div className="page-numbers">
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map((n) => (
-              <button
-                key={n}
-                className={`page-number ${safePage === n ? "active" : ""}`}
-                onClick={() => setPage(n)}
-              >
-                {n}
-              </button>
-            ))}
-          </div>
-
+          {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+            <button
+              key={p}
+              className={`bk-page-btn${p === safePage ? " bk-page-btn--active" : ""}`}
+              onClick={() => setPage(p)}
+            >
+              {p}
+            </button>
+          ))}
           <button
-            className="pagination-arrow"
-            disabled={safePage === totalPages}
+            className="bk-page-btn"
             onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+            disabled={safePage === totalPages}
           >
-            ›
+            <i className="bi bi-chevron-right" />
           </button>
-        </div>
-
-        <div className="pagination-info">
-          Rows per page <span className="rows-per-page">04</span>
         </div>
       </div>
     </div>
